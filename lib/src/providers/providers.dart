@@ -8,7 +8,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../../constants.dart';
-import '../json/presets/preset.dart';
+import '../json/json_value_context.dart';
+import '../json/presets/preset_collection.dart';
 import 'app_context.dart';
 
 /// Provide an app context.
@@ -28,21 +29,25 @@ final appContextProvider = FutureProvider((final ref) async {
 });
 
 /// Provide the current presets.
-final presetsProvider = FutureProvider((final ref) async {
+final presetCollectionsProvider = FutureProvider((final ref) async {
   final context = await ref.watch(appContextProvider.future);
   final presetsDirectory = context.presetsDirectory;
   if (!presetsDirectory.existsSync()) {
-    return <Preset>[];
+    return <JsonValueContext<PresetCollection>>[];
   }
-  final files = presetsDirectory
+  return presetsDirectory
       .listSync()
       .whereType<File>()
-      .where((final element) => path.extension(element.path) == '.json');
-  return files.map<Preset>(
+      .where(
+        (final element) =>
+            path.extension(element.path) == presetCollectionExtension,
+      )
+      .map<JsonValueContext<PresetCollection>>(
     (final e) {
       final data = e.readAsStringSync();
       final json = jsonDecode(data) as JsonType;
-      return Preset.fromJson(json);
+      final collection = PresetCollection.fromJson(json);
+      return JsonValueContext(file: e, value: collection);
     },
   );
 });

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:backstreets_widgets/util.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
-import 'screens/presets/presets_list.dart';
+import 'screens/presets/preset_collections_list.dart';
 
 /// The type of JSON.
 typedef JsonType = Map<String, dynamic>;
@@ -23,8 +26,17 @@ class PresetsAction extends ContextAction<PresetsIntent> {
     if (context != null) {
       pushWidget(
         context: context,
-        builder: (final context) => const PresetsList(),
+        builder: (final context) => const PresetCollectionsList(),
       );
     }
   }
 }
+
+/// The JSON encoder to use.
+const indentedJsonEncoder = JsonEncoder.withIndent('  ');
+
+/// The UUID generator to use.
+const uuid = Uuid();
+
+/// The file extension for preset collections.
+const presetCollectionExtension = '.presets';
