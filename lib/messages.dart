@@ -23,3 +23,27 @@ String nothingToShowMessage(final String what) => Intl.message(
       },
       name: 'nothingToShowMessage',
     );
+
+/// An error message.
+final errorTitleMessage = Intl.message('Error');
+
+/// The message to show when [path] does not exist.
+String fileDoesNotExistMessage(final String path) => Intl.message(
+      'The file $path does not exist.',
+      args: [path],
+      desc: 'The message to show when a file does not exist',
+      examples: {
+        'path': [
+          r'c:\users\Someone\Documents\file.json',
+          '/home/someone/Documents/document.json',
+          '/Users/Someone/Documents/file.json'
+        ]
+      },
+      name: 'fileDoesNotExistMessage',
+    );
+
+/// The title of a name field.
+final nameMessage = Intl.message('Name');
+
+/// The title of a description field.
+final descriptionMessage = Intl.message('Description');

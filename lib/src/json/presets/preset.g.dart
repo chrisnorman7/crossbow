@@ -7,6 +7,7 @@ part of 'preset.dart';
 // **************************************************************************
 
 Preset _$PresetFromJson(Map<String, dynamic> json) => Preset(
+      id: json['id'] as String?,
       name: json['name'] as String? ?? 'Untitled Preset',
       description: json['description'] as String? ?? 'DESCRIBE ME',
       code: json['code'] as String? ?? '/// This preset needs code.\n',
@@ -16,6 +17,7 @@ Preset _$PresetFromJson(Map<String, dynamic> json) => Preset(
     );
 
 Map<String, dynamic> _$PresetToJson(Preset instance) => <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'description': instance.description,
       'code': instance.code,

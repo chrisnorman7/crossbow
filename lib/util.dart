@@ -12,8 +12,14 @@ import 'package:path/path.dart' as path;
 
 import 'constants.dart';
 import 'messages.dart';
+import 'screens/presets/edit_preset.dart';
+import 'src/json/json_value_context.dart';
+import 'src/json/presets/preset.dart';
 import 'src/json/presets/preset_collection.dart';
 import 'src/providers/providers.dart';
+
+/// Create a new ID.
+String newId() => uuid.v4();
 
 /// Create a new preset.
 Future<void> createPresetCollection({
@@ -64,6 +70,22 @@ Future<void> createPresetCollection({
         return null;
       },
     ),
+  );
+}
+
+/// Create a new preset inside of a [presetCollectionContext].
+Future<void> createPreset({
+  required final BuildContext context,
+  required final WidgetRef ref,
+  required final JsonValueContext<PresetCollection> presetCollectionContext,
+}) {
+  final preset = Preset();
+  presetCollectionContext.value.presets.add(preset);
+  ref.refresh(presetCollectionsProvider);
+  return pushWidget(
+    context: context,
+    builder: (final context) =>
+        EditPreset(file: presetCollectionContext.file, id: preset.id),
   );
 }
 

@@ -1,7 +1,6 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/shortcuts.dart';
-import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +11,7 @@ import '../../src/json/json_value_context.dart';
 import '../../src/json/presets/preset_collection.dart';
 import '../../src/providers/providers.dart';
 import '../../util.dart';
+import 'edit_preset_collection.dart';
 
 /// A widget for viewing preset collections.
 class PresetCollectionsList extends ConsumerWidget {
@@ -32,12 +32,14 @@ class PresetCollectionsList extends ConsumerWidget {
                 createPresetCollection(context: context, ref: ref)
           },
           child: SimpleScaffold(
-            title: 'Presets',
+            title: Intl.message('Preset Collections'),
             body: getBody(ref: ref, presets: data.toList()),
             floatingActionButton: FloatingActionButton(
-              onPressed: () =>
-                  createPresetCollection(context: context, ref: ref),
-              tooltip: Intl.message('New Preset Collection'),
+              onPressed: () => createPresetCollection(
+                context: context,
+                ref: ref,
+              ),
+              tooltip: Intl.message('Create Preset Collection'),
               child: addIcon,
             ),
           ),
@@ -74,11 +76,12 @@ class PresetCollectionsList extends ConsumerWidget {
                     onDone: () => ref.refresh(presetCollectionsProvider),
                   )
             },
-            child: ListTile(
+            child: PushWidgetListTile(
+              title: preset.name,
+              builder: (final context) =>
+                  EditPresetCollection(file: value.file),
+              subtitle: preset.description,
               autofocus: index == 0,
-              title: Text(preset.name),
-              subtitle: Text(preset.description),
-              onTap: () => setClipboardText(preset.description),
             ),
           ),
         );

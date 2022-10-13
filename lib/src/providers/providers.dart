@@ -11,6 +11,8 @@ import '../../constants.dart';
 import '../json/json_value_context.dart';
 import '../json/presets/preset_collection.dart';
 import 'app_context.dart';
+import 'preset_argument.dart';
+import 'preset_context.dart';
 
 /// Provide an app context.
 final appContextProvider = FutureProvider((final ref) async {
@@ -51,3 +53,27 @@ final presetCollectionsProvider = FutureProvider((final ref) async {
     },
   );
 });
+
+/// Provide a single preset collection.
+final presetCollectionProvider =
+    Provider.family<JsonValueContext<PresetCollection>, File>(
+  (final ref, final file) {
+    final data = file.readAsStringSync();
+    final json = jsonDecode(data) as JsonType;
+    final presetCollection = PresetCollection.fromJson(json);
+    return JsonValueContext(file: file, value: presetCollection);
+  },
+);
+
+/// Provide a single preset.
+final presetProvider = Provider.family<PresetContext, PresetArgument>(
+  (final ref, final arg) {
+    final presetCollectionContext = ref.watch(
+      presetCollectionProvider.call(arg.file),
+    );
+    return PresetContext(
+      presetCollectionContext: presetCollectionContext,
+      id: arg.id,
+    );
+  },
+);
