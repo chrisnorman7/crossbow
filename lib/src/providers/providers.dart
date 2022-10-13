@@ -40,7 +40,7 @@ final presetCollectionsProvider = FutureProvider((final ref) async {
       .whereType<File>()
       .where(
         (final element) =>
-            path.extension(element.path) == presetCollectionExtension,
+            path.extension(element.path) == presetCollectionFileExtension,
       )
       .map<JsonValueContext<PresetCollection>>(
     (final e) {

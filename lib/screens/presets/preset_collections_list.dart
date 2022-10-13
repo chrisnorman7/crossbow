@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +25,20 @@ class PresetCollectionsList extends ConsumerWidget {
     final provider = ref.watch(presetCollectionsProvider);
     return provider.when(
       data: (final data) => Cancel(
-        child: SimpleScaffold(
-          title: 'Presets',
-          body: getBody(ref: ref, presets: data.toList()),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => createPresetCollection(context: context, ref: ref),
-            tooltip: Intl.message('New Preset Collection'),
-            child: addIcon,
+        child: CallbackShortcuts(
+          bindings: {
+            newShortcut: () =>
+                createPresetCollection(context: context, ref: ref)
+          },
+          child: SimpleScaffold(
+            title: 'Presets',
+            body: getBody(ref: ref, presets: data.toList()),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () =>
+                  createPresetCollection(context: context, ref: ref),
+              tooltip: Intl.message('New Preset Collection'),
+              child: addIcon,
+            ),
           ),
         ),
       ),

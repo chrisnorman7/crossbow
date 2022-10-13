@@ -26,7 +26,17 @@ Future<void> createPresetCollection({
     context: context,
     builder: (final context) => GetText(
       onDone: (final value) {
-        final file = File(path.join(appContext.presetsDirectory.path, value));
+        if (!appContext.presetsDirectory.existsSync()) {
+          appContext.presetsDirectory.createSync(recursive: true);
+        }
+        final file = File(
+          path.join(
+            appContext.presetsDirectory.path,
+            value.endsWith(presetCollectionFileExtension)
+                ? value
+                : '$value$presetCollectionFileExtension',
+          ),
+        );
         final data = indentedJsonEncoder.convert(collection.toJson());
         file.writeAsStringSync(data);
         Navigator.pop(context);
@@ -36,12 +46,18 @@ Future<void> createPresetCollection({
       title: Intl.message('Preset Collection Filename'),
       tooltip: Intl.message('Save'),
       validator: (final value) {
+        if (!appContext.presetsDirectory.existsSync()) {
+          return null;
+        }
         if (value == null || value.isEmpty) {
           return emptyValueMessage;
         }
         for (final file
             in appContext.presetsDirectory.listSync().whereType<File>()) {
-          if (path.basename(file.path).toLowerCase() == value.toLowerCase()) {
+          final filenameLowerCase = path.basename(file.path).toLowerCase();
+          if (filenameLowerCase == value.toLowerCase() ||
+              filenameLowerCase ==
+                  '${value.toLowerCase()}$presetCollectionFileExtension') {
             return Intl.message('There is already a file with that name');
           }
         }

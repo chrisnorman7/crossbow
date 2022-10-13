@@ -39,4 +39,4 @@ const indentedJsonEncoder = JsonEncoder.withIndent('  ');
 const uuid = Uuid();
 
 /// The file extension for preset collections.
-const presetCollectionExtension = '.presets';
+const presetCollectionFileExtension = '.crossbow-presets';
