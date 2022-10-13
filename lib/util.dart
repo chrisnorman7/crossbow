@@ -66,3 +66,20 @@ Future<void> createPresetCollection({
     ),
   );
 }
+
+/// Confirm before deleting a given [file].
+Future<void> confirmDeleteFile({
+  required final BuildContext context,
+  required final File file,
+  final VoidCallback? onDone,
+}) =>
+    confirm(
+      context: context,
+      message: confirmDeleteFileMessage,
+      title: confirmDeleteTitle,
+      yesCallback: () {
+        file.deleteSync(recursive: true);
+        Navigator.pop(context);
+        onDone?.call();
+      },
+    );

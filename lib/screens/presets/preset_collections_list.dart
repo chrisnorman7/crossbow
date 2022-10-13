@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../messages.dart';
 import '../../src/json/json_value_context.dart';
 import '../../src/json/presets/preset_collection.dart';
 import '../../src/providers/providers.dart';
@@ -54,10 +55,7 @@ class PresetCollectionsList extends ConsumerWidget {
   }) {
     if (presets.isEmpty) {
       return CenterText(
-        text: Intl.message(
-          'There are no presets to show.',
-          desc: 'The message to show when there are no presets to show.',
-        ),
+        text: nothingToShowMessage('presets'),
         autofocus: true,
       );
     }
@@ -68,11 +66,20 @@ class PresetCollectionsList extends ConsumerWidget {
         final preset = value.value;
         return SearchableListTile(
           searchString: preset.name,
-          child: ListTile(
-            autofocus: index == 0,
-            title: Text(preset.name),
-            subtitle: Text(preset.description),
-            onTap: () => setClipboardText(preset.description),
+          child: CallbackShortcuts(
+            bindings: {
+              deleteShortcut: () => confirmDeleteFile(
+                    context: context,
+                    file: value.file,
+                    onDone: () => ref.refresh(presetCollectionsProvider),
+                  )
+            },
+            child: ListTile(
+              autofocus: index == 0,
+              title: Text(preset.name),
+              subtitle: Text(preset.description),
+              onTap: () => setClipboardText(preset.description),
+            ),
           ),
         );
       },
