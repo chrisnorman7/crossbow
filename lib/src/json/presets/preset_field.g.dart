@@ -30,4 +30,5 @@ const _$PresetFieldTypeEnumMap = {
   PresetFieldType.boolean: 'boolean',
   PresetFieldType.scanCode: 'scanCode',
   PresetFieldType.sound: 'sound',
+  PresetFieldType.function: 'function',
 };

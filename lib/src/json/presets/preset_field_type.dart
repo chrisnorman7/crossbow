@@ -20,4 +20,7 @@ enum PresetFieldType {
 
   /// A sound.
   sound,
+
+  /// A function to call.
+  function,
 }
