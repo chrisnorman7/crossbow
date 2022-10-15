@@ -13,6 +13,8 @@ import '../json/presets/preset_collection.dart';
 import 'app_context.dart';
 import 'preset_argument.dart';
 import 'preset_context.dart';
+import 'preset_field_argument.dart';
+import 'preset_field_context.dart';
 
 /// Provide an app context.
 final appContextProvider = FutureProvider((final ref) async {
@@ -74,6 +76,26 @@ final presetProvider = Provider.family<PresetContext, PresetArgument>(
     return PresetContext(
       presetCollectionContext: presetCollectionContext,
       id: arg.id,
+    );
+  },
+);
+
+/// Provide a single preset field.
+final presetFieldProvider =
+    Provider.family<PresetFieldContext, PresetFieldArgument>(
+  (final ref, final arg) {
+    final presetContext = ref.watch(
+      presetProvider.call(
+        PresetArgument(
+          file: arg.presetCollectionContext.file,
+          id: arg.presetId,
+        ),
+      ),
+    );
+    return PresetFieldContext(
+      presetContext: presetContext,
+      presetFieldId: arg.presetFieldId,
+      presetId: presetContext.id,
     );
   },
 );

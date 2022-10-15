@@ -41,12 +41,12 @@ class EditPresetCollection extends ConsumerWidget {
       child: TabbedScaffold(
         tabs: [
           TabbedScaffoldTab(
-            title: 'Settings',
+            title: settingsTitle,
             icon: settingsIcon,
             builder: (final context) => getSettingsPage(ref: ref),
           ),
           TabbedScaffoldTab(
-            title: 'Presets',
+            title: Intl.message('Presets'),
             icon: Text('${presets.length}'),
             builder: (final context) => getPresetsPage(ref: ref),
             floatingActionButton: FloatingActionButton(
@@ -80,7 +80,7 @@ class EditPresetCollection extends ConsumerWidget {
             presetCollection.name = value;
             save(ref: ref, presetCollection: presetCollectionContext);
           },
-          header: 'Name',
+          header: nameMessage,
           autofocus: true,
         ),
         TextListTile(
@@ -89,7 +89,7 @@ class EditPresetCollection extends ConsumerWidget {
             presetCollection.description = value;
             save(ref: ref, presetCollection: presetCollectionContext);
           },
-          header: 'Description',
+          header: descriptionMessage,
         ),
         TextListTile(
           value: presetCollection.authors,
@@ -97,7 +97,7 @@ class EditPresetCollection extends ConsumerWidget {
             presetCollection.authors = value;
             save(ref: ref, presetCollection: presetCollectionContext);
           },
-          header: 'Authors',
+          header: Intl.message('Authors'),
         )
       ],
     );

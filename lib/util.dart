@@ -3,6 +3,7 @@ library util;
 
 import 'dart:io';
 
+import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,10 @@ import 'screens/presets/edit_preset.dart';
 import 'src/json/json_value_context.dart';
 import 'src/json/presets/preset.dart';
 import 'src/json/presets/preset_collection.dart';
+import 'src/json/presets/preset_field.dart';
+import 'src/json/presets/preset_field_type.dart';
+import 'src/providers/preset_argument.dart';
+import 'src/providers/preset_context.dart';
 import 'src/providers/providers.dart';
 
 /// Create a new ID.
@@ -104,4 +109,55 @@ Future<void> confirmDeleteFile({
         Navigator.pop(context);
         onDone?.call();
       },
+    );
+
+/// Create a new field.
+Future<void> createPresetField({
+  required final BuildContext context,
+  required final WidgetRef ref,
+  required final PresetContext presetContext,
+}) =>
+    pushWidget(
+      context: context,
+      builder: (final context) => GetText(
+        onDone: (final fieldName) {
+          Navigator.pop(context);
+          pushWidget(
+            context: context,
+            builder: (final context) => SelectEnum(
+              values: PresetFieldType.values,
+              onDone: (final fieldType) {
+                final field = PresetField(name: fieldName, type: fieldType);
+                presetContext.preset.fields.add(field);
+                presetContext.presetCollectionContext.save();
+                ref
+                  ..refresh(
+                    presetCollectionProvider
+                        .call(presetContext.presetCollectionContext.file),
+                  )
+                  ..refresh(
+                    presetProvider.call(
+                      PresetArgument(
+                        file: presetContext.presetCollectionContext.file,
+                        id: presetContext.id,
+                      ),
+                    ),
+                  );
+              },
+            ),
+          );
+        },
+        labelText: 'Field Name',
+        icon: const Icon(Icons.navigate_next),
+        tooltip: Intl.message('Next'),
+        title: Intl.message('Enter Field Name'),
+        validator: (final value) {
+          for (final field in presetContext.preset.fields) {
+            if (field.name == value) {
+              return Intl.message('That name is already used');
+            }
+          }
+          return null;
+        },
+      ),
     );

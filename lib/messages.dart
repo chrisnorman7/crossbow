@@ -47,3 +47,6 @@ final nameMessage = Intl.message('Name');
 
 /// The title of a description field.
 final descriptionMessage = Intl.message('Description');
+
+/// The title of a settings page.
+final settingsTitle = Intl.message('Settings');

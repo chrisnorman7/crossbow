@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../util.dart';
 import 'preset_field_type.dart';
 
 part 'preset_field.g.dart';
@@ -13,15 +14,20 @@ final _null = jsonEncode(null);
 class PresetField {
   /// Create an instance.
   PresetField({
+    final String? id,
     this.name = 'untitled',
     this.description = 'A new preset field',
     this.type = PresetFieldType.string,
     final String? defaultValue,
-  }) : defaultValue = defaultValue ?? _null;
+  })  : id = id ?? newId(),
+        defaultValue = defaultValue ?? _null;
 
   /// Create an instance from a JSON object.
   factory PresetField.fromJson(final Map<String, dynamic> json) =>
       _$PresetFieldFromJson(json);
+
+  /// The ID of this field.
+  final String id;
 
   /// The name of this field.
   ///

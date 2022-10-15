@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import '../../src/json/presets/preset_collection.dart';
 import '../../src/providers/preset_argument.dart';
 import '../../src/providers/preset_context.dart';
 import '../../src/providers/providers.dart';
+import '../../util.dart';
 import '../file_does_not_exist_screen.dart';
 
 /// A widget to edit a [Preset].
@@ -41,37 +43,31 @@ class EditPreset extends ConsumerWidget {
     );
     final preset = presetContext.preset;
     return Cancel(
-      child: SimpleScaffold(
-        title: Intl.message('Edit Preset'),
-        body: ListView(
-          children: [
-            TextListTile(
-              value: preset.name,
-              onChanged: (final value) {
-                preset.name = value;
-                save(ref: ref, presetContext: presetContext);
-              },
-              header: nameMessage,
-              autofocus: true,
+      child: TabbedScaffold(
+        tabs: [
+          TabbedScaffoldTab(
+            title: settingsTitle,
+            icon: settingsIcon,
+            builder: (final context) => getSettingsPage(
+              ref: ref,
+              presetContext: presetContext,
             ),
-            TextListTile(
-              value: preset.description,
-              onChanged: (final value) {
-                preset.description = value;
-                save(ref: ref, presetContext: presetContext);
-              },
-              header: descriptionMessage,
+          ),
+          TabbedScaffoldTab(
+            title: Intl.message('Fields'),
+            icon: Text('${preset.fields.length}'),
+            builder: (final context) => getFieldsPage(ref: ref, preset: preset),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => createPresetField(
+                context: context,
+                ref: ref,
+                presetContext: presetContext,
+              ),
+              tooltip: Intl.message('Create Field'),
+              child: addIcon,
             ),
-            TextListTile(
-              value: preset.code,
-              onChanged: (final value) {
-                preset.code = value;
-                save(ref: ref, presetContext: presetContext);
-              },
-              header: Intl.message('Code'),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
@@ -89,5 +85,71 @@ class EditPreset extends ConsumerWidget {
       ..refresh(
         presetCollectionProvider.call(file),
       );
+  }
+
+  /// Get the settings page.
+  Widget getSettingsPage({
+    required final WidgetRef ref,
+    required final PresetContext presetContext,
+  }) {
+    final preset = presetContext.preset;
+    return ListView(
+      children: [
+        TextListTile(
+          value: preset.name,
+          onChanged: (final value) {
+            preset.name = value;
+            save(ref: ref, presetContext: presetContext);
+          },
+          header: nameMessage,
+          autofocus: true,
+        ),
+        TextListTile(
+          value: preset.description,
+          onChanged: (final value) {
+            preset.description = value;
+            save(ref: ref, presetContext: presetContext);
+          },
+          header: descriptionMessage,
+        ),
+        TextListTile(
+          value: preset.code,
+          onChanged: (final value) {
+            preset.code = value;
+            save(ref: ref, presetContext: presetContext);
+          },
+          header: Intl.message('Code'),
+        )
+      ],
+    );
+  }
+
+  /// Get the fields page.
+  Widget getFieldsPage({
+    required final WidgetRef ref,
+    required final Preset preset,
+  }) {
+    final fields = preset.fields;
+    if (fields.isEmpty) {
+      return CenterText(
+        text: nothingToShowMessage('fields'),
+        autofocus: true,
+      );
+    }
+    return BuiltSearchableListView(
+      items: fields,
+      builder: (final context, final index) {
+        final field = fields[index];
+        return SearchableListTile(
+          searchString: field.name,
+          child: PushWidgetListTile(
+            title: field.name,
+            builder: (final context) => const Placeholder(),
+            autofocus: index == 0,
+            subtitle: '${field.type.name} ( ${field.defaultValue}',
+          ),
+        );
+      },
+    );
   }
 }

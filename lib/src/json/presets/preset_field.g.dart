@@ -7,6 +7,7 @@ part of 'preset_field.dart';
 // **************************************************************************
 
 PresetField _$PresetFieldFromJson(Map<String, dynamic> json) => PresetField(
+      id: json['id'] as String?,
       name: json['name'] as String? ?? 'untitled',
       description: json['description'] as String? ?? 'A new preset field',
       type: $enumDecodeNullable(_$PresetFieldTypeEnumMap, json['type']) ??
@@ -16,6 +17,7 @@ PresetField _$PresetFieldFromJson(Map<String, dynamic> json) => PresetField(
 
 Map<String, dynamic> _$PresetFieldToJson(PresetField instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'description': instance.description,
       'type': _$PresetFieldTypeEnumMap[instance.type]!,
