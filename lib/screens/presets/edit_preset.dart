@@ -82,8 +82,12 @@ class EditPreset extends ConsumerWidget {
     required final PresetContext presetContext,
   }) {
     presetContext.presetCollectionContext.save();
-    ref.refresh(
-      presetProvider.call(PresetArgument(file: file, id: id)),
-    );
+    ref
+      ..refresh(
+        presetProvider.call(PresetArgument(file: file, id: id)),
+      )
+      ..refresh(
+        presetCollectionProvider.call(file),
+      );
   }
 }
