@@ -5,7 +5,9 @@ import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants.dart';
 import '../contexts/app_context.dart';
 
 /// Provide an app context.
@@ -20,6 +22,9 @@ final appContextProvider = FutureProvider<AppContext>((final ref) async {
       'crossbow',
     ),
   );
+  if (crossbowDirectory.existsSync() == false) {
+    crossbowDirectory.createSync(recursive: true);
+  }
   return AppContext(
     crossbowDirectory: crossbowDirectory,
     synthizer: synthizer,
@@ -27,3 +32,16 @@ final appContextProvider = FutureProvider<AppContext>((final ref) async {
     sdl: sdl,
   );
 });
+
+/// Provide shared preferences.
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>(
+  (final ref) => SharedPreferences.getInstance(),
+);
+
+/// Provides the path to the most recently loaded project.
+final recentProjectPathProvider = FutureProvider<String?>(
+  (final ref) async {
+    final sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
+    return sharedPreferences.getString(recentProjectPathKey);
+  },
+);

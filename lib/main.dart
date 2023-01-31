@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(final BuildContext context) => MaterialApp(
-        title: 'OSM',
+        title: 'Crossbow',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

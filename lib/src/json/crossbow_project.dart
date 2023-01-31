@@ -7,9 +7,10 @@ part 'crossbow_project.g.dart';
 class CrossbowProject {
   /// Create an instance.
   CrossbowProject({
-    this.name = 'Untitled Project',
+    this.projectName = 'Untitled Project',
     this.appName = 'untitled_game',
     this.orgName = 'com.example',
+    this.assetDirectory = 'assets',
   });
 
   /// Create an instance from a JSON object.
@@ -17,13 +18,20 @@ class CrossbowProject {
       _$CrossbowProjectFromJson(json);
 
   /// The human-readable name of this project.
-  String name;
+  String projectName;
 
   /// The app name for this project.
   String appName;
 
   /// The org name for this project.
   String orgName;
+
+  /// The directory where assets will be stored.
+  String assetDirectory;
+
+  /// The time this project was last modified.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  DateTime? lastModified;
 
   /// Convert an instance to JSON.
   Map<String, dynamic> toJson() => _$CrossbowProjectToJson(this);

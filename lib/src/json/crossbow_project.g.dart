@@ -8,14 +8,16 @@ part of 'crossbow_project.dart';
 
 CrossbowProject _$CrossbowProjectFromJson(Map<String, dynamic> json) =>
     CrossbowProject(
-      name: json['name'] as String? ?? 'Untitled Project',
+      projectName: json['projectName'] as String? ?? 'Untitled Project',
       appName: json['appName'] as String? ?? 'untitled_game',
       orgName: json['orgName'] as String? ?? 'com.example',
+      assetDirectory: json['assetDirectory'] as String? ?? 'assets',
     );
 
 Map<String, dynamic> _$CrossbowProjectToJson(CrossbowProject instance) =>
     <String, dynamic>{
-      'name': instance.name,
+      'projectName': instance.projectName,
       'appName': instance.appName,
       'orgName': instance.orgName,
+      'assetDirectory': instance.assetDirectory,
     };
