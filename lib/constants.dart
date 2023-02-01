@@ -6,13 +6,13 @@ import 'package:uuid/uuid.dart';
 typedef JsonType = Map<String, dynamic>;
 
 /// The UUID generator to use.
-const _uuid = Uuid();
-
-/// Get a new ID.
-String newId() => _uuid.v4();
+const uuid = Uuid();
 
 /// The key which holds the most recently loaded project path.
 const recentProjectPathKey = 'crossbow_last_loaded_project_path';
 
 /// The JSON encoder to use.
 const indentedJsonEncoder = JsonEncoder.withIndent('  ');
+
+/// The default project filename.
+const defaultProjectFilename = 'project.json';

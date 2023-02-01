@@ -13,6 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   dart_sdl: ^0.10.1
   dart_synthizer: ^0.11.1
+  file_picker: ^5.2.5
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.1.3

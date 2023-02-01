@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'screens/home_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,11 +12,13 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(final BuildContext context) => MaterialApp(
-        title: 'Crossbow',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+  Widget build(final BuildContext context) => ProviderScope(
+        child: MaterialApp(
+          title: 'Crossbow',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const HomePage(),
         ),
-        home: const Scaffold(),
       );
 }
