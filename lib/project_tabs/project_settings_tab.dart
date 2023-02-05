@@ -1,6 +1,7 @@
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../hotkeys.dart';
 import '../src/contexts/project_context.dart';
@@ -58,6 +59,17 @@ class ProjectSettingsTabState extends State<ProjectSettingsTab> {
             widget.projectContext.touch();
           }),
           header: Intl.message('Org name'),
+        ),
+        ListTile(
+          title: Text(Intl.message('Asset Directory')),
+          subtitle: Text(widget.projectContext.assetDirectory.path),
+          onTap: () {
+            widget.projectContext.maybeCreateAssetDirectory();
+            final uri = Uri.directory(
+              widget.projectContext.assetDirectory.path,
+            );
+            launchUrl(uri);
+          },
         ),
         ListTile(
           title: Text(Intl.message('Save Project')),

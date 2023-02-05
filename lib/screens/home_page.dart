@@ -39,7 +39,8 @@ class HomePage extends ConsumerWidget {
       return const CreateOpenProjectScreen();
     }
     try {
-      final projectContext = ProjectContext.fromFile(projectFile: projectFile);
+      final projectContext = ProjectContext.fromFile(projectFile: projectFile)
+        ..maybeCreateAssetDirectory();
       return ProjectScreen(
         projectContext: projectContext,
         isTopLevel: true,

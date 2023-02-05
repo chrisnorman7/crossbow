@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
+
 import '../../constants.dart';
 import '../json/crossbow_project.dart';
 
@@ -27,6 +29,10 @@ class ProjectContext {
   /// The directory where the [project] has been loaded from.
   Directory get projectDirectory => projectFile.parent;
 
+  /// Get the assets directory.
+  Directory get assetDirectory =>
+      Directory(path.join(projectDirectory.path, project.assetDirectory));
+
   /// Save the attached [project].
   void save() {
     final object = project.toJson();
@@ -37,4 +43,11 @@ class ProjectContext {
 
   /// Mark the [project] as having been modified.
   void touch() => project.lastModified = DateTime.now();
+
+  /// Create the [assetDirectory] if it does not exist.
+  void maybeCreateAssetDirectory() {
+    if (assetDirectory.existsSync() == false) {
+      assetDirectory.createSync(recursive: true);
+    }
+  }
 }

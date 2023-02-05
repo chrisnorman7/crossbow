@@ -23,6 +23,7 @@ dependencies:
   path_provider: ^2.0.12
   recase: ^4.1.0
   shared_preferences: ^2.0.17
+  url_launcher: ^6.1.8
   uuid: ^3.0.7
   ziggurat: ^0.55.0
 dev_dependencies:

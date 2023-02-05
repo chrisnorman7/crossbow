@@ -125,7 +125,8 @@ class CreateOpenProjectScreenState
   }) async {
     final prefs = await ref.watch(sharedPreferencesProvider.future);
     await prefs.setString(recentProjectPathKey, file.path);
-    final projectContext = ProjectContext.fromFile(projectFile: file);
+    final projectContext = ProjectContext.fromFile(projectFile: file)
+      ..maybeCreateAssetDirectory();
     if (mounted) {
       await pushWidget(
         context: context,
