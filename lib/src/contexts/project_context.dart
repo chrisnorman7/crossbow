@@ -32,6 +32,7 @@ class ProjectContext {
     final object = project.toJson();
     final data = indentedJsonEncoder.convert(object);
     projectFile.writeAsStringSync(data);
+    project.lastModified = null;
   }
 
   /// Mark the [project] as having been modified.

@@ -40,7 +40,10 @@ class HomePage extends ConsumerWidget {
     }
     try {
       final projectContext = ProjectContext.fromFile(projectFile: projectFile);
-      return ProjectScreen(projectContext: projectContext);
+      return ProjectScreen(
+        projectContext: projectContext,
+        isTopLevel: true,
+      );
     } on Exception catch (e, s) {
       return ErrorScreen(
         error: e,

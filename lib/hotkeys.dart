@@ -15,3 +15,17 @@ final openProjectHotkey = SingleActivator(
   control: useControlKey,
   meta: useMetaKey,
 );
+
+/// The hotkey for saving the project.
+final saveProjectHotkey = SingleActivator(
+  LogicalKeyboardKey.keyS,
+  control: useControlKey,
+  meta: useMetaKey,
+);
+
+/// The hotkey for closing the current project.
+final closeProjectHotkey = SingleActivator(
+  LogicalKeyboardKey.keyW,
+  control: useControlKey,
+  meta: useMetaKey,
+);

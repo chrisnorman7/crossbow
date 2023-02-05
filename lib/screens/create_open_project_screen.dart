@@ -87,19 +87,9 @@ class CreateOpenProjectScreenState
       return;
     }
     final file = File(projectPath);
-    if (file.existsSync()) {
-      return showMessage(
-        context: context,
-        message: Intl.message('That file already exists.'),
-      );
-    }
     final project = CrossbowProject();
-    final projectContext = ProjectContext(projectFile: file, project: project)
-      ..save();
-    await pushWidget(
-      context: context,
-      builder: (final context) => ProjectScreen(projectContext: projectContext),
-    );
+    ProjectContext(projectFile: file, project: project).save();
+    await loadProject(file: file);
   }
 
   /// Open an existing project.
@@ -115,13 +105,7 @@ class CreateOpenProjectScreenState
     }
     final file = File(projectPath);
     try {
-      final projectContext = ProjectContext.fromFile(projectFile: file);
-      await pushWidget(
-        context: context,
-        builder: (final context) => ProjectScreen(
-          projectContext: projectContext,
-        ),
-      );
+      await loadProject(file: file);
     } on Exception catch (e) {
       await showMessage(
         context: context,
@@ -130,6 +114,24 @@ class CreateOpenProjectScreenState
           args: [e],
           desc: 'A message to show when loading a project failed',
           examples: {'e': '<Any Dart exception>'},
+        ),
+      );
+    }
+  }
+
+  /// Load a project from the given [file].
+  Future<void> loadProject({
+    required final File file,
+  }) async {
+    final prefs = await ref.watch(sharedPreferencesProvider.future);
+    await prefs.setString(recentProjectPathKey, file.path);
+    final projectContext = ProjectContext.fromFile(projectFile: file);
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => ProjectScreen(
+          projectContext: projectContext,
+          isTopLevel: false,
         ),
       );
     }
