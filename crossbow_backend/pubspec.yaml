@@ -1,0 +1,24 @@
+name: crossbow_backend
+description: The backend library for the Crossbow game engine.
+version: 0.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: '>=3.0.0-204.0.dev <4.0.0'
+
+# Add regular dependencies here.
+dependencies:
+  dart_sdl: ^0.10.1
+  dart_synthizer: ^0.11.1
+  drift: ^2.5.0
+  json_annotation: ^4.8.0
+  sqlite3: ^1.9.1
+  ziggurat: ^0.55.0
+  # path: ^1.8.0
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  drift_dev: ^2.5.2
+  json_serializable: ^6.6.1
+  lints: ^2.0.0
+  test: ^1.21.0
