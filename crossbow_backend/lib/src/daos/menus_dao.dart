@@ -23,9 +23,14 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<MenuItem> createMenuItem({
     required final int menuId,
     required final String name,
+    final int position = 0,
   }) =>
       into(menuItems).insertReturning(
-        MenuItemsCompanion(menuId: Value(menuId), name: Value(name)),
+        MenuItemsCompanion(
+          menuId: Value(menuId),
+          name: Value(name),
+          position: Value(position),
+        ),
       );
 
   /// Get the menu items for the menu with the given [menuId].
@@ -33,7 +38,20 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     required final int menuId,
   }) {
     final query = select(menuItems)
-      ..where((final table) => table.menuId.equals(menuId));
+      ..where((final table) => table.menuId.equals(menuId))
+      ..orderBy([(final table) => OrderingTerm.asc(table.position)]);
     return query.get();
+  }
+
+  /// Move the [MenuItem] with the given [menuItemId] to the new [position].
+  Future<MenuItem> moveMenuItem({
+    required final int menuItemId,
+    required final int position,
+  }) async {
+    final query = update(menuItems)
+      ..where((final table) => table.id.equals(menuItemId));
+    return (await query
+            .writeReturning(MenuItemsCompanion(position: Value(position))))
+        .single;
   }
 }

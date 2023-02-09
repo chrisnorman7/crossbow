@@ -1200,9 +1200,17 @@ class $MenuItemsTable extends MenuItems
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, menuId, selectSoundId, activateSoundId];
+      [id, name, menuId, selectSoundId, activateSoundId, position];
   @override
   String get aliasedName => _alias ?? 'menu_items';
   @override
@@ -1237,6 +1245,10 @@ class $MenuItemsTable extends MenuItems
           activateSoundId.isAcceptableOrUnknown(
               data['activate_sound_id']!, _activateSoundIdMeta));
     }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    }
     return context;
   }
 
@@ -1256,6 +1268,8 @@ class $MenuItemsTable extends MenuItems
           .read(DriftSqlType.int, data['${effectivePrefix}select_sound_id']),
       activateSoundId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}activate_sound_id']),
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
     );
   }
 
@@ -1280,12 +1294,16 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
 
   /// The sound to use when this item is activated.
   final int? activateSoundId;
+
+  /// The position of this item in the menu.
+  final int position;
   const MenuItem(
       {required this.id,
       required this.name,
       required this.menuId,
       this.selectSoundId,
-      this.activateSoundId});
+      this.activateSoundId,
+      required this.position});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1298,6 +1316,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     if (!nullToAbsent || activateSoundId != null) {
       map['activate_sound_id'] = Variable<int>(activateSoundId);
     }
+    map['position'] = Variable<int>(position);
     return map;
   }
 
@@ -1312,6 +1331,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
       activateSoundId: activateSoundId == null && nullToAbsent
           ? const Value.absent()
           : Value(activateSoundId),
+      position: Value(position),
     );
   }
 
@@ -1324,6 +1344,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
       menuId: serializer.fromJson<int>(json['menuId']),
       selectSoundId: serializer.fromJson<int?>(json['selectSoundId']),
       activateSoundId: serializer.fromJson<int?>(json['activateSoundId']),
+      position: serializer.fromJson<int>(json['position']),
     );
   }
   @override
@@ -1335,6 +1356,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
       'menuId': serializer.toJson<int>(menuId),
       'selectSoundId': serializer.toJson<int?>(selectSoundId),
       'activateSoundId': serializer.toJson<int?>(activateSoundId),
+      'position': serializer.toJson<int>(position),
     };
   }
 
@@ -1343,7 +1365,8 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
           String? name,
           int? menuId,
           Value<int?> selectSoundId = const Value.absent(),
-          Value<int?> activateSoundId = const Value.absent()}) =>
+          Value<int?> activateSoundId = const Value.absent(),
+          int? position}) =>
       MenuItem(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -1353,6 +1376,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
         activateSoundId: activateSoundId.present
             ? activateSoundId.value
             : this.activateSoundId,
+        position: position ?? this.position,
       );
   @override
   String toString() {
@@ -1361,14 +1385,15 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
           ..write('name: $name, ')
           ..write('menuId: $menuId, ')
           ..write('selectSoundId: $selectSoundId, ')
-          ..write('activateSoundId: $activateSoundId')
+          ..write('activateSoundId: $activateSoundId, ')
+          ..write('position: $position')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, name, menuId, selectSoundId, activateSoundId);
+      Object.hash(id, name, menuId, selectSoundId, activateSoundId, position);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1377,7 +1402,8 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
           other.name == this.name &&
           other.menuId == this.menuId &&
           other.selectSoundId == this.selectSoundId &&
-          other.activateSoundId == this.activateSoundId);
+          other.activateSoundId == this.activateSoundId &&
+          other.position == this.position);
 }
 
 class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
@@ -1386,12 +1412,14 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   final Value<int> menuId;
   final Value<int?> selectSoundId;
   final Value<int?> activateSoundId;
+  final Value<int> position;
   const MenuItemsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.menuId = const Value.absent(),
     this.selectSoundId = const Value.absent(),
     this.activateSoundId = const Value.absent(),
+    this.position = const Value.absent(),
   });
   MenuItemsCompanion.insert({
     this.id = const Value.absent(),
@@ -1399,6 +1427,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     required int menuId,
     this.selectSoundId = const Value.absent(),
     this.activateSoundId = const Value.absent(),
+    this.position = const Value.absent(),
   }) : menuId = Value(menuId);
   static Insertable<MenuItem> custom({
     Expression<int>? id,
@@ -1406,6 +1435,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     Expression<int>? menuId,
     Expression<int>? selectSoundId,
     Expression<int>? activateSoundId,
+    Expression<int>? position,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1413,6 +1443,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
       if (menuId != null) 'menu_id': menuId,
       if (selectSoundId != null) 'select_sound_id': selectSoundId,
       if (activateSoundId != null) 'activate_sound_id': activateSoundId,
+      if (position != null) 'position': position,
     });
   }
 
@@ -1421,13 +1452,15 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
       Value<String>? name,
       Value<int>? menuId,
       Value<int?>? selectSoundId,
-      Value<int?>? activateSoundId}) {
+      Value<int?>? activateSoundId,
+      Value<int>? position}) {
     return MenuItemsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       menuId: menuId ?? this.menuId,
       selectSoundId: selectSoundId ?? this.selectSoundId,
       activateSoundId: activateSoundId ?? this.activateSoundId,
+      position: position ?? this.position,
     );
   }
 
@@ -1449,6 +1482,9 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     if (activateSoundId.present) {
       map['activate_sound_id'] = Variable<int>(activateSoundId.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     return map;
   }
 
@@ -1459,7 +1495,8 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
           ..write('name: $name, ')
           ..write('menuId: $menuId, ')
           ..write('selectSoundId: $selectSoundId, ')
-          ..write('activateSoundId: $activateSoundId')
+          ..write('activateSoundId: $activateSoundId, ')
+          ..write('position: $position')
           ..write(')'))
         .toString();
   }

@@ -103,6 +103,9 @@ class MenuItems extends Table with _WithPrimaryKey, _WithName {
   IntColumn get activateSoundId => integer()
       .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
+
+  /// The position of this item in the menu.
+  IntColumn get position => integer().withDefault(const Constant(0))();
 }
 
 /// The pop levels table.
