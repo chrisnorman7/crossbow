@@ -15,7 +15,21 @@ Future<void> main() async {
   final menu = await menus.createMenu(name: 'Main Menu');
   await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
   await menus.createMenuItem(menuId: menu.id, name: 'Quit');
-  final command =
-      await db.into(db.commands).insertReturning(const CommandsCompanion());
+  final popLevel = await db.into(db.popLevels).insertReturning(
+        const PopLevelsCompanion(),
+      );
+  final command = await db.into(db.commands).insertReturning(
+        CommandsCompanion(
+          popLevelId: Value(popLevel.id),
+        ),
+      );
   print(command);
+  await (db.delete(db.commands)
+        ..where((final table) => table.id.equals(command.id)))
+      .go();
+  print(
+    await (db.select(db.popLevels)
+          ..where((final table) => table.id.equals(command.popLevelId!)))
+        .get(),
+  );
 }

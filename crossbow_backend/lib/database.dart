@@ -22,6 +22,18 @@ mixin _WithName on Table {
       .withDefault(const Constant('Untitled Object'))();
 }
 
+/// Add a [fadeTime] column.
+mixin _WithFadeTime on Table {
+  /// The fade time to use.
+  RealColumn get fadeTime => real().nullable()();
+}
+
+/// Add a [after] column.
+mixin _WithAfter on Table {
+  /// How many milliseconds to wait before doing something.
+  IntColumn get after => integer().nullable()();
+}
+
 /// The asset references table.
 class AssetReferences extends Table with _WithPrimaryKey, _WithName {
   /// The folder that contains the asset with the given [name].
@@ -54,7 +66,7 @@ class CommandTriggers extends Table with _WithPrimaryKey {
 
   /// The keyboard key to use.
   IntColumn get keyboardKeyId => integer()
-      .references(CommandTriggerKeyboardKeys, #id, onDelete: KeyAction.cascade)
+      .references(CommandTriggerKeyboardKeys, #id, onDelete: KeyAction.setNull)
       .nullable()();
 }
 
@@ -62,17 +74,17 @@ class CommandTriggers extends Table with _WithPrimaryKey {
 class Menus extends Table with _WithPrimaryKey, _WithName {
   /// The music to use for this menu.
   IntColumn get musicId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
   /// The sound to use when selecting an item.
   IntColumn get selectItemSoundId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
   /// The sound to use when selecting an item.
   IntColumn get activateItemSoundId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
 }
 
@@ -84,23 +96,37 @@ class MenuItems extends Table with _WithPrimaryKey, _WithName {
 
   /// The sound to use when this item is selected.
   IntColumn get selectSoundId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
   /// The sound to use when this item is activated.
   IntColumn get activateSoundId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
+}
+
+/// The pop levels table.
+class PopLevels extends Table with _WithPrimaryKey, _WithFadeTime {}
+
+/// The push menus table.
+class PushMenus extends Table with _WithPrimaryKey, _WithAfter, _WithFadeTime {
+  /// The ID of the menu to push.
+  IntColumn get menuId =>
+      integer().references(Menus, #id, onDelete: KeyAction.cascade)();
+}
+
+/// The call commands table.
+class CallCommands extends Table with _WithPrimaryKey, _WithAfter {
+  /// The ID of the command to call.
+  IntColumn get commandId =>
+      integer().references(Commands, #id, onDelete: KeyAction.cascade)();
 }
 
 /// The commands table.
 class Commands extends Table with _WithPrimaryKey {
-  /// How many levels to pop.
-  IntColumn get popLevels => integer().withDefault(const Constant(0))();
-
   /// The ID of a menu to push.
-  IntColumn get menuId => integer()
-      .references(Menus, #id, onDelete: KeyAction.setNull)
+  IntColumn get pushMenuId => integer()
+      .references(PushMenus, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
   /// Some text to output.
@@ -108,7 +134,21 @@ class Commands extends Table with _WithPrimaryKey {
 
   /// The ID of a sound to play.
   IntColumn get messageSoundId => integer()
-      .references(AssetReferences, #id, onDelete: KeyAction.cascade)
+      .references(AssetReferences, #id, onDelete: KeyAction.setNull)
+      .nullable()();
+
+  /// How to pop a level.
+  IntColumn get popLevelId => integer()
+      .references(
+        PopLevels,
+        #id,
+        onDelete: KeyAction.setNull,
+      )
+      .nullable()();
+
+  /// The ID of another command to call.
+  IntColumn get callCommandId => integer()
+      .references(CallCommands, #id, onDelete: KeyAction.setNull)
       .nullable()();
 }
 
@@ -121,6 +161,9 @@ class Commands extends Table with _WithPrimaryKey {
     Menus,
     MenuItems,
     Commands,
+    PopLevels,
+    PushMenus,
+    CallCommands,
   ],
   daos: [
     MenusDao,
@@ -136,7 +179,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 1;
 
   /// Migrate the database.
   @override
@@ -147,11 +190,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
         onCreate: (final m) async {
           await m.createAll();
         },
-        onUpgrade: (final m, final from, final to) async {
-          if (from < 2) {
-            await m.createTable(commands);
-          }
-        },
+        onUpgrade: (final m, final from, final to) async {},
       );
 
   /// Dump all rows to the given [file].

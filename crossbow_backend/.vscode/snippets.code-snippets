@@ -15,7 +15,7 @@
 	"Asset Reference Column": {
 		"body": [
 			"IntColumn get ${1:columnName} => integer()",
-			".references(AssetReferences, #id, onDelete: KeyAction.cascade)",
+			".references(AssetReferences, #id, onDelete: KeyAction.setNull)",
 			".nullable()();"
 		],
 		"description": "Add a nullable asset reference column",

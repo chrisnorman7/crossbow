@@ -12,6 +12,7 @@ dependencies:
   dart_synthizer: ^0.11.1
   drift: ^2.5.0
   json_annotation: ^4.8.0
+  logging: ^1.1.1
   sqlite3: ^1.9.1
   ziggurat: ^0.55.0
   # path: ^1.8.0
