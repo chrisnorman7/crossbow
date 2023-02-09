@@ -15,23 +15,29 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<Command> createCommand() =>
       into(commands).insertReturning(const CommandsCompanion());
 
-  /// Get a command with the given [commandId].
-  Future<Command> getCommand({required final int commandId}) {
-    final query = select(commands)
-      ..where((final table) => table.id.equals(commandId));
+  /// Get a command with the given [id].
+  Future<Command> getCommand({required final int id}) {
+    final query = select(commands)..where((final table) => table.id.equals(id));
+    return query.getSingle();
+  }
+
+  /// Get the push menu with the given [id].
+  Future<PushMenu> getPushMenu({required final int id}) async {
+    final query = select(pushMenus)
+      ..where((final table) => table.id.equals(id));
     return query.getSingle();
   }
 
   /// Clear a push menu instruction from a command with the given [commandId].
   Future<Command> clearPushMenu({required final int commandId}) async {
     // TODO(chrisnorman7): Don't retrieve the command if possible.
-    final command = await getCommand(commandId: commandId);
+    final command = await getCommand(id: commandId);
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
       final query = delete(pushMenus)
         ..where((final table) => table.id.equals(pushMenuId));
       await query.go();
     }
-    return getCommand(commandId: commandId);
+    return getCommand(id: commandId);
   }
 }

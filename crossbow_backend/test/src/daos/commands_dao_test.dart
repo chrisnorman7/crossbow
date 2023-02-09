@@ -30,12 +30,12 @@ void main() {
         () async {
           final command1 = await commands.createCommand();
           expect(
-            (await commands.getCommand(commandId: command1.id)).id,
+            (await commands.getCommand(id: command1.id)).id,
             command1.id,
           );
           final command2 = await commands.createCommand();
           expect(
-            await commands.getCommand(commandId: command2.id),
+            await commands.getCommand(id: command2.id),
             predicate<Command>(
               (final value) =>
                   value.id == command2.id && value.id != command1.id,
