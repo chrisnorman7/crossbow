@@ -184,6 +184,10 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           executor ?? NativeDatabase(File('db.sqlite3')),
         );
 
+  /// Load an instance from the given [file].
+  CrossbowBackendDatabase.fromFile(final File file)
+      : super(NativeDatabase(file));
+
   /// The schema version.
   @override
   int get schemaVersion => 1;
