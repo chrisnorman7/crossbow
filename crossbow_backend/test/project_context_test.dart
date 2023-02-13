@@ -27,20 +27,31 @@ void main() {
       final project = Project(
         projectName: 'Test Project',
         databaseFilename: databaseFile.path,
+        assetsDirectory: 'test_assets',
       );
       test(
         'Initialise',
         () async {
+          final pretendDirectory = Directory('projects');
+          const pretendProjectFilename = 'test-project.json';
           final projectContext = ProjectContext(
-            file: File('project.json'),
+            file: File(
+              path.join(
+                pretendDirectory.path,
+                pretendProjectFilename,
+              ),
+            ),
             project: project,
             db: getDatabase(),
           );
           expect(
             projectContext.assetsDirectory.path,
-            path.join('.', project.assetsDirectory),
+            path.join(pretendDirectory.path, project.assetsDirectory),
           );
-          expect(projectContext.file.path, 'project.json');
+          expect(
+            projectContext.file.path,
+            path.join(pretendDirectory.path, pretendProjectFilename),
+          );
           expect(projectContext.project, project);
           await projectContext.db.close();
         },
