@@ -5,7 +5,7 @@ import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import '../../custom_database.dart';
+import 'custom_database.dart';
 
 /// The file where the test database is stored.
 final databaseFile = File('test_db.sqlite3');
