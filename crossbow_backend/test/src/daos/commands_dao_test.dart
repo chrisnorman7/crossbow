@@ -1,5 +1,4 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
-import 'package:drift/drift.dart';
 import 'package:test/test.dart';
 
 import '../../custom_database.dart';
@@ -11,6 +10,7 @@ void main() {
       final db = getDatabase();
       final commands = db.commandsDao;
       final menus = db.menusDao;
+      final pushMenus = db.pushMenusDao;
 
       test(
         '.createCommand',
@@ -45,23 +45,17 @@ void main() {
       );
 
       test(
-        '.clearPushMenu',
+        '.setPushMenu',
         () async {
-          final command = await commands.createCommand();
           final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await db
-              .into(db.pushMenus)
-              .insertReturning(PushMenusCompanion(menuId: Value(menu.id)));
-          final query = db.update(db.commands)
-            ..where((final table) => table.id.equals(command.id));
-          var updatedCommand = (await query.writeReturning(
-            CommandsCompanion(pushMenuId: Value(pushMenu.id)),
-          ))
-              .single;
-          expect(updatedCommand.id, command.id);
-          expect(updatedCommand.pushMenuId, pushMenu.id);
-          updatedCommand = await commands.clearPushMenu(commandId: command.id);
-          expect(updatedCommand.pushMenuId, null);
+          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final initialCommand = await commands.createCommand();
+          final command = await commands.setPushMenu(
+            commandId: initialCommand.id,
+            pushMenuId: pushMenu.id,
+          );
+          expect(command.id, initialCommand.id);
+          expect(command.pushMenuId, pushMenu.id);
         },
       );
     },

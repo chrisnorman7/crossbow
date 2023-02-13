@@ -21,23 +21,15 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Get the push menu with the given [id].
-  Future<PushMenu> getPushMenu({required final int id}) async {
-    final query = select(pushMenus)
-      ..where((final table) => table.id.equals(id));
-    return query.getSingle();
-  }
-
-  /// Clear a push menu instruction from a command with the given [commandId].
-  Future<Command> clearPushMenu({required final int commandId}) async {
-    // TODO(chrisnorman7): Don't retrieve the command if possible.
-    final command = await getCommand(id: commandId);
-    final pushMenuId = command.pushMenuId;
-    if (pushMenuId != null) {
-      final query = delete(pushMenus)
-        ..where((final table) => table.id.equals(pushMenuId));
-      await query.go();
-    }
-    return getCommand(id: commandId);
+  /// Set the push menu ID for the command with the given [commandId].
+  Future<Command> setPushMenu({
+    required final int commandId,
+    required final int pushMenuId,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query
+            .writeReturning(CommandsCompanion(pushMenuId: Value(pushMenuId))))
+        .single;
   }
 }

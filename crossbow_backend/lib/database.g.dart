@@ -2534,6 +2534,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final CommandsDao commandsDao =
       CommandsDao(this as CrossbowBackendDatabase);
+  late final PushMenusDao pushMenusDao =
+      PushMenusDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

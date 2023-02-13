@@ -6,6 +6,7 @@ import 'package:drift/native.dart';
 
 import 'src/daos/commands_dao.dart';
 import 'src/daos/menus_dao.dart';
+import 'src/daos/push_menus_dao.dart';
 
 part 'database.g.dart';
 
@@ -169,7 +170,11 @@ class Commands extends Table with _WithPrimaryKey {
     PushMenus,
     CallCommands,
   ],
-  daos: [MenusDao, CommandsDao],
+  daos: [
+    MenusDao,
+    CommandsDao,
+    PushMenusDao,
+  ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
   /// Create an instance.
