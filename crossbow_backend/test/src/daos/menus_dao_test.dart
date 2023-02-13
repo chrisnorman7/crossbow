@@ -1,3 +1,4 @@
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:test/test.dart';
 
 import '../../custom_database.dart';
@@ -39,6 +40,44 @@ void main() {
           expect(menuItem2.name, 'Menu Item 2');
           expect(menuItem2.menuId, menu.id);
           expect(menuItem2.position, 1);
+        },
+      );
+
+      test(
+        '.getMenuItem',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final playMenuItem =
+              await menus.createMenuItem(menuId: menu.id, name: 'Play');
+          expect(
+            await menus.getMenuItem(id: playMenuItem.id),
+            predicate<MenuItem>(
+              (final menuItem) =>
+                  menuItem.activateSoundId == playMenuItem.activateSoundId &&
+                  menuItem.id == playMenuItem.id &&
+                  menuItem.menuId == menu.id &&
+                  menuItem.name == playMenuItem.name &&
+                  menuItem.position == playMenuItem.position &&
+                  menuItem.selectSoundId == null,
+            ),
+          );
+          final quitMenuItem = await menus.createMenuItem(
+            menuId: menu.id,
+            name: 'Quit',
+            position: 1,
+          );
+          expect(
+            await menus.getMenuItem(id: quitMenuItem.id),
+            predicate<MenuItem>(
+              (final menuItem) =>
+                  menuItem.activateSoundId == null &&
+                  menuItem.id == quitMenuItem.id &&
+                  menuItem.menuId == menu.id &&
+                  menuItem.name == quitMenuItem.name &&
+                  menuItem.position == quitMenuItem.position &&
+                  menuItem.selectSoundId == null,
+            ),
+          );
         },
       );
 
@@ -101,6 +140,51 @@ void main() {
           expect(menuItem.position, 1);
           menuItem = (await menus.getMenuItems(menuId: menu.id)).last;
           expect(menuItem.id, quitMenuItem.id);
+        },
+      );
+
+      test(
+        '.deleteMenuItem',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final playMenuItem = await menus.createMenuItem(
+            menuId: menu.id,
+            name: 'Play',
+          );
+          final quitMenuItem = await menus.createMenuItem(
+            menuId: menu.id,
+            name: 'Quit',
+            position: 1,
+          );
+          expect(await menus.deleteMenuItem(id: playMenuItem.id), 1);
+          final query = db.select(db.menuItems)
+            ..where((final table) => table.id.equals(playMenuItem.id));
+          expect(await query.getSingleOrNull(), null);
+          expect(
+            (await menus.getMenuItem(id: quitMenuItem.id)).id,
+            quitMenuItem.id,
+          );
+        },
+      );
+
+      test(
+        '.deleteMenu',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final menuItems = [
+            await menus.createMenuItem(menuId: menu.id, name: 'Play'),
+            await menus.createMenuItem(
+              menuId: menu.id,
+              name: 'Quit',
+              position: 1,
+            ),
+          ];
+          await menus.deleteMenu(id: menu.id);
+          for (final menuItem in menuItems) {
+            final query = db.select(db.menuItems)
+              ..where((final table) => table.id.equals(menuItem.id));
+            expect(await query.getSingleOrNull(), null);
+          }
         },
       );
     },

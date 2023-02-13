@@ -33,6 +33,13 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       );
 
+  /// Get the menu item with the given [id].
+  Future<MenuItem> getMenuItem({required final int id}) async {
+    final query = select(menuItems)
+      ..where((final table) => table.id.equals(id));
+    return query.getSingle();
+  }
+
   /// Get the menu items for the menu with the given [menuId].
   Future<List<MenuItem>> getMenuItems({
     required final int menuId,
@@ -53,5 +60,18 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return (await query
             .writeReturning(MenuItemsCompanion(position: Value(position))))
         .single;
+  }
+
+  /// Delete the menu item with the given [id].
+  Future<int> deleteMenuItem({required final int id}) {
+    final query = delete(menuItems)
+      ..where((final table) => table.id.equals(id));
+    return query.go();
+  }
+
+  /// Delete the menu with the given [id].
+  Future<int> deleteMenu({required final int id}) {
+    final query = delete(menus)..where((final table) => table.id.equals(id));
+    return query.go();
   }
 }
