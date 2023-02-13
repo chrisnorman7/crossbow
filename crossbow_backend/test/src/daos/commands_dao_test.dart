@@ -58,6 +58,30 @@ void main() {
           expect(command.pushMenuId, pushMenu.id);
         },
       );
+
+      test(
+        '.deleteCommand',
+        () async {
+          var command = await commands.createCommand();
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          command = await commands.setPushMenu(
+            commandId: command.id,
+            pushMenuId: pushMenu.id,
+          );
+          expect(await commands.deleteCommand(id: command.id), 1);
+          expect(
+            await pushMenus.getPushMenu(id: pushMenu.id),
+            predicate<PushMenu>(
+              (final value) =>
+                  value.after == pushMenu.after &&
+                  value.fadeTime == pushMenu.fadeTime &&
+                  value.id == pushMenu.id &&
+                  value.menuId == pushMenu.menuId,
+            ),
+          );
+        },
+      );
     },
   );
 }

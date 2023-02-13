@@ -32,4 +32,10 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(CommandsCompanion(pushMenuId: Value(pushMenuId))))
         .single;
   }
+
+  /// Delete the command with the given [id].
+  Future<int> deleteCommand({required final int id}) async {
+    final query = delete(commands)..where((final table) => table.id.equals(id));
+    return query.go();
+  }
 }
