@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dart_sdl/dart_sdl.dart';
+import 'package:dart_synthizer/dart_synthizer.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:ziggurat/sound.dart';
+import 'package:ziggurat/ziggurat.dart';
 
-import 'database.dart';
-import 'src/json/project.dart';
+import 'crossbow_backend.dart';
 
 /// The context for a particular project.
 class ProjectContext {
@@ -41,4 +46,27 @@ class ProjectContext {
 
   /// The database to use.
   final CrossbowBackendDatabase db;
+
+  /// Get a project runner for this project context.
+  @useResult
+  ProjectRunner get projectRunner {
+    final sdl = Sdl();
+    final synthizer = Synthizer();
+    final synthizerContext = synthizer.createContext();
+    final random = Random();
+    return ProjectRunner(
+      projectContext: this,
+      sdl: sdl,
+      synthizerContext: synthizerContext,
+      random: random,
+      soundBackend: SynthizerSoundBackend(
+        context: synthizerContext,
+        bufferCache: BufferCache(
+          synthizer: synthizer,
+          maxSize: 1.gb,
+          random: random,
+        ),
+      ),
+    );
+  }
 }
