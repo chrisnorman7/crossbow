@@ -38,6 +38,14 @@ mixin _WithAfter on Table {
   IntColumn get after => integer().nullable()();
 }
 
+/// Add a [callCommandId] column.
+mixin _WithCallCommandId on Table {
+  /// The ID of a call command.
+  IntColumn get callCommandId => integer()
+      .references(CallCommands, #id, onDelete: KeyAction.setNull)
+      .nullable()();
+}
+
 /// The asset references table.
 class AssetReferences extends Table with _WithPrimaryKey, _WithName {
   /// The folder that contains the asset with the given [name].
@@ -93,7 +101,8 @@ class Menus extends Table with _WithPrimaryKey, _WithName {
 }
 
 /// The menu items table.
-class MenuItems extends Table with _WithPrimaryKey, _WithName {
+class MenuItems extends Table
+    with _WithPrimaryKey, _WithName, _WithCallCommandId {
   /// The menu this menu item belongs to.
   IntColumn get menuId =>
       integer().references(Menus, #id, onDelete: KeyAction.cascade)();
@@ -110,11 +119,6 @@ class MenuItems extends Table with _WithPrimaryKey, _WithName {
 
   /// The position of this item in the menu.
   IntColumn get position => integer().withDefault(const Constant(0))();
-
-  /// The ID of a command to call.
-  IntColumn get callCommandId => integer()
-      .references(CallCommands, #id, onDelete: KeyAction.setNull)
-      .nullable()();
 }
 
 /// The pop levels table.
@@ -138,7 +142,7 @@ class CallCommands extends Table with _WithPrimaryKey, _WithAfter {
 class StopGames extends Table with _WithPrimaryKey, _WithAfter {}
 
 /// The commands table.
-class Commands extends Table with _WithPrimaryKey {
+class Commands extends Table with _WithPrimaryKey, _WithCallCommandId {
   /// The ID of a menu to push.
   IntColumn get pushMenuId => integer()
       .references(PushMenus, #id, onDelete: KeyAction.setNull)
@@ -159,11 +163,6 @@ class Commands extends Table with _WithPrimaryKey {
         #id,
         onDelete: KeyAction.setNull,
       )
-      .nullable()();
-
-  /// The ID of another command to call.
-  IntColumn get callCommandId => integer()
-      .references(CallCommands, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
   /// The ID of a stop game.

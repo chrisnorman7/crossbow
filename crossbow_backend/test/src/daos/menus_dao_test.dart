@@ -200,6 +200,27 @@ void main() {
           }
         },
       );
+
+      test(
+        '.setCallCommand',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final menuItem = await menus.createMenuItem(
+            menuId: menu.id,
+            name: 'Call Command',
+          );
+          expect(menuItem.callCommandId, null);
+          final command = await db.commandsDao.createCommand();
+          final callCommand =
+              await db.callCommandsDao.createCallCommand(commandId: command.id);
+          final updatedMenuItem = await menus.setCallCommand(
+            menuItemId: menuItem.id,
+            callCommandId: callCommand.id,
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.callCommandId, callCommand.id);
+        },
+      );
     },
   );
 }

@@ -80,4 +80,18 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final query = delete(menus)..where((final table) => table.id.equals(id));
     return query.go();
   }
+
+  /// Set the [MenuItem] with the given [menuItemId] to have a [CallCommand]
+  /// with the given [callCommandId].
+  Future<MenuItem> setCallCommand({
+    required final int menuItemId,
+    required final int callCommandId,
+  }) async {
+    final query = update(menuItems)
+      ..where((final table) => table.id.equals(menuItemId));
+    return (await query.writeReturning(
+      MenuItemsCompanion(callCommandId: Value(callCommandId)),
+    ))
+        .single;
+  }
 }
