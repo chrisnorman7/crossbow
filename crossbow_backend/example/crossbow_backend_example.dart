@@ -10,7 +10,7 @@ Future<void> main() async {
   final menus = db.menusDao;
   final menu = await menus.createMenu(name: 'Main Menu');
   await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
-  await menus.createMenuItem(menuId: menu.id, name: 'Quit Game');
+  await menus.createMenuItem(menuId: menu.id, name: 'Quit Game', position: 1);
   final commands = db.commandsDao;
   await commands.setMessageText(
     commandId: projectContext.project.initialCommandId,
