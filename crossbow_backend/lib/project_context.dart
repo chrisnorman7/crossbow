@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
+import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
@@ -30,6 +31,26 @@ class ProjectContext {
     final databaseFile =
         File(path.join(file.parent.path, project.databaseFilename));
     final db = CrossbowBackendDatabase.fromFile(databaseFile);
+    return ProjectContext(file: file, project: project, db: db);
+  }
+
+  /// Create and return a blank project.
+  ///
+  /// The created project will have only one command.
+  static Future<ProjectContext> blank({required final File file}) async {
+    const project = Project(
+      projectName: 'Untitled Project',
+      initialCommandId: 1,
+    );
+    final db = CrossbowBackendDatabase.fromFile(
+      File(path.join(file.parent.path, project.databaseFilename)),
+    );
+    await db.into(db.commands).insert(
+          CommandsCompanion(
+            id: Value(project.initialCommandId),
+            messageText: const Value('This command has not been programmed.'),
+          ),
+        );
     return ProjectContext(file: file, project: project, db: db);
   }
 

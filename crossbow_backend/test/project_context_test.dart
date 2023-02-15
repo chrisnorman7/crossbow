@@ -107,6 +107,22 @@ void main() {
           await db.close();
         },
       );
+
+      test(
+        '.blank',
+        () async {
+          final projectContext = await ProjectContext.blank(file: projectFile);
+          expect(projectContext.project.projectName, 'Untitled Project');
+          expect(
+            await projectContext.initialCommand,
+            predicate<Command>(
+              (final value) =>
+                  value.id == projectContext.project.initialCommandId &&
+                  value.messageText == 'This command has not been programmed.',
+            ),
+          );
+        },
+      );
     },
   );
 }
