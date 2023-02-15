@@ -4,9 +4,11 @@ import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
+import 'src/daos/call_commands_dao.dart';
 import 'src/daos/commands_dao.dart';
 import 'src/daos/menus_dao.dart';
 import 'src/daos/push_menus_dao.dart';
+import 'src/daos/stop_games_dao.dart';
 
 part 'database.g.dart';
 
@@ -108,6 +110,11 @@ class MenuItems extends Table with _WithPrimaryKey, _WithName {
 
   /// The position of this item in the menu.
   IntColumn get position => integer().withDefault(const Constant(0))();
+
+  /// The ID of a command to call.
+  IntColumn get callCommandId => integer()
+      .references(CallCommands, #id, onDelete: KeyAction.setNull)
+      .nullable()();
 }
 
 /// The pop levels table.
@@ -126,6 +133,9 @@ class CallCommands extends Table with _WithPrimaryKey, _WithAfter {
   IntColumn get commandId =>
       integer().references(Commands, #id, onDelete: KeyAction.cascade)();
 }
+
+/// The stop game table.
+class StopGames extends Table with _WithPrimaryKey, _WithAfter {}
 
 /// The commands table.
 class Commands extends Table with _WithPrimaryKey {
@@ -155,6 +165,11 @@ class Commands extends Table with _WithPrimaryKey {
   IntColumn get callCommandId => integer()
       .references(CallCommands, #id, onDelete: KeyAction.setNull)
       .nullable()();
+
+  /// The ID of a stop game.
+  IntColumn get stopGameId => integer()
+      .references(StopGames, #id, onDelete: KeyAction.setNull)
+      .nullable()();
 }
 
 /// The database to use.
@@ -169,11 +184,14 @@ class Commands extends Table with _WithPrimaryKey {
     PopLevels,
     PushMenus,
     CallCommands,
+    StopGames,
   ],
   daos: [
     MenusDao,
     CommandsDao,
     PushMenusDao,
+    CallCommandsDao,
+    StopGamesDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
