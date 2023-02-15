@@ -44,6 +44,19 @@ void main() {
       );
 
       test(
+        '.getMenu',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          expect(
+            await menus.getMenu(id: menu.id),
+            predicate<Menu>(
+              (final value) => value.id == menu.id && value.name == menu.name,
+            ),
+          );
+        },
+      );
+
+      test(
         '.getMenuItem',
         () async {
           final menu = await menus.createMenu(name: 'Test Menu');

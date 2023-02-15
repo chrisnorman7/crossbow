@@ -33,6 +33,12 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       );
 
+  /// Get the menu with the given [id].
+  Future<Menu> getMenu({required final int id}) async {
+    final query = select(menus)..where((final table) => table.id.equals(id));
+    return query.getSingle();
+  }
+
   /// Get the menu item with the given [id].
   Future<MenuItem> getMenuItem({required final int id}) async {
     final query = select(menuItems)
