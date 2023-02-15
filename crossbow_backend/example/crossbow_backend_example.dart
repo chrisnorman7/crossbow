@@ -11,13 +11,18 @@ Future<void> main() async {
   final menu = await menus.createMenu(name: 'Main Menu');
   await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
   final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
-  final command = await db.commandsDao.setMessageText(
-    commandId: (await db.commandsDao.setStopGame(
-      commandId: (await db.commandsDao.createCommand()).id,
-      stopGameId: stopGame.id,
+  final popLevel = await db.popLevelsDao.createPopLevel();
+  final command = await db.commandsDao.setPopLevel(
+    commandID: (await db.commandsDao.setMessageText(
+      commandId: (await db.commandsDao.setStopGame(
+        commandId: (await db.commandsDao.createCommand()).id,
+        stopGameId: stopGame.id,
+      ))
+          .id,
+      text: 'The game will now close.',
     ))
         .id,
-    text: 'The game will now close.',
+    popLevelId: popLevel.id,
   );
   await menus.setCallCommand(
     menuItemId: (await menus.createMenuItem(

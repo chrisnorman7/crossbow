@@ -113,6 +113,20 @@ void main() {
           expect(updatedCommand.stopGameId, stopGame.id);
         },
       );
+
+      test(
+        '.setPopLevel',
+        () async {
+          final command = await commands.createCommand();
+          final popLevel = await db.popLevelsDao.createPopLevel();
+          final updatedCommand = await commands.setPopLevel(
+            commandID: command.id,
+            popLevelId: popLevel.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.popLevelId, popLevel.id);
+        },
+      );
     },
   );
 }

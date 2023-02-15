@@ -62,4 +62,16 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(CommandsCompanion(stopGameId: Value(stopGameId))))
         .single;
   }
+
+  /// Set the pop level for the command with the given [commandID].
+  Future<Command> setPopLevel({
+    required final int commandID,
+    required final int popLevelId,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandID));
+    return (await query
+            .writeReturning(CommandsCompanion(popLevelId: Value(popLevelId))))
+        .single;
+  }
 }
