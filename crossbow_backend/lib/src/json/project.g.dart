@@ -12,7 +12,8 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       appName: json['appName'] as String? ?? 'example_game',
       orgName: json['orgName'] as String? ?? 'com.example',
       assetsDirectory: json['assetsDirectory'] as String? ?? 'assets',
-      databaseFilename: json['databaseFilename'] as String? ?? 'db.sqlite3',
+      databaseFilename:
+          json['databaseFilename'] as String? ?? defaultDatabasePath,
       framesPerSecond: json['framesPerSecond'] as int? ?? 60,
     );
 

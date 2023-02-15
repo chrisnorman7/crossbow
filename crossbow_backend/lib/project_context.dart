@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
-import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
@@ -35,26 +34,27 @@ class ProjectContext {
   /// Create and return a blank project.
   ///
   /// The created project will have only one command.
-  static Future<ProjectContext> blank({required final File file}) async {
-    const project = Project(
-      projectName: 'Untitled Project',
-      initialCommandId: 1,
-    );
-    final databaseFile = File(
-      path.join(file.parent.path, project.databaseFilename),
-    );
+  static Future<ProjectContext> blank({
+    required final File projectFile,
+    final String databasePath = defaultDatabasePath,
+  }) async {
+    final databaseFile = File(path.join(projectFile.parent.path, databasePath));
     assert(
       !databaseFile.existsSync(),
       'Database file $databaseFile already exists.',
     );
     final db = CrossbowBackendDatabase.fromFile(databaseFile);
-    await db.into(db.commands).insert(
-          CommandsCompanion(
-            id: Value(project.initialCommandId),
-            messageText: const Value('This command has not been programmed.'),
-          ),
-        );
-    return ProjectContext(file: file, project: project, db: db)..save();
+    final commands = db.commandsDao;
+    final command = await commands.setMessageText(
+      commandId: (await commands.createCommand()).id,
+      text: 'This command has not been programmed.',
+    );
+    final project = Project(
+      projectName: 'Untitled Project',
+      initialCommandId: command.id,
+      databaseFilename: databasePath,
+    );
+    return ProjectContext(file: projectFile, project: project, db: db)..save();
   }
 
   /// The file where the [project] is stored.

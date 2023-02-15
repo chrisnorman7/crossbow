@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../crossbow_backend.dart';
+
 part 'project.g.dart';
 
 /// A class to hold information about a project.
@@ -12,7 +14,7 @@ class Project {
     this.appName = 'example_game',
     this.orgName = 'com.example',
     this.assetsDirectory = 'assets',
-    this.databaseFilename = 'db.sqlite3',
+    this.databaseFilename = defaultDatabasePath,
     this.framesPerSecond = 60,
   });
 

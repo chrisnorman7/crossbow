@@ -115,7 +115,8 @@ void main() {
           if (file.existsSync()) {
             file.deleteSync();
           }
-          final projectContext = await ProjectContext.blank(file: projectFile);
+          final projectContext =
+              await ProjectContext.blank(projectFile: projectFile);
           expect(projectContext.project.projectName, 'Untitled Project');
           expect(
             await projectContext.initialCommand,

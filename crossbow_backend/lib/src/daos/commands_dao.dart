@@ -38,4 +38,16 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final query = delete(commands)..where((final table) => table.id.equals(id));
     return query.go();
   }
+
+  /// Add message [text] to the command with the given [commandId].
+  Future<Command> setMessageText({
+    required final int commandId,
+    final String? text,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query
+            .writeReturning(CommandsCompanion(messageText: Value(text))))
+        .single;
+  }
 }

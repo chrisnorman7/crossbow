@@ -82,6 +82,21 @@ void main() {
           );
         },
       );
+
+      test(
+        '.setMessageText',
+        () async {
+          final command = await commands.createCommand();
+          expect(command.messageText, null);
+          const string = 'Hello world.';
+          final updatedCommand = await commands.setMessageText(
+            commandId: command.id,
+            text: string,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.messageText, string);
+        },
+      );
     },
   );
 }
