@@ -10,7 +10,27 @@ Future<void> main() async {
   final menus = db.menusDao;
   final menu = await menus.createMenu(name: 'Main Menu');
   await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
-  await menus.createMenuItem(menuId: menu.id, name: 'Quit Game', position: 1);
+  final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
+  final command = await db.commandsDao.setMessageText(
+    commandId: (await db.commandsDao.setStopGame(
+      commandId: (await db.commandsDao.createCommand()).id,
+      stopGameId: stopGame.id,
+    ))
+        .id,
+    text: 'The game will now close.',
+  );
+  await menus.setCallCommand(
+    menuItemId: (await menus.createMenuItem(
+      menuId: menu.id,
+      name: 'Quit Game',
+      position: 1,
+    ))
+        .id,
+    callCommandId: (await db.callCommandsDao.createCallCommand(
+      commandId: command.id,
+    ))
+        .id,
+  );
   final commands = db.commandsDao;
   await commands.setMessageText(
     commandId: projectContext.project.initialCommandId,
