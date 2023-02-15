@@ -68,7 +68,7 @@ class ProjectRunner {
         framesPerSecond: project.framesPerSecond,
         onStart: () async {
           final command = await projectContext.initialCommand;
-          await handleCommand(command: command);
+          await handleCommand(command);
         },
       );
     } finally {
@@ -86,7 +86,7 @@ class ProjectRunner {
   }
 
   /// Run the given [command].
-  Future<void> handleCommand({required final Command command}) async {
+  Future<void> handleCommand(final Command command) async {
     final messageText = command.messageText;
     if (messageText != null) {
       game.outputText(messageText);
@@ -94,18 +94,18 @@ class ProjectRunner {
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
       final pushMenuRow = await db.pushMenusDao.getPushMenu(id: pushMenuId);
-      await handlePushMenu(pushMenu: pushMenuRow);
+      await handlePushMenu(pushMenuRow);
     }
     final callCommandId = command.callCommandId;
     if (callCommandId != null) {
       final callCommand =
           await db.callCommandsDao.getCallCommand(id: callCommandId);
-      await handleCallCommand(callCommand: callCommand);
+      await handleCallCommand(callCommand);
     }
     final stopGameId = command.stopGameId;
     if (stopGameId != null) {
       final stopGame = await db.stopGamesDao.getStopGame(id: stopGameId);
-      await handleStopGame(stopGame: stopGame);
+      await handleStopGame(stopGame);
     }
     final popLevelId = command.popLevelId;
     if (popLevelId != null) {
@@ -115,23 +115,21 @@ class ProjectRunner {
   }
 
   /// Handle the given [callCommand].
-  Future<void> handleCallCommand({
-    required final CallCommand callCommand,
-  }) async {
+  Future<void> handleCallCommand(final CallCommand callCommand) async {
     final command = await db.commandsDao.getCommand(id: callCommand.commandId);
     final after = callCommand.after;
     if (after == null) {
-      await handleCommand(command: command);
+      await handleCommand(command);
     } else {
       game.callAfter(
-        func: () => handleCommand(command: command),
+        func: () => handleCommand(command),
         runAfter: after,
       );
     }
   }
 
   /// Push the given [pushMenu].
-  Future<void> handlePushMenu({required final PushMenu pushMenu}) async {
+  Future<void> handlePushMenu(final PushMenu pushMenu) async {
     final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
     final menuItems = await db.menusDao.getMenuItems(menuId: menu.id);
     final menuLevel = ziggurat_menus.Menu(
@@ -148,7 +146,7 @@ class ProjectRunner {
                     final callCommand = await db.callCommandsDao.getCallCommand(
                       id: callCommandId,
                     );
-                    await handleCallCommand(callCommand: callCommand);
+                    await handleCallCommand(callCommand);
                   }),
           );
         },
@@ -162,7 +160,7 @@ class ProjectRunner {
   }
 
   /// Handle the given [stopGame].
-  Future<void> handleStopGame({required final StopGame stopGame}) async {
+  Future<void> handleStopGame(final StopGame stopGame) async {
     final after = stopGame.after;
     if (after == null) {
       game.stop();
