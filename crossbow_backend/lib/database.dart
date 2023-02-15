@@ -7,6 +7,7 @@ import 'package:drift/native.dart';
 import 'src/daos/call_commands_dao.dart';
 import 'src/daos/commands_dao.dart';
 import 'src/daos/menus_dao.dart';
+import 'src/daos/pop_levels_dao.dart';
 import 'src/daos/push_menus_dao.dart';
 import 'src/daos/stop_games_dao.dart';
 
@@ -191,6 +192,7 @@ class Commands extends Table with _WithPrimaryKey, _WithCallCommandId {
     PushMenusDao,
     CallCommandsDao,
     StopGamesDao,
+    PopLevelsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {

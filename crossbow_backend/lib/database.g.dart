@@ -2822,6 +2822,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       CallCommandsDao(this as CrossbowBackendDatabase);
   late final StopGamesDao stopGamesDao =
       StopGamesDao(this as CrossbowBackendDatabase);
+  late final PopLevelsDao popLevelsDao =
+      PopLevelsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
