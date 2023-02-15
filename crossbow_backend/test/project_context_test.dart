@@ -111,6 +111,10 @@ void main() {
       test(
         '.blank',
         () async {
+          final file = File('db.sqlite3');
+          if (file.existsSync()) {
+            file.deleteSync();
+          }
           final projectContext = await ProjectContext.blank(file: projectFile);
           expect(projectContext.project.projectName, 'Untitled Project');
           expect(
@@ -121,6 +125,8 @@ void main() {
                   value.messageText == 'This command has not been programmed.',
             ),
           );
+          expect(projectContext.file.existsSync(), true);
+          projectContext.file.deleteSync();
         },
       );
     },

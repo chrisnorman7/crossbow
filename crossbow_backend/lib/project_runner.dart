@@ -3,8 +3,9 @@ import 'dart:math';
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:ziggurat/sound.dart';
-import 'package:ziggurat/ziggurat.dart';
+import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
+import 'database.dart';
 import 'project_context.dart';
 import 'src/json/project.dart';
 
@@ -17,7 +18,7 @@ class ProjectRunner {
     required this.synthizerContext,
     required this.random,
     required this.soundBackend,
-  }) : game = Game(
+  }) : game = ziggurat.Game(
           title: projectContext.project.projectName,
           sdl: sdl,
           soundBackend: soundBackend,
@@ -51,5 +52,36 @@ class ProjectRunner {
   BufferCache get bufferCache => soundBackend.bufferCache;
 
   /// The game to use.
-  final Game game;
+  final ziggurat.Game game;
+
+  /// Run this game.
+  Future<void> run() async {
+    try {
+      await game.run(
+        framesPerSecond: project.framesPerSecond,
+        onStart: () async {
+          final command = await projectContext.initialCommand;
+          runCommand(command: command);
+        },
+      );
+    } finally {
+      destroy();
+    }
+  }
+
+  /// Destroy this project runner.
+  void destroy() {
+    sdl.quit();
+    bufferCache.destroy();
+    synthizerContext.destroy();
+    synthizer.shutdown();
+  }
+
+  /// Run the given [command].
+  void runCommand({required final Command command}) {
+    final messageText = command.messageText;
+    if (messageText != null) {
+      game.outputText(messageText);
+    }
+  }
 }

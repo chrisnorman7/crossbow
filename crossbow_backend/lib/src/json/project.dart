@@ -13,6 +13,7 @@ class Project {
     this.orgName = 'com.example',
     this.assetsDirectory = 'assets',
     this.databaseFilename = 'db.sqlite3',
+    this.framesPerSecond = 60,
   });
 
   /// Create an instance from a JSON object.
@@ -40,6 +41,9 @@ class Project {
 
   /// The ID of the initial command to use.
   final int initialCommandId;
+
+  /// How many frames per second this project should run at.
+  final int framesPerSecond;
 
   /// Convert an instance to JSON.
   Map<String, dynamic> toJson() => _$ProjectToJson(this);

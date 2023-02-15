@@ -13,6 +13,7 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       orgName: json['orgName'] as String? ?? 'com.example',
       assetsDirectory: json['assetsDirectory'] as String? ?? 'assets',
       databaseFilename: json['databaseFilename'] as String? ?? 'db.sqlite3',
+      framesPerSecond: json['framesPerSecond'] as int? ?? 60,
     );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'databaseFilename': instance.databaseFilename,
       'assetsDirectory': instance.assetsDirectory,
       'initialCommandId': instance.initialCommandId,
+      'framesPerSecond': instance.framesPerSecond,
     };

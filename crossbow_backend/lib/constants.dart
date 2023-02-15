@@ -1,2 +1,4 @@
-/// The type for exported database JSON.
-typedef DatabaseJsonType = Map<String, dynamic>;
+import 'dart:convert';
+
+/// The JSON encoder to use.
+const indentedJsonEncoder = JsonEncoder.withIndent('  ');

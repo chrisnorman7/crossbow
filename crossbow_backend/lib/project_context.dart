@@ -10,9 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' hide Command;
 
-import 'database.dart';
-import 'project_runner.dart';
-import 'src/json/project.dart';
+import 'crossbow_backend.dart';
 
 /// The context for a particular project.
 class ProjectContext {
@@ -42,16 +40,21 @@ class ProjectContext {
       projectName: 'Untitled Project',
       initialCommandId: 1,
     );
-    final db = CrossbowBackendDatabase.fromFile(
-      File(path.join(file.parent.path, project.databaseFilename)),
+    final databaseFile = File(
+      path.join(file.parent.path, project.databaseFilename),
     );
+    assert(
+      !databaseFile.existsSync(),
+      'Database file $databaseFile already exists.',
+    );
+    final db = CrossbowBackendDatabase.fromFile(databaseFile);
     await db.into(db.commands).insert(
           CommandsCompanion(
             id: Value(project.initialCommandId),
             messageText: const Value('This command has not been programmed.'),
           ),
         );
-    return ProjectContext(file: file, project: project, db: db);
+    return ProjectContext(file: file, project: project, db: db)..save();
   }
 
   /// The file where the [project] is stored.
@@ -74,11 +77,18 @@ class ProjectContext {
   Future<Command> get initialCommand =>
       db.commandsDao.getCommand(id: project.initialCommandId);
 
+  /// Save the [project].
+  void save() {
+    final json = project.toJson();
+    final data = indentedJsonEncoder.convert(json);
+    file.writeAsStringSync(data);
+  }
+
   /// Get a project runner for this project context.
   @useResult
   ProjectRunner get projectRunner {
-    final sdl = Sdl();
-    final synthizer = Synthizer();
+    final sdl = Sdl()..init();
+    final synthizer = Synthizer()..initialize();
     final synthizerContext = synthizer.createContext();
     final random = Random();
     return ProjectRunner(
@@ -96,4 +106,7 @@ class ProjectContext {
       ),
     );
   }
+
+  /// Run this project.
+  Future<void> run() => projectRunner.run();
 }
