@@ -1,0 +1,18 @@
+{
+  "cSpell.words": [
+    "analyzer",
+    "bools",
+    "Colors",
+    "dialog",
+    "formals",
+    "jinja",
+    "pubspec",
+    "recase",
+    "riverpod",
+    "sdl",
+    "synthizer",
+    "todos",
+    "unawaited"
+  ],
+  "cmake.sourceDirectory": "${workspaceFolder}/windows"
+}
