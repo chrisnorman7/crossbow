@@ -1522,11 +1522,11 @@ class $PushMenusTable extends PushMenus
   late final GeneratedColumn<int> after = GeneratedColumn<int>(
       'after', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _fadeTimeMeta =
-      const VerificationMeta('fadeTime');
+  static const VerificationMeta _fadeLengthMeta =
+      const VerificationMeta('fadeLength');
   @override
-  late final GeneratedColumn<double> fadeTime = GeneratedColumn<double>(
-      'fade_time', aliasedName, true,
+  late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
+      'fade_length', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
   static const VerificationMeta _menuIdMeta = const VerificationMeta('menuId');
   @override
@@ -1537,7 +1537,7 @@ class $PushMenusTable extends PushMenus
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES menus (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns => [id, after, fadeTime, menuId];
+  List<GeneratedColumn> get $columns => [id, after, fadeLength, menuId];
   @override
   String get aliasedName => _alias ?? 'push_menus';
   @override
@@ -1554,9 +1554,11 @@ class $PushMenusTable extends PushMenus
       context.handle(
           _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
     }
-    if (data.containsKey('fade_time')) {
-      context.handle(_fadeTimeMeta,
-          fadeTime.isAcceptableOrUnknown(data['fade_time']!, _fadeTimeMeta));
+    if (data.containsKey('fade_length')) {
+      context.handle(
+          _fadeLengthMeta,
+          fadeLength.isAcceptableOrUnknown(
+              data['fade_length']!, _fadeLengthMeta));
     }
     if (data.containsKey('menu_id')) {
       context.handle(_menuIdMeta,
@@ -1577,8 +1579,8 @@ class $PushMenusTable extends PushMenus
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       after: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
-      fadeTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}fade_time']),
+      fadeLength: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
       menuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}menu_id'])!,
     );
@@ -1597,13 +1599,13 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
   /// How many milliseconds to wait before doing something.
   final int? after;
 
-  /// The fade time to use.
-  final double? fadeTime;
+  /// The fade length to use when pushing a level.
+  final double? fadeLength;
 
   /// The ID of the menu to push.
   final int menuId;
   const PushMenu(
-      {required this.id, this.after, this.fadeTime, required this.menuId});
+      {required this.id, this.after, this.fadeLength, required this.menuId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1611,8 +1613,8 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
     if (!nullToAbsent || after != null) {
       map['after'] = Variable<int>(after);
     }
-    if (!nullToAbsent || fadeTime != null) {
-      map['fade_time'] = Variable<double>(fadeTime);
+    if (!nullToAbsent || fadeLength != null) {
+      map['fade_length'] = Variable<double>(fadeLength);
     }
     map['menu_id'] = Variable<int>(menuId);
     return map;
@@ -1623,9 +1625,9 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
       id: Value(id),
       after:
           after == null && nullToAbsent ? const Value.absent() : Value(after),
-      fadeTime: fadeTime == null && nullToAbsent
+      fadeLength: fadeLength == null && nullToAbsent
           ? const Value.absent()
-          : Value(fadeTime),
+          : Value(fadeLength),
       menuId: Value(menuId),
     );
   }
@@ -1636,7 +1638,7 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
     return PushMenu(
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
-      fadeTime: serializer.fromJson<double?>(json['fadeTime']),
+      fadeLength: serializer.fromJson<double?>(json['fadeLength']),
       menuId: serializer.fromJson<int>(json['menuId']),
     );
   }
@@ -1646,7 +1648,7 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
-      'fadeTime': serializer.toJson<double?>(fadeTime),
+      'fadeLength': serializer.toJson<double?>(fadeLength),
       'menuId': serializer.toJson<int>(menuId),
     };
   }
@@ -1654,12 +1656,12 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
   PushMenu copyWith(
           {int? id,
           Value<int?> after = const Value.absent(),
-          Value<double?> fadeTime = const Value.absent(),
+          Value<double?> fadeLength = const Value.absent(),
           int? menuId}) =>
       PushMenu(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
-        fadeTime: fadeTime.present ? fadeTime.value : this.fadeTime,
+        fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
         menuId: menuId ?? this.menuId,
       );
   @override
@@ -1667,51 +1669,51 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
     return (StringBuffer('PushMenu(')
           ..write('id: $id, ')
           ..write('after: $after, ')
-          ..write('fadeTime: $fadeTime, ')
+          ..write('fadeLength: $fadeLength, ')
           ..write('menuId: $menuId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after, fadeTime, menuId);
+  int get hashCode => Object.hash(id, after, fadeLength, menuId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PushMenu &&
           other.id == this.id &&
           other.after == this.after &&
-          other.fadeTime == this.fadeTime &&
+          other.fadeLength == this.fadeLength &&
           other.menuId == this.menuId);
 }
 
 class PushMenusCompanion extends UpdateCompanion<PushMenu> {
   final Value<int> id;
   final Value<int?> after;
-  final Value<double?> fadeTime;
+  final Value<double?> fadeLength;
   final Value<int> menuId;
   const PushMenusCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
-    this.fadeTime = const Value.absent(),
+    this.fadeLength = const Value.absent(),
     this.menuId = const Value.absent(),
   });
   PushMenusCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
-    this.fadeTime = const Value.absent(),
+    this.fadeLength = const Value.absent(),
     required int menuId,
   }) : menuId = Value(menuId);
   static Insertable<PushMenu> custom({
     Expression<int>? id,
     Expression<int>? after,
-    Expression<double>? fadeTime,
+    Expression<double>? fadeLength,
     Expression<int>? menuId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
-      if (fadeTime != null) 'fade_time': fadeTime,
+      if (fadeLength != null) 'fade_length': fadeLength,
       if (menuId != null) 'menu_id': menuId,
     });
   }
@@ -1719,12 +1721,12 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
   PushMenusCompanion copyWith(
       {Value<int>? id,
       Value<int?>? after,
-      Value<double?>? fadeTime,
+      Value<double?>? fadeLength,
       Value<int>? menuId}) {
     return PushMenusCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
-      fadeTime: fadeTime ?? this.fadeTime,
+      fadeLength: fadeLength ?? this.fadeLength,
       menuId: menuId ?? this.menuId,
     );
   }
@@ -1738,8 +1740,8 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
     if (after.present) {
       map['after'] = Variable<int>(after.value);
     }
-    if (fadeTime.present) {
-      map['fade_time'] = Variable<double>(fadeTime.value);
+    if (fadeLength.present) {
+      map['fade_length'] = Variable<double>(fadeLength.value);
     }
     if (menuId.present) {
       map['menu_id'] = Variable<int>(menuId.value);
@@ -1752,7 +1754,7 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
     return (StringBuffer('PushMenusCompanion(')
           ..write('id: $id, ')
           ..write('after: $after, ')
-          ..write('fadeTime: $fadeTime, ')
+          ..write('fadeLength: $fadeLength, ')
           ..write('menuId: $menuId')
           ..write(')'))
         .toString();
@@ -1774,14 +1776,14 @@ class $PopLevelsTable extends PopLevels
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _fadeTimeMeta =
-      const VerificationMeta('fadeTime');
+  static const VerificationMeta _fadeLengthMeta =
+      const VerificationMeta('fadeLength');
   @override
-  late final GeneratedColumn<double> fadeTime = GeneratedColumn<double>(
-      'fade_time', aliasedName, true,
+  late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
+      'fade_length', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [id, fadeTime];
+  List<GeneratedColumn> get $columns => [id, fadeLength];
   @override
   String get aliasedName => _alias ?? 'pop_levels';
   @override
@@ -1794,9 +1796,11 @@ class $PopLevelsTable extends PopLevels
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('fade_time')) {
-      context.handle(_fadeTimeMeta,
-          fadeTime.isAcceptableOrUnknown(data['fade_time']!, _fadeTimeMeta));
+    if (data.containsKey('fade_length')) {
+      context.handle(
+          _fadeLengthMeta,
+          fadeLength.isAcceptableOrUnknown(
+              data['fade_length']!, _fadeLengthMeta));
     }
     return context;
   }
@@ -1809,8 +1813,8 @@ class $PopLevelsTable extends PopLevels
     return PopLevel(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      fadeTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}fade_time']),
+      fadeLength: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
     );
   }
 
@@ -1824,15 +1828,15 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
   /// The primary key.
   final int id;
 
-  /// The fade time to use.
-  final double? fadeTime;
-  const PopLevel({required this.id, this.fadeTime});
+  /// The fade length to use when pushing a level.
+  final double? fadeLength;
+  const PopLevel({required this.id, this.fadeLength});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    if (!nullToAbsent || fadeTime != null) {
-      map['fade_time'] = Variable<double>(fadeTime);
+    if (!nullToAbsent || fadeLength != null) {
+      map['fade_length'] = Variable<double>(fadeLength);
     }
     return map;
   }
@@ -1840,9 +1844,9 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
   PopLevelsCompanion toCompanion(bool nullToAbsent) {
     return PopLevelsCompanion(
       id: Value(id),
-      fadeTime: fadeTime == null && nullToAbsent
+      fadeLength: fadeLength == null && nullToAbsent
           ? const Value.absent()
-          : Value(fadeTime),
+          : Value(fadeLength),
     );
   }
 
@@ -1851,7 +1855,7 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PopLevel(
       id: serializer.fromJson<int>(json['id']),
-      fadeTime: serializer.fromJson<double?>(json['fadeTime']),
+      fadeLength: serializer.fromJson<double?>(json['fadeLength']),
     );
   }
   @override
@@ -1859,60 +1863,60 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'fadeTime': serializer.toJson<double?>(fadeTime),
+      'fadeLength': serializer.toJson<double?>(fadeLength),
     };
   }
 
   PopLevel copyWith(
-          {int? id, Value<double?> fadeTime = const Value.absent()}) =>
+          {int? id, Value<double?> fadeLength = const Value.absent()}) =>
       PopLevel(
         id: id ?? this.id,
-        fadeTime: fadeTime.present ? fadeTime.value : this.fadeTime,
+        fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
       );
   @override
   String toString() {
     return (StringBuffer('PopLevel(')
           ..write('id: $id, ')
-          ..write('fadeTime: $fadeTime')
+          ..write('fadeLength: $fadeLength')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fadeTime);
+  int get hashCode => Object.hash(id, fadeLength);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PopLevel &&
           other.id == this.id &&
-          other.fadeTime == this.fadeTime);
+          other.fadeLength == this.fadeLength);
 }
 
 class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
   final Value<int> id;
-  final Value<double?> fadeTime;
+  final Value<double?> fadeLength;
   const PopLevelsCompanion({
     this.id = const Value.absent(),
-    this.fadeTime = const Value.absent(),
+    this.fadeLength = const Value.absent(),
   });
   PopLevelsCompanion.insert({
     this.id = const Value.absent(),
-    this.fadeTime = const Value.absent(),
+    this.fadeLength = const Value.absent(),
   });
   static Insertable<PopLevel> custom({
     Expression<int>? id,
-    Expression<double>? fadeTime,
+    Expression<double>? fadeLength,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (fadeTime != null) 'fade_time': fadeTime,
+      if (fadeLength != null) 'fade_length': fadeLength,
     });
   }
 
-  PopLevelsCompanion copyWith({Value<int>? id, Value<double?>? fadeTime}) {
+  PopLevelsCompanion copyWith({Value<int>? id, Value<double?>? fadeLength}) {
     return PopLevelsCompanion(
       id: id ?? this.id,
-      fadeTime: fadeTime ?? this.fadeTime,
+      fadeLength: fadeLength ?? this.fadeLength,
     );
   }
 
@@ -1922,8 +1926,8 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (fadeTime.present) {
-      map['fade_time'] = Variable<double>(fadeTime.value);
+    if (fadeLength.present) {
+      map['fade_length'] = Variable<double>(fadeLength.value);
     }
     return map;
   }
@@ -1932,7 +1936,7 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
   String toString() {
     return (StringBuffer('PopLevelsCompanion(')
           ..write('id: $id, ')
-          ..write('fadeTime: $fadeTime')
+          ..write('fadeLength: $fadeLength')
           ..write(')'))
         .toString();
   }

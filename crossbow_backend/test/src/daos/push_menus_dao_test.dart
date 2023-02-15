@@ -17,7 +17,7 @@ void main() {
           final menu = await menus.createMenu(name: 'Test Menu');
           final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
           expect(pushMenu.after, null);
-          expect(pushMenu.fadeTime, null);
+          expect(pushMenu.fadeLength, null);
           expect(pushMenu.id, isNonZero);
           expect(pushMenu.menuId, menu.id);
         },

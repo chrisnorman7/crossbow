@@ -75,7 +75,7 @@ void main() {
             predicate<PushMenu>(
               (final value) =>
                   value.after == pushMenu.after &&
-                  value.fadeTime == pushMenu.fadeTime &&
+                  value.fadeLength == pushMenu.fadeLength &&
                   value.id == pushMenu.id &&
                   value.menuId == pushMenu.menuId,
             ),

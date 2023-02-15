@@ -24,10 +24,10 @@ mixin _WithName on Table {
       .withDefault(const Constant('Untitled Object'))();
 }
 
-/// Add a [fadeTime] column.
+/// Add a [fadeLength] column.
 mixin _WithFadeTime on Table {
-  /// The fade time to use.
-  RealColumn get fadeTime => real().nullable()();
+  /// The fade length to use when pushing a level.
+  RealColumn get fadeLength => real().nullable()();
 }
 
 /// Add a [after] column.

@@ -114,7 +114,7 @@ class ProjectRunner {
     game.pushLevel(
       menuLevel,
       after: pushMenu.after,
-      fadeLength: pushMenu.fadeTime,
+      fadeLength: pushMenu.fadeLength,
     );
   }
 }
