@@ -30,6 +30,7 @@ void main() {
         databaseFilename: databaseFile.path,
         assetsDirectory: 'test_assets',
       );
+
       test(
         'Initialise',
         () async {
@@ -85,6 +86,25 @@ void main() {
             ),
           );
           await projectContext.db.close();
+        },
+      );
+
+      test(
+        '.initialCommand',
+        () async {
+          final db = getDatabase();
+          final command = await db.commandsDao.createCommand();
+          final project = Project(
+            projectName: 'Test Project',
+            initialCommandId: command.id,
+          );
+          final projectContext =
+              ProjectContext(file: databaseFile, project: project, db: db);
+          expect(
+            await projectContext.initialCommand,
+            predicate<Command>((final value) => value.id == command.id),
+          );
+          await db.close();
         },
       );
     },

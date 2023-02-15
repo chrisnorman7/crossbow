@@ -7,9 +7,11 @@ import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
-import 'package:ziggurat/ziggurat.dart';
+import 'package:ziggurat/ziggurat.dart' hide Command;
 
-import 'crossbow_backend.dart';
+import 'database.dart';
+import 'project_runner.dart';
+import 'src/json/project.dart';
 
 /// The context for a particular project.
 class ProjectContext {
@@ -46,6 +48,10 @@ class ProjectContext {
 
   /// The database to use.
   final CrossbowBackendDatabase db;
+
+  /// Get the initial command to run.
+  Future<Command> get initialCommand =>
+      db.commandsDao.getCommand(id: project.initialCommandId);
 
   /// Get a project runner for this project context.
   @useResult
