@@ -50,4 +50,16 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(CommandsCompanion(messageText: Value(text))))
         .single;
   }
+
+  /// Set the stop game for the command with the given [commandId].
+  Future<Command> setStopGame({
+    required final int commandId,
+    required final int stopGameId,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query
+            .writeReturning(CommandsCompanion(stopGameId: Value(stopGameId))))
+        .single;
+  }
 }

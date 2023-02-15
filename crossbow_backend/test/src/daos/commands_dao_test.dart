@@ -22,6 +22,7 @@ void main() {
           expect(command.messageText, null);
           expect(command.popLevelId, null);
           expect(command.pushMenuId, null);
+          expect(command.stopGameId, null);
         },
       );
 
@@ -95,6 +96,21 @@ void main() {
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.messageText, string);
+        },
+      );
+
+      test(
+        '.setStopGame',
+        () async {
+          final command = await commands.createCommand();
+          expect(command.stopGameId, null);
+          final stopGame = await db.stopGamesDao.createStopGame();
+          final updatedCommand = await commands.setStopGame(
+            commandId: command.id,
+            stopGameId: stopGame.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.stopGameId, stopGame.id);
         },
       );
     },
