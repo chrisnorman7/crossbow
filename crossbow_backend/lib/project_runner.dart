@@ -107,6 +107,11 @@ class ProjectRunner {
       final stopGame = await db.stopGamesDao.getStopGame(id: stopGameId);
       await handleStopGame(stopGame: stopGame);
     }
+    final popLevelId = command.popLevelId;
+    if (popLevelId != null) {
+      final popLevel = await db.popLevelsDao.getPopLevel(id: popLevelId);
+      await handlePopLevel(popLevel);
+    }
   }
 
   /// Handle the given [callCommand].
@@ -164,5 +169,10 @@ class ProjectRunner {
     } else {
       game.callAfter(func: game.stop, runAfter: after);
     }
+  }
+
+  /// Handle the given [popLevel].
+  Future<void> handlePopLevel(final PopLevel popLevel) async {
+    game.popLevel(ambianceFadeTime: popLevel.fadeLength);
   }
 }
