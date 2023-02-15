@@ -8,6 +8,7 @@ part of 'project.dart';
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       projectName: json['projectName'] as String,
+      initialCommandId: json['initialCommandId'] as int,
       appName: json['appName'] as String? ?? 'example_game',
       orgName: json['orgName'] as String? ?? 'com.example',
       assetsDirectory: json['assetsDirectory'] as String? ?? 'assets',
@@ -20,4 +21,5 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'orgName': instance.orgName,
       'databaseFilename': instance.databaseFilename,
       'assetsDirectory': instance.assetsDirectory,
+      'initialCommandId': instance.initialCommandId,
     };

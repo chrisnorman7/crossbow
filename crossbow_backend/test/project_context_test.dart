@@ -26,6 +26,7 @@ void main() {
       });
       final project = Project(
         projectName: 'Test Project',
+        initialCommandId: 1,
         databaseFilename: databaseFile.path,
         assetsDirectory: 'test_assets',
       );
@@ -63,6 +64,7 @@ void main() {
           expect(projectFile.existsSync(), false);
           final project = Project(
             projectName: 'My Test Project',
+            initialCommandId: 1,
             appName: 'test_game',
             orgName: 'site.backstreets',
             assetsDirectory: 'test_assets',

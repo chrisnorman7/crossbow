@@ -8,6 +8,7 @@ class Project {
   /// Create an instance.
   const Project({
     required this.projectName,
+    required this.initialCommandId,
     this.appName = 'example_game',
     this.orgName = 'com.example',
     this.assetsDirectory = 'assets',
@@ -36,6 +37,9 @@ class Project {
   ///
   /// This value will be anchored at the project directory.
   final String assetsDirectory;
+
+  /// The ID of the initial command to use.
+  final int initialCommandId;
 
   /// Convert an instance to JSON.
   Map<String, dynamic> toJson() => _$ProjectToJson(this);
