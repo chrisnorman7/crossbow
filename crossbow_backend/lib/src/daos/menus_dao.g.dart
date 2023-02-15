@@ -6,5 +6,9 @@ part of 'menus_dao.dart';
 mixin _$MenusDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $AssetReferencesTable get assetReferences => attachedDatabase.assetReferences;
   $MenusTable get menus => attachedDatabase.menus;
+  $PushMenusTable get pushMenus => attachedDatabase.pushMenus;
+  $PopLevelsTable get popLevels => attachedDatabase.popLevels;
+  $CommandsTable get commands => attachedDatabase.commands;
+  $CallCommandsTable get callCommands => attachedDatabase.callCommands;
   $MenuItemsTable get menuItems => attachedDatabase.menuItems;
 }
