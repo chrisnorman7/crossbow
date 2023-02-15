@@ -11,7 +11,7 @@ Future<void> main() async {
   final menu = await menus.createMenu(name: 'Main Menu');
   await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
   final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
-  final popLevel = await db.popLevelsDao.createPopLevel();
+  final popLevel = await db.popLevelsDao.createPopLevel(fadeLength: 3.0);
   final command = await db.commandsDao.setPopLevel(
     commandID: (await db.commandsDao.setMessageText(
       commandId: (await db.commandsDao.setStopGame(
