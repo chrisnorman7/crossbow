@@ -9,7 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' hide Command;
 
-import 'crossbow_backend.dart';
+import '../../crossbow_backend.dart';
 
 /// The context for a particular project.
 class ProjectContext {

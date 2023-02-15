@@ -6,7 +6,7 @@ import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import 'database.dart';
-import 'project_context.dart';
+import 'src/contexts/project_context.dart';
 import 'src/json/project.dart';
 
 /// A class for running a [projectContext].
