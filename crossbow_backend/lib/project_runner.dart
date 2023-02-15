@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
+import 'package:ziggurat/menus.dart' as ziggurat_menus;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
@@ -33,6 +34,9 @@ class ProjectRunner {
   /// The project that the [projectContext] represents.
   Project get project => projectContext.project;
 
+  /// The database to use.
+  CrossbowBackendDatabase get db => projectContext.db;
+
   /// The sdl instance to use.
   final Sdl sdl;
 
@@ -61,27 +65,56 @@ class ProjectRunner {
         framesPerSecond: project.framesPerSecond,
         onStart: () async {
           final command = await projectContext.initialCommand;
-          runCommand(command: command);
+          await runCommand(command: command);
         },
       );
     } finally {
-      destroy();
+      await destroy();
     }
   }
 
   /// Destroy this project runner.
-  void destroy() {
+  Future<void> destroy() async {
     sdl.quit();
     bufferCache.destroy();
     synthizerContext.destroy();
     synthizer.shutdown();
+    await db.close();
   }
 
   /// Run the given [command].
-  void runCommand({required final Command command}) {
+  Future<void> runCommand({required final Command command}) async {
     final messageText = command.messageText;
     if (messageText != null) {
       game.outputText(messageText);
     }
+    final pushMenuId = command.pushMenuId;
+    if (pushMenuId != null) {
+      final pushMenuRow = await db.pushMenusDao.getPushMenu(id: pushMenuId);
+      await pushMenu(pushMenu: pushMenuRow);
+    }
+  }
+
+  /// Push the given [pushMenu].
+  Future<void> pushMenu({required final PushMenu pushMenu}) async {
+    final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
+    final menuItems = await db.menusDao.getMenuItems(menuId: menu.id);
+    final menuLevel = ziggurat_menus.Menu(
+      game: game,
+      title: ziggurat.Message(text: menu.name),
+      items: menuItems
+          .map<ziggurat_menus.MenuItem>(
+            (final e) => ziggurat_menus.MenuItem(
+              ziggurat.Message(text: e.name),
+              ziggurat_menus.menuItemLabel,
+            ),
+          )
+          .toList(),
+    );
+    game.pushLevel(
+      menuLevel,
+      after: pushMenu.after,
+      fadeLength: pushMenu.fadeTime,
+    );
   }
 }
