@@ -12,9 +12,18 @@ class PushMenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   PushMenusDao(super.db);
 
   /// Create a new push menu.
-  Future<PushMenu> createPushMenu({required final int menuId}) =>
-      into(pushMenus)
-          .insertReturning(PushMenusCompanion(menuId: Value(menuId)));
+  Future<PushMenu> createPushMenu({
+    required final int menuId,
+    final int? after,
+    final double? fadeLength,
+  }) =>
+      into(pushMenus).insertReturning(
+        PushMenusCompanion(
+          menuId: Value(menuId),
+          after: Value(after),
+          fadeLength: Value(fadeLength),
+        ),
+      );
 
   /// Get the push menu with the given [id].
   Future<PushMenu> getPushMenu({required final int id}) {

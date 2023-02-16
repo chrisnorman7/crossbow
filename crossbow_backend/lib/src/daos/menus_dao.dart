@@ -14,8 +14,18 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create a new menu.
   Future<Menu> createMenu({
     required final String name,
+    final int? activateItemSoundId,
+    final int? musicId,
+    final int? selectItemSoundId,
   }) =>
-      into(menus).insertReturning(MenusCompanion(name: Value(name)));
+      into(menus).insertReturning(
+        MenusCompanion(
+          name: Value(name),
+          activateItemSoundId: Value(activateItemSoundId),
+          musicId: Value(musicId),
+          selectItemSoundId: Value(selectItemSoundId),
+        ),
+      );
 
   /// Create a menu item in the menu with the given [menuId].
   ///

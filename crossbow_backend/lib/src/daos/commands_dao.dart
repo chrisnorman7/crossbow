@@ -12,8 +12,24 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   CommandsDao(super.db);
 
   /// Create a command.
-  Future<Command> createCommand() =>
-      into(commands).insertReturning(const CommandsCompanion());
+  Future<Command> createCommand({
+    final int? callCommandId,
+    final int? messageSoundId,
+    final String? messageText,
+    final int? popLevelId,
+    final int? pushMenuId,
+    final int? stopGameId,
+  }) =>
+      into(commands).insertReturning(
+        CommandsCompanion(
+          callCommandId: Value(callCommandId),
+          messageSoundId: Value(messageSoundId),
+          messageText: Value(messageText),
+          popLevelId: Value(popLevelId),
+          pushMenuId: Value(pushMenuId),
+          stopGameId: Value(stopGameId),
+        ),
+      );
 
   /// Get a command with the given [id].
   Future<Command> getCommand({required final int id}) {
