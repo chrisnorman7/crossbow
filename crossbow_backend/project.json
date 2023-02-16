@@ -1,9 +1,0 @@
-{
-  "projectName": "Untitled Project",
-  "appName": "example_game",
-  "orgName": "com.example",
-  "databaseFilename": "db.sqlite3",
-  "assetsDirectory": "assets",
-  "initialCommandId": 6,
-  "framesPerSecond": 60
-}
