@@ -25,7 +25,12 @@ Future<void> main() async {
     name: 'Quit Game',
     callCommandId: quitCallCommand.id,
   );
-  final pushMenu = await db.pushMenusDao.createPushMenu(menuId: menu.id);
+  final pushMenu =
+      await db.pushMenusDao.createPushMenu(menuId: menu.id, after: 2000);
+  await commands.setMessageText(
+    commandId: projectContext.project.initialCommandId,
+    text: 'Welcome to the crossbow example.',
+  );
   await commands.setPushMenu(
     commandId: projectContext.project.initialCommandId,
     pushMenuId: pushMenu.id,
