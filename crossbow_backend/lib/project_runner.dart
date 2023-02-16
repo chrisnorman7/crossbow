@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
+import 'package:open_url/open_url.dart';
 import 'package:ziggurat/menus.dart' as ziggurat_menus;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
@@ -111,6 +112,10 @@ class ProjectRunner {
     if (popLevelId != null) {
       final popLevel = await db.popLevelsDao.getPopLevel(id: popLevelId);
       await handlePopLevel(popLevel);
+    }
+    final url = command.url;
+    if (url != null) {
+      await openUrl(url);
     }
   }
 
