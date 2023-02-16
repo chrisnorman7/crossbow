@@ -1827,6 +1827,11 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES stop_games (id) ON DELETE SET NULL'));
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1835,7 +1840,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
         messageText,
         messageSoundId,
         popLevelId,
-        stopGameId
+        stopGameId,
+        url
       ];
   @override
   String get aliasedName => _alias ?? 'commands';
@@ -1885,6 +1891,10 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           stopGameId.isAcceptableOrUnknown(
               data['stop_game_id']!, _stopGameIdMeta));
     }
+    if (data.containsKey('url')) {
+      context.handle(
+          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
+    }
     return context;
   }
 
@@ -1908,6 +1918,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           .read(DriftSqlType.int, data['${effectivePrefix}pop_level_id']),
       stopGameId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}stop_game_id']),
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url']),
     );
   }
 
@@ -1938,6 +1950,9 @@ class Command extends DataClass implements Insertable<Command> {
 
   /// The ID of a stop game.
   final int? stopGameId;
+
+  /// A URL to open.
+  final String? url;
   const Command(
       {required this.id,
       this.callCommandId,
@@ -1945,7 +1960,8 @@ class Command extends DataClass implements Insertable<Command> {
       this.messageText,
       this.messageSoundId,
       this.popLevelId,
-      this.stopGameId});
+      this.stopGameId,
+      this.url});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1967,6 +1983,9 @@ class Command extends DataClass implements Insertable<Command> {
     }
     if (!nullToAbsent || stopGameId != null) {
       map['stop_game_id'] = Variable<int>(stopGameId);
+    }
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
     }
     return map;
   }
@@ -1992,6 +2011,7 @@ class Command extends DataClass implements Insertable<Command> {
       stopGameId: stopGameId == null && nullToAbsent
           ? const Value.absent()
           : Value(stopGameId),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
     );
   }
 
@@ -2006,6 +2026,7 @@ class Command extends DataClass implements Insertable<Command> {
       messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
       popLevelId: serializer.fromJson<int?>(json['popLevelId']),
       stopGameId: serializer.fromJson<int?>(json['stopGameId']),
+      url: serializer.fromJson<String?>(json['url']),
     );
   }
   @override
@@ -2019,6 +2040,7 @@ class Command extends DataClass implements Insertable<Command> {
       'messageSoundId': serializer.toJson<int?>(messageSoundId),
       'popLevelId': serializer.toJson<int?>(popLevelId),
       'stopGameId': serializer.toJson<int?>(stopGameId),
+      'url': serializer.toJson<String?>(url),
     };
   }
 
@@ -2029,7 +2051,8 @@ class Command extends DataClass implements Insertable<Command> {
           Value<String?> messageText = const Value.absent(),
           Value<int?> messageSoundId = const Value.absent(),
           Value<int?> popLevelId = const Value.absent(),
-          Value<int?> stopGameId = const Value.absent()}) =>
+          Value<int?> stopGameId = const Value.absent(),
+          Value<String?> url = const Value.absent()}) =>
       Command(
         id: id ?? this.id,
         callCommandId:
@@ -2040,6 +2063,7 @@ class Command extends DataClass implements Insertable<Command> {
             messageSoundId.present ? messageSoundId.value : this.messageSoundId,
         popLevelId: popLevelId.present ? popLevelId.value : this.popLevelId,
         stopGameId: stopGameId.present ? stopGameId.value : this.stopGameId,
+        url: url.present ? url.value : this.url,
       );
   @override
   String toString() {
@@ -2050,14 +2074,15 @@ class Command extends DataClass implements Insertable<Command> {
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
           ..write('popLevelId: $popLevelId, ')
-          ..write('stopGameId: $stopGameId')
+          ..write('stopGameId: $stopGameId, ')
+          ..write('url: $url')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, callCommandId, pushMenuId, messageText,
-      messageSoundId, popLevelId, stopGameId);
+      messageSoundId, popLevelId, stopGameId, url);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2068,7 +2093,8 @@ class Command extends DataClass implements Insertable<Command> {
           other.messageText == this.messageText &&
           other.messageSoundId == this.messageSoundId &&
           other.popLevelId == this.popLevelId &&
-          other.stopGameId == this.stopGameId);
+          other.stopGameId == this.stopGameId &&
+          other.url == this.url);
 }
 
 class CommandsCompanion extends UpdateCompanion<Command> {
@@ -2079,6 +2105,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int?> messageSoundId;
   final Value<int?> popLevelId;
   final Value<int?> stopGameId;
+  final Value<String?> url;
   const CommandsCompanion({
     this.id = const Value.absent(),
     this.callCommandId = const Value.absent(),
@@ -2087,6 +2114,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.messageSoundId = const Value.absent(),
     this.popLevelId = const Value.absent(),
     this.stopGameId = const Value.absent(),
+    this.url = const Value.absent(),
   });
   CommandsCompanion.insert({
     this.id = const Value.absent(),
@@ -2096,6 +2124,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.messageSoundId = const Value.absent(),
     this.popLevelId = const Value.absent(),
     this.stopGameId = const Value.absent(),
+    this.url = const Value.absent(),
   });
   static Insertable<Command> custom({
     Expression<int>? id,
@@ -2105,6 +2134,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     Expression<int>? messageSoundId,
     Expression<int>? popLevelId,
     Expression<int>? stopGameId,
+    Expression<String>? url,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2114,6 +2144,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       if (messageSoundId != null) 'message_sound_id': messageSoundId,
       if (popLevelId != null) 'pop_level_id': popLevelId,
       if (stopGameId != null) 'stop_game_id': stopGameId,
+      if (url != null) 'url': url,
     });
   }
 
@@ -2124,7 +2155,8 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       Value<String?>? messageText,
       Value<int?>? messageSoundId,
       Value<int?>? popLevelId,
-      Value<int?>? stopGameId}) {
+      Value<int?>? stopGameId,
+      Value<String?>? url}) {
     return CommandsCompanion(
       id: id ?? this.id,
       callCommandId: callCommandId ?? this.callCommandId,
@@ -2133,6 +2165,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       messageSoundId: messageSoundId ?? this.messageSoundId,
       popLevelId: popLevelId ?? this.popLevelId,
       stopGameId: stopGameId ?? this.stopGameId,
+      url: url ?? this.url,
     );
   }
 
@@ -2160,6 +2193,9 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     if (stopGameId.present) {
       map['stop_game_id'] = Variable<int>(stopGameId.value);
     }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
     return map;
   }
 
@@ -2172,7 +2208,8 @@ class CommandsCompanion extends UpdateCompanion<Command> {
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
           ..write('popLevelId: $popLevelId, ')
-          ..write('stopGameId: $stopGameId')
+          ..write('stopGameId: $stopGameId, ')
+          ..write('url: $url')
           ..write(')'))
         .toString();
   }

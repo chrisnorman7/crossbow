@@ -170,6 +170,9 @@ class Commands extends Table with _WithPrimaryKey, _WithCallCommandId {
   IntColumn get stopGameId => integer()
       .references(StopGames, #id, onDelete: KeyAction.setNull)
       .nullable()();
+
+  /// A URL to open.
+  TextColumn get url => text().nullable()();
 }
 
 /// The database to use.

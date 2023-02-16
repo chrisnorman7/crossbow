@@ -127,6 +127,21 @@ void main() {
           expect(updatedCommand.popLevelId, popLevel.id);
         },
       );
+
+      test(
+        '.setUrl',
+        () async {
+          final command = await commands.createCommand();
+          expect(command.url, null);
+          const url = 'https://www.github.com/chrisnorman7/';
+          final updatedCommand = await commands.setUrl(
+            commandId: command.id,
+            url: url,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.url, url);
+        },
+      );
     },
   );
 }

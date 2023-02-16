@@ -19,6 +19,7 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? popLevelId,
     final int? pushMenuId,
     final int? stopGameId,
+    final String? url,
   }) =>
       into(commands).insertReturning(
         CommandsCompanion(
@@ -28,6 +29,7 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
           popLevelId: Value(popLevelId),
           pushMenuId: Value(pushMenuId),
           stopGameId: Value(stopGameId),
+          url: Value(url),
         ),
       );
 
@@ -88,6 +90,17 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(commandID));
     return (await query
             .writeReturning(CommandsCompanion(popLevelId: Value(popLevelId))))
+        .single;
+  }
+
+  /// Set the URL of the command with the given [commandId] to the given [url].
+  Future<Command> setUrl({
+    required final int commandId,
+    final String? url,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query.writeReturning(CommandsCompanion(url: Value(url))))
         .single;
   }
 }
