@@ -9,10 +9,20 @@ Future<void> main() async {
   final db = projectContext.db;
   final menus = db.menusDao;
   final menu = await menus.createMenu(name: 'Main Menu');
-  await menus.createMenuItem(menuId: menu.id, name: 'Play Game');
+  final commands = db.commandsDao;
+  final openGitHubCommand = await commands.createCommand(
+    messageText: 'Opening GitHub...',
+    url: 'https://github.com/chrisnorman7/crossbow.git',
+  );
+  final openGitHubCallCommand = await db.callCommandsDao
+      .createCallCommand(commandId: openGitHubCommand.id);
+  await menus.createMenuItem(
+    menuId: menu.id,
+    name: 'Open GitHub',
+    callCommandId: openGitHubCallCommand.id,
+  );
   final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
   final popLevel = await db.popLevelsDao.createPopLevel(fadeLength: 3.0);
-  final commands = db.commandsDao;
   final quitCommand = await commands.createCommand(
     messageText: 'The game will now close.',
     popLevelId: popLevel.id,
