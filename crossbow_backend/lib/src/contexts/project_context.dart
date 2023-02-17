@@ -45,9 +45,8 @@ class ProjectContext {
     );
     final db = CrossbowBackendDatabase.fromFile(databaseFile);
     final commands = db.commandsDao;
-    final command = await commands.setMessageText(
-      commandId: (await commands.createCommand()).id,
-      text: 'This command has not been programmed.',
+    final command = await commands.createCommand(
+      messageText: 'This command has not been programmed.',
     );
     final project = Project(
       projectName: 'Untitled Project',
