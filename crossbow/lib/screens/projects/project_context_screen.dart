@@ -139,12 +139,11 @@ class ProjectScreenState extends State<ProjectContextScreen> {
       framesPerSecond: framesPerSecond ?? oldProject.framesPerSecond,
       orgName: orgName ?? oldProject.orgName,
     );
-    setState(() {
-      projectContext = ProjectContext(
-        file: projectContext.file,
-        project: project,
-        db: projectContext.db,
-      );
-    });
+    projectContext = ProjectContext(
+      file: projectContext.file,
+      project: project,
+      db: projectContext.db,
+    );
+    setState(() => projectContext.save());
   }
 }
