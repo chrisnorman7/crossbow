@@ -37,6 +37,7 @@ class ProjectContext {
   static Future<ProjectContext> blank({
     required final File projectFile,
     final String databasePath = defaultDatabasePath,
+    final String assetsPath = defaultAssetsPath,
   }) async {
     final databaseFile = File(path.join(projectFile.parent.path, databasePath));
     assert(
@@ -51,6 +52,7 @@ class ProjectContext {
     final project = Project(
       projectName: 'Untitled Project',
       initialCommandId: command.id,
+      assetsDirectory: assetsPath,
       databaseFilename: databasePath,
     );
     return ProjectContext(file: projectFile, project: project, db: db)..save();
@@ -78,6 +80,10 @@ class ProjectContext {
 
   /// Save the [project].
   void save() {
+    final directory = assetsDirectory;
+    if (!assetsDirectory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
     final json = project.toJson();
     final data = indentedJsonEncoder.convert(json);
     file.writeAsStringSync(data);
