@@ -14,12 +14,12 @@ import 'package:path_provider/path_provider.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../util.dart';
-import 'project_screen.dart';
+import 'project_context_screen.dart';
 
 /// A widget for opening and creating projects.
-class CreateOpenProject extends ConsumerStatefulWidget {
+class CreateOpenProjectScreen extends ConsumerStatefulWidget {
   /// Create an instance.
-  const CreateOpenProject({
+  const CreateOpenProjectScreen({
     super.key,
   });
 
@@ -28,8 +28,8 @@ class CreateOpenProject extends ConsumerStatefulWidget {
   CreateOpenProjectState createState() => CreateOpenProjectState();
 }
 
-/// State for [CreateOpenProject].
-class CreateOpenProjectState extends ConsumerState<CreateOpenProject> {
+/// State for [CreateOpenProjectScreen].
+class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
   /// Build a widget.
   @override
   Widget build(final BuildContext context) => CallbackShortcuts(
@@ -90,7 +90,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProject> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => ProjectScreen(
+        builder: (final context) => ProjectContextScreen(
           projectContext: projectContext,
         ),
       );
@@ -134,7 +134,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProject> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => ProjectScreen(
+        builder: (final context) => ProjectContextScreen(
           projectContext: projectContext,
         ),
       );

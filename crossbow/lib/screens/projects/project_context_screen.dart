@@ -8,16 +8,16 @@ import 'package:flutter/material.dart';
 import '../../widgets/bases/project_stateful_widget.dart';
 
 /// The main project screen.
-class ProjectScreen extends ProjectStatefulWidget {
+class ProjectContextScreen extends ProjectStatefulWidget {
   /// Create an instance.
-  const ProjectScreen({required super.projectContext, super.key});
+  const ProjectContextScreen({required super.projectContext, super.key});
 
   @override
   ProjectScreenState createState() => ProjectScreenState();
 }
 
-/// State for [ProjectScreen].
-class ProjectScreenState extends State<ProjectScreen> {
+/// State for [ProjectContextScreen].
+class ProjectScreenState extends State<ProjectContextScreen> {
   /// The project context to edit.
   late ProjectContext projectContext;
 

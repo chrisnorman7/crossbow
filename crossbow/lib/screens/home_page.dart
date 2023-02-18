@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../src/json/app_preferences.dart';
 import '../src/providers.dart';
-import 'projects/create_open_project.dart';
-import 'projects/project_screen.dart';
+import 'projects/create_open_project_screen.dart';
+import 'projects/project_context_screen.dart';
 
 /// The home page for the app.
 class HomePage extends ConsumerWidget {
@@ -34,9 +34,9 @@ class HomePage extends ConsumerWidget {
     final recentProjectFile =
         recentProjectPath == null ? null : File(recentProjectPath);
     if (recentProjectFile == null || recentProjectFile.existsSync() == false) {
-      return const CreateOpenProject();
+      return const CreateOpenProjectScreen();
     }
     final projectContext = ProjectContext.fromFile(recentProjectFile);
-    return ProjectScreen(projectContext: projectContext);
+    return ProjectContextScreen(projectContext: projectContext);
   }
 }
