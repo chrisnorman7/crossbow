@@ -77,7 +77,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
   Future<void> newProject() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = await FilePicker.platform.saveFile(
-      allowedExtensions: ['.json'],
+      allowedExtensions: ['json'],
       dialogTitle: newProjectDialogTitle,
       fileName: 'project.json',
       initialDirectory: documentsDirectory.path,
@@ -92,6 +92,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
         context: context,
         builder: (final context) => ProjectContextScreen(
           projectContext: projectContext,
+          backButton: false,
         ),
       );
     }
@@ -136,8 +137,11 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
         context: context,
         builder: (final context) => ProjectContextScreen(
           projectContext: projectContext,
+          backButton: false,
         ),
       );
+    } else {
+      await projectContext.db.close();
     }
   }
 }

@@ -26,3 +26,15 @@ final openProjectDialogTitle = Intl.message(
 
 /// The message to show that an empty path was given.
 final emptyPathMessage = Intl.message('No path was given.');
+
+/// The message for project name.
+final projectNameMessage = Intl.message('Project Name');
+
+/// The message for app name.
+final appNameMessage = Intl.message('App Name');
+
+/// The message for org name.
+final orgNameMessage = Intl.message('Org Name');
+
+/// The message for frames per second.
+final framesPerSecondMessage = Intl.message('Frames Per Second');

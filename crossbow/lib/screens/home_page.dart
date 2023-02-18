@@ -37,6 +37,9 @@ class HomePage extends ConsumerWidget {
       return const CreateOpenProjectScreen();
     }
     final projectContext = ProjectContext.fromFile(recentProjectFile);
-    return ProjectContextScreen(projectContext: projectContext);
+    return ProjectContextScreen(
+      projectContext: projectContext,
+      backButton: true,
+    );
   }
 }
