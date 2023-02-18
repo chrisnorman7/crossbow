@@ -15,3 +15,10 @@ final openProjectHotkey = SingleActivator(
   control: useControlKey,
   meta: useMetaKey,
 );
+
+/// The hotkey for copying things.
+final copyHotkey = SingleActivator(
+  LogicalKeyboardKey.keyC,
+  control: useControlKey,
+  meta: useMetaKey,
+);
