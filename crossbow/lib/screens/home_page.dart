@@ -22,14 +22,20 @@ class HomePage extends ConsumerWidget {
   Widget build(final BuildContext context, final WidgetRef ref) {
     final value = ref.watch(appPreferencesProvider);
     return value.when(
-      data: (final data) => getBody(data.appPreferences),
+      data: (final data) => getBody(
+        ref: ref,
+        preferences: data.appPreferences,
+      ),
       error: ErrorScreen.withPositional,
       loading: LoadingScreen.new,
     );
   }
 
   /// Get the body for this widget.
-  Widget getBody(final AppPreferences preferences) {
+  Widget getBody({
+    required final WidgetRef ref,
+    required final AppPreferences preferences,
+  }) {
     final recentProjectPath = preferences.recentProjectPath;
     final recentProjectFile =
         recentProjectPath == null ? null : File(recentProjectPath);
@@ -37,8 +43,10 @@ class HomePage extends ConsumerWidget {
       return const CreateOpenProjectScreen();
     }
     final projectContext = ProjectContext.fromFile(recentProjectFile);
-    return ProjectContextScreen(
-      projectContext: projectContext,
+    ref
+        .watch(projectContextNotifierProvider.notifier)
+        .setProjectContext(projectContext);
+    return const ProjectContextScreen(
       backButton: true,
     );
   }

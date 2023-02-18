@@ -78,11 +78,13 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     final preferences = await ref.watch(appPreferencesProvider.future);
     preferences.appPreferences.recentProjectPath = path;
     await preferences.save();
+    ref
+        .watch(projectContextNotifierProvider.notifier)
+        .setProjectContext(projectContext);
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => ProjectContextScreen(
-          projectContext: projectContext,
+        builder: (final context) => const ProjectContextScreen(
           backButton: false,
         ),
       );
@@ -129,8 +131,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => ProjectContextScreen(
-          projectContext: projectContext,
+        builder: (final context) => const ProjectContextScreen(
           backButton: false,
         ),
       );

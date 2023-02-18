@@ -2,20 +2,20 @@ import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../hotkeys.dart';
 import '../../messages.dart';
-import '../../widgets/bases/project_stateful_widget.dart';
+import '../../src/providers.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
 import 'create_open_project_screen.dart';
 
 /// The main project screen.
-class ProjectContextScreen extends ProjectStatefulWidget {
+class ProjectContextScreen extends ConsumerStatefulWidget {
   /// Create an instance.
   const ProjectContextScreen({
-    required super.projectContext,
     required this.backButton,
     super.key,
   });
@@ -27,22 +27,14 @@ class ProjectContextScreen extends ProjectStatefulWidget {
 }
 
 /// State for [ProjectContextScreen].
-class ProjectScreenState extends State<ProjectContextScreen> {
-  /// The project context to edit.
-  late ProjectContext projectContext;
-
-  /// Initialise state.
-  @override
-  void initState() {
-    super.initState();
-    projectContext = widget.projectContext;
-  }
-
+class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Dispose of the widget.
   @override
-  void dispose() {
+  Future<void> dispose() async {
     super.dispose();
-    projectContext.db.close();
+    await ref
+        .watch(projectContextNotifierProvider.notifier)
+        .clearProjectContext();
   }
 
   /// Build the widget.
@@ -83,18 +75,23 @@ class ProjectScreenState extends State<ProjectContextScreen> {
   }
 
   /// What happens when the back button is clicked.
-  void goBack(final BuildContext context) {
-    Navigator.of(context)
-      ..pop()
-      ..push(
+  Future<void> goBack(final BuildContext context) async {
+    await ref
+        .watch(projectContextNotifierProvider.notifier)
+        .clearProjectContext();
+    if (mounted) {
+      Navigator.of(context).pop();
+      await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (final context) => const CreateOpenProjectScreen(),
         ),
       );
+    }
   }
 
   /// The main settings page.
   Widget getSettingsPage(final BuildContext context) {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
     final project = projectContext.project;
     final assetsDirectory = projectContext.assetsDirectory;
     if (assetsDirectory.existsSync() == false) {
@@ -165,7 +162,7 @@ class ProjectScreenState extends State<ProjectContextScreen> {
     final int? initialCommandId,
     final int? framesPerSecond,
   }) {
-    final oldProject = projectContext.project;
+    final oldProject = ref.watch(projectContextNotifierProvider)!.project;
     final project = Project(
       projectName: projectName ?? oldProject.projectName,
       initialCommandId: initialCommandId ?? oldProject.initialCommandId,
@@ -175,11 +172,9 @@ class ProjectScreenState extends State<ProjectContextScreen> {
       framesPerSecond: framesPerSecond ?? oldProject.framesPerSecond,
       orgName: orgName ?? oldProject.orgName,
     );
-    projectContext = ProjectContext(
-      file: projectContext.file,
-      project: project,
-      db: projectContext.db,
-    );
-    setState(() => projectContext.save());
+    ref
+        .watch(projectContextNotifierProvider.notifier)
+        .replaceProjectContext(project);
+    setState(() {});
   }
 }
