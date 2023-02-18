@@ -29,3 +29,6 @@ final closeHotkey = SingleActivator(
   control: useControlKey,
   meta: useMetaKey,
 );
+
+/// The hotkey for deleting things.
+const deleteHotkey = SingleActivator(LogicalKeyboardKey.delete);

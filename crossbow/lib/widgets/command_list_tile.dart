@@ -1,0 +1,59 @@
+import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../hotkeys.dart';
+import '../messages.dart';
+
+/// A list tile that allows editing a command.
+class CommandListTile extends ConsumerWidget {
+  /// Create an instance.
+  const CommandListTile({
+    required this.database,
+    required this.commandId,
+    required this.title,
+    required this.nullable,
+    required this.onChanged,
+    this.autofocus = false,
+    super.key,
+  });
+
+  /// The database to use.
+  final CrossbowBackendDatabase database;
+
+  /// The ID of the command to edit.
+  final int? commandId;
+
+  /// The title of the list tile.
+  final String title;
+
+  /// Whether or not the [commandId] can be set to `null`.
+  final bool nullable;
+
+  /// The function to call when [commandId] changes.
+  final ValueChanged<int?> onChanged;
+
+  /// Whether or not the list tile should be autofocused.
+  final bool autofocus;
+
+  /// Build the widget.
+  @override
+  Widget build(final BuildContext context, final WidgetRef ref) {
+    final id = commandId;
+    return CallbackShortcuts(
+      bindings: {
+        deleteHotkey: () async {
+          if (id != null && nullable) {
+            await database.commandsDao.deleteCommand(id: id);
+          }
+        }
+      },
+      child: ListTile(
+        autofocus: autofocus,
+        title: Text(title),
+        subtitle: Text(id == null ? unsetMessage : setMessage),
+        onTap: () {},
+      ),
+    );
+  }
+}

@@ -38,3 +38,9 @@ final orgNameMessage = Intl.message('Org Name');
 
 /// The message for frames per second.
 final framesPerSecondMessage = Intl.message('Frames Per Second');
+
+/// The unset message.
+final unsetMessage = Intl.message('Unset');
+
+/// The set message.
+final setMessage = Intl.message('Set');

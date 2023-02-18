@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../widgets/bases/project_stateful_widget.dart';
+import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
 import 'create_open_project_screen.dart';
 
@@ -118,6 +119,13 @@ class ProjectScreenState extends State<ProjectContextScreen> {
           header: projectNameMessage,
           labelText: projectNameMessage,
           title: projectNameMessage,
+        ),
+        CommandListTile(
+          database: projectContext.db,
+          commandId: project.initialCommandId,
+          title: Intl.message('Initial Command'),
+          nullable: false,
+          onChanged: (final value) {},
         ),
         TextListTile(
           value: project.appName,
