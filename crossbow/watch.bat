@@ -1,2 +1,2 @@
 @echo off
-flutter pub run build_runner watch --delete-conflicting-outputs
+title build_runner & flutter pub run build_runner watch --delete-conflicting-outputs

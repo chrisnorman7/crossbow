@@ -4,6 +4,7 @@
     "bools",
     "Colors",
     "dialog",
+    "ffi",
     "formals",
     "jinja",
     "pubspec",
