@@ -5,7 +5,6 @@ import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -41,18 +40,6 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
           title: Intl.message('Load Project'),
           body: ListView(
             children: [
-              ListTile(
-                title: const Text('Debug'),
-                subtitle: Text(kDebugMode.toString()),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('Script Directory'),
-                subtitle: Text(
-                  Platform.packageConfig ?? 'Nothing',
-                ),
-                onTap: () {},
-              ),
               ListTile(
                 autofocus: true,
                 title: Text(Intl.message('Create New Project')),
