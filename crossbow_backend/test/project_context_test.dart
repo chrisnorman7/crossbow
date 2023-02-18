@@ -128,6 +128,8 @@ void main() {
           );
           expect(projectContext.file.existsSync(), true);
           projectContext.file.deleteSync();
+          expect(projectContext.assetsDirectory.existsSync(), true);
+          projectContext.assetsDirectory.deleteSync();
         },
       );
     },
