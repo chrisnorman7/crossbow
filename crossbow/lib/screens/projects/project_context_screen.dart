@@ -10,18 +10,14 @@ import '../../messages.dart';
 import '../../src/providers.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
-import 'create_open_project_screen.dart';
 
 /// The main project screen.
 class ProjectContextScreen extends ConsumerStatefulWidget {
   /// Create an instance.
   const ProjectContextScreen({
-    required this.backButton,
     super.key,
   });
 
-  /// Whether this widget needs a back button.
-  final bool backButton;
   @override
   ProjectScreenState createState() => ProjectScreenState();
 }
@@ -39,59 +35,31 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
 
   /// Build the widget.
   @override
-  Widget build(final BuildContext context) {
-    final backButton = widget.backButton
-        ? BackButton(
-            onPressed: () => goBack(context),
-          )
-        : null;
-    return CallbackShortcuts(
-      bindings: {
-        closeHotkey: () {
-          if (widget.backButton) {
-            goBack(context);
-          } else {
+  Widget build(final BuildContext context) => CallbackShortcuts(
+        bindings: {
+          closeHotkey: () {
             Navigator.of(context).pop();
           }
-        }
-      },
-      child: TabbedScaffold(
-        tabs: [
-          TabbedScaffoldTab(
-            title: Intl.message('Project Settings'),
-            icon: const Icon(Icons.settings),
-            builder: getSettingsPage,
-            leading: backButton,
-          ),
-          TabbedScaffoldTab(
-            title: Intl.message('Menus'),
-            icon: Text(Intl.message('Project menus.')),
-            builder: (final context) => const Placeholder(),
-            leading: backButton,
-          )
-        ],
-      ),
-    );
-  }
-
-  /// What happens when the back button is clicked.
-  Future<void> goBack(final BuildContext context) async {
-    await ref
-        .watch(projectContextNotifierProvider.notifier)
-        .clearProjectContext();
-    if (mounted) {
-      Navigator.of(context).pop();
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (final context) => const CreateOpenProjectScreen(),
+        },
+        child: TabbedScaffold(
+          tabs: [
+            TabbedScaffoldTab(
+              title: Intl.message('Project Settings'),
+              icon: const Icon(Icons.settings),
+              builder: getSettingsPage,
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Menus'),
+              icon: Text(Intl.message('Project menus.')),
+              builder: (final context) => const Placeholder(),
+            )
+          ],
         ),
       );
-    }
-  }
 
   /// The main settings page.
   Widget getSettingsPage(final BuildContext context) {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextProvider);
     final project = projectContext.project;
     final assetsDirectory = projectContext.assetsDirectory;
     if (assetsDirectory.existsSync() == false) {

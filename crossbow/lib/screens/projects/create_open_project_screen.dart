@@ -32,34 +32,73 @@ class CreateOpenProjectScreen extends ConsumerStatefulWidget {
 class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
   /// Build a widget.
   @override
-  Widget build(final BuildContext context) => CallbackShortcuts(
-        bindings: {
-          newProjectHotkey: newProject,
-          openProjectHotkey: openProject
-        },
-        child: SimpleScaffold(
-          title: Intl.message('Load Project'),
-          body: ListView(
-            children: [
-              ListTile(
-                autofocus: true,
-                title: Text(Intl.message('Create New Project')),
-                subtitle: Text(
-                  singleActivatorToString(singleActivator: newProjectHotkey),
+  Widget build(final BuildContext context) {
+    final result = ref.watch(appPreferencesProvider);
+    return result.when(
+      data: (final data) {
+        final recentProjectPath = data.appPreferences.recentProjectPath;
+        final recentProjectFile =
+            recentProjectPath == null ? null : File(recentProjectPath);
+        return CallbackShortcuts(
+          bindings: {
+            newProjectHotkey: newProject,
+            openProjectHotkey: openProject
+          },
+          child: SimpleScaffold(
+            title: Intl.message('Load Project'),
+            body: ListView(
+              children: [
+                if (recentProjectFile != null && recentProjectFile.existsSync())
+                  ListTile(
+                    autofocus: true,
+                    title: Text(openProjectDialogTitle),
+                    subtitle: Text(recentProjectFile.path),
+                    onTap: () async {
+                      final file = recentProjectFile;
+                      if (file.existsSync()) {
+                        final projectContext = ProjectContext.fromFile(file);
+                        ref
+                            .watch(projectContextNotifierProvider.notifier)
+                            .setProjectContext(projectContext);
+                        await pushWidget(
+                          context: context,
+                          builder: (final context) =>
+                              const ProjectContextScreen(),
+                        );
+                      } else {
+                        data.appPreferences.recentProjectPath = null;
+                        ref.invalidate(appPreferencesProvider);
+                      }
+                    },
+                  ),
+                ListTile(
+                  autofocus: recentProjectPath == null,
+                  title: Text(Intl.message('Create New Project')),
+                  subtitle: Text(
+                    singleActivatorToString(
+                      singleActivator: newProjectHotkey,
+                    ),
+                  ),
+                  onTap: newProject,
                 ),
-                onTap: newProject,
-              ),
-              ListTile(
-                title: Text(Intl.message('Open Existing Project')),
-                subtitle: Text(
-                  singleActivatorToString(singleActivator: openProjectHotkey),
-                ),
-                onTap: openProject,
-              )
-            ],
+                ListTile(
+                  title: Text(Intl.message('Open Existing Project')),
+                  subtitle: Text(
+                    singleActivatorToString(
+                      singleActivator: openProjectHotkey,
+                    ),
+                  ),
+                  onTap: openProject,
+                )
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      },
+      error: ErrorScreen.withPositional,
+      loading: LoadingScreen.new,
+    );
+  }
 
   /// Create a new project.
   Future<void> newProject() async {
@@ -84,9 +123,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => const ProjectContextScreen(
-          backButton: false,
-        ),
+        builder: (final context) => const ProjectContextScreen(),
       );
     }
   }
@@ -131,9 +168,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     if (mounted) {
       await pushWidget(
         context: context,
-        builder: (final context) => const ProjectContextScreen(
-          backButton: false,
-        ),
+        builder: (final context) => const ProjectContextScreen(),
       );
     } else {
       await projectContext.db.close();

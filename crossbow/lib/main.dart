@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'screens/home_page.dart';
+import 'screens/projects/create_open_project_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const HomePage(),
+          home: const CreateOpenProjectScreen(),
         ),
       );
 }
