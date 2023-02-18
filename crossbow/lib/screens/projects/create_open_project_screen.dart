@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../hotkeys.dart';
 import '../../messages.dart';
+import '../../src/providers.dart';
 import '../../util.dart';
 import 'project_context_screen.dart';
 
@@ -74,6 +75,9 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     }
     final file = File(path);
     final projectContext = await ProjectContext.blank(projectFile: file);
+    final preferences = await ref.watch(appPreferencesProvider.future);
+    preferences.appPreferences.recentProjectPath = path;
+    await preferences.save();
     if (mounted) {
       await pushWidget(
         context: context,
@@ -119,6 +123,9 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
       }
       return;
     }
+    final preferences = await ref.watch(appPreferencesProvider.future);
+    preferences.appPreferences.recentProjectPath = path;
+    await preferences.save();
     if (mounted) {
       await pushWidget(
         context: context,

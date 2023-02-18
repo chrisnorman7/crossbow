@@ -22,3 +22,10 @@ final copyHotkey = SingleActivator(
   control: useControlKey,
   meta: useMetaKey,
 );
+
+/// The hotkey for closing something.
+final closeHotkey = SingleActivator(
+  LogicalKeyboardKey.keyW,
+  control: useControlKey,
+  meta: useMetaKey,
+);

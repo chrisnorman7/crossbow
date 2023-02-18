@@ -4,6 +4,7 @@ import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../widgets/bases/project_stateful_widget.dart';
 import '../../widgets/directory_list_tile.dart';
@@ -48,33 +49,47 @@ class ProjectScreenState extends State<ProjectContextScreen> {
   Widget build(final BuildContext context) {
     final backButton = widget.backButton
         ? BackButton(
-            onPressed: () {
-              Navigator.of(context)
-                ..pop()
-                ..push(
-                  MaterialPageRoute(
-                    builder: (final context) => const CreateOpenProjectScreen(),
-                  ),
-                );
-            },
+            onPressed: () => goBack(context),
           )
         : null;
-    return TabbedScaffold(
-      tabs: [
-        TabbedScaffoldTab(
-          title: Intl.message('Project Settings'),
-          icon: const Icon(Icons.settings),
-          builder: getSettingsPage,
-          leading: backButton,
-        ),
-        TabbedScaffoldTab(
-          title: Intl.message('Menus'),
-          icon: Text(Intl.message('Project menus.')),
-          builder: (final context) => const Placeholder(),
-          leading: backButton,
-        )
-      ],
+    return CallbackShortcuts(
+      bindings: {
+        closeHotkey: () {
+          if (widget.backButton) {
+            goBack(context);
+          } else {
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: TabbedScaffold(
+        tabs: [
+          TabbedScaffoldTab(
+            title: Intl.message('Project Settings'),
+            icon: const Icon(Icons.settings),
+            builder: getSettingsPage,
+            leading: backButton,
+          ),
+          TabbedScaffoldTab(
+            title: Intl.message('Menus'),
+            icon: Text(Intl.message('Project menus.')),
+            builder: (final context) => const Placeholder(),
+            leading: backButton,
+          )
+        ],
+      ),
     );
+  }
+
+  /// What happens when the back button is clicked.
+  void goBack(final BuildContext context) {
+    Navigator.of(context)
+      ..pop()
+      ..push(
+        MaterialPageRoute(
+          builder: (final context) => const CreateOpenProjectScreen(),
+        ),
+      );
   }
 
   /// The main settings page.
