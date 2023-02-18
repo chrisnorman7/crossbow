@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,3 +28,12 @@ final appPreferencesProvider = FutureProvider<AppPreferencesContext>(
     return AppPreferencesContext(appPreferences: preferences);
   },
 );
+
+/// Provide a synthizer instance.
+final synthizerProvider = Provider((final ref) => Synthizer()..initialize());
+
+/// Provide a synthizer context.
+final synthizerContextProvider = Provider((final ref) {
+  final synthizer = ref.watch(synthizerProvider);
+  return synthizer.createContext();
+});
