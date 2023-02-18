@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../messages.dart';
 import '../../widgets/bases/project_stateful_widget.dart';
+import '../../widgets/directory_list_tile.dart';
 import 'create_open_project_screen.dart';
 
 /// The main project screen.
@@ -79,15 +80,27 @@ class ProjectScreenState extends State<ProjectContextScreen> {
   /// The main settings page.
   Widget getSettingsPage(final BuildContext context) {
     final project = projectContext.project;
+    final assetsDirectory = projectContext.assetsDirectory;
+    if (assetsDirectory.existsSync() == false) {
+      assetsDirectory.createSync(recursive: true);
+    }
     return ListView(
       children: [
+        DirectoryListTile(
+          directory: projectContext.projectDirectory,
+          title: Intl.message('Project Directory'),
+        ),
+        DirectoryListTile(
+          directory: projectContext.assetsDirectory,
+          title: Intl.message('Assets Directory'),
+        ),
         TextListTile(
+          autofocus: true,
           value: project.projectName,
           onChanged: (final value) {
             editProject(projectName: value);
           },
           header: projectNameMessage,
-          autofocus: true,
           labelText: projectNameMessage,
           title: projectNameMessage,
         ),
