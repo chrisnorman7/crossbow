@@ -39,7 +39,7 @@ class CommandListTile extends ConsumerWidget {
   /// Build the widget.
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final projectContext = ref.watch(projectContextProvider);
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
     final commands = projectContext.db.commandsDao;
     final id = commandId;
     final Widget child;

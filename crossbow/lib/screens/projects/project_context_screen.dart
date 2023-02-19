@@ -24,21 +24,12 @@ class ProjectContextScreen extends ConsumerStatefulWidget {
 
 /// State for [ProjectContextScreen].
 class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
-  /// Dispose of the widget.
-  @override
-  Future<void> dispose() async {
-    super.dispose();
-    await ref
-        .watch(projectContextNotifierProvider.notifier)
-        .clearProjectContext();
-  }
-
   /// Build the widget.
   @override
   Widget build(final BuildContext context) => CallbackShortcuts(
         bindings: {
           closeHotkey: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).maybePop();
           }
         },
         child: TabbedScaffold(
@@ -59,7 +50,10 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
 
   /// The main settings page.
   Widget getSettingsPage(final BuildContext context) {
-    final projectContext = ref.watch(projectContextProvider);
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      return const Placeholder();
+    }
     final project = projectContext.project;
     final assetsDirectory = projectContext.assetsDirectory;
     if (assetsDirectory.existsSync() == false) {

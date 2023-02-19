@@ -57,16 +57,10 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
                       final file = recentProjectFile;
                       if (file.existsSync()) {
                         final projectContext = ProjectContext.fromFile(file);
-                        ref
-                            .watch(projectContextNotifierProvider.notifier)
-                            .setProjectContext(projectContext);
-                        await pushWidget(
-                          context: context,
-                          builder: (final context) =>
-                              const ProjectContextScreen(),
-                        );
+                        await loadProjectContext(projectContext);
                       } else {
                         data.appPreferences.recentProjectPath = null;
+                        await data.save();
                         ref.invalidate(appPreferencesProvider);
                       }
                     },
@@ -108,23 +102,15 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
       dialogTitle: newProjectDialogTitle,
       fileName: 'project.json',
       initialDirectory: documentsDirectory.path,
+      type: FileType.custom,
     );
     if (path == null) {
       return;
     }
     final file = File(path);
     final projectContext = await ProjectContext.blank(projectFile: file);
-    final preferences = await ref.watch(appPreferencesProvider.future);
-    preferences.appPreferences.recentProjectPath = path;
-    await preferences.save();
-    ref
-        .watch(projectContextNotifierProvider.notifier)
-        .setProjectContext(projectContext);
     if (mounted) {
-      await pushWidget(
-        context: context,
-        builder: (final context) => const ProjectContextScreen(),
-      );
+      await loadProjectContext(projectContext);
     }
   }
 
@@ -132,9 +118,10 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
   Future<void> openProject() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ['.json'],
+      allowedExtensions: ['json'],
       dialogTitle: openProjectDialogTitle,
       initialDirectory: documentsDirectory.path,
+      type: FileType.custom,
     );
     if (result == null) {
       return;
@@ -151,25 +138,41 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
     final ProjectContext projectContext;
     try {
       projectContext = ProjectContext.fromFile(file);
+      await loadProjectContext(projectContext);
       // ignore: avoid_catches_without_on_clauses
     } catch (e, s) {
       if (mounted) {
         await pushWidget(
           context: context,
-          builder: (final context) =>
-              Cancel(child: ErrorScreen(error: e, stackTrace: s)),
+          builder: (final context) => Cancel(
+            child: ErrorScreen(error: e, stackTrace: s),
+          ),
         );
       }
       return;
     }
+  }
+
+  /// Clear the project context.
+  Future<void> clearProjectContext() async {
+    final notifier = ref.watch(projectContextNotifierProvider.notifier);
+    await notifier.clearProjectContext();
+  }
+
+  /// Load the given [projectContext].
+  Future<void> loadProjectContext(final ProjectContext projectContext) async {
     final preferences = await ref.watch(appPreferencesProvider.future);
-    preferences.appPreferences.recentProjectPath = path;
+    preferences.appPreferences.recentProjectPath = projectContext.file.path;
     await preferences.save();
     if (mounted) {
+      ref
+          .watch(projectContextNotifierProvider.notifier)
+          .setProjectContext(projectContext);
       await pushWidget(
         context: context,
         builder: (final context) => const ProjectContextScreen(),
       );
+      await clearProjectContext();
     } else {
       await projectContext.db.close();
     }

@@ -21,10 +21,10 @@ class ProjectContextStateNotifier extends StateNotifier<ProjectContext?> {
   /// Clear the project context.
   Future<void> clearProjectContext() async {
     final projectContext = state;
+    state = null;
     if (projectContext != null) {
       await projectContext.db.close();
     }
-    state = null;
   }
 
   /// Set the project context.
@@ -64,11 +64,6 @@ final projectContextNotifierProvider =
   (final ref) => ProjectContextStateNotifier(),
 );
 
-/// Always provide a project context.
-final projectContextProvider = Provider<ProjectContext>(
-  (final ref) => ref.watch(projectContextNotifierProvider)!,
-);
-
 /// Provide shared preferences.
 final sharedPreferencesProvider = FutureProvider<SharedPreferences>(
   (final ref) => SharedPreferences.getInstance(),
@@ -102,7 +97,7 @@ final synthizerContextProvider = Provider((final ref) {
 /// Provide a single command.
 final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
   (final ref, final id) async {
-    final projectContext = ref.watch(projectContextProvider);
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
     final command = await projectContext.db.commandsDao.getCommand(id: id);
     return ValueContext(projectContext: projectContext, value: command);
   },

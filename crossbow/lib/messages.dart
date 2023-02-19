@@ -53,3 +53,9 @@ final yes = Intl.message('Yes');
 
 /// No.
 final no = Intl.message('No');
+
+/// The title of the edit command screen.
+final editCommandTitle = Intl.message('Edit Command');
+
+/// Output text.
+final outputText = Intl.message('Output Text');
