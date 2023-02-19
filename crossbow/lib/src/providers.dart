@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
+import 'contexts/value_context.dart';
 import 'json/app_preferences.dart';
 
 /// Project context state.
@@ -99,6 +100,10 @@ final synthizerContextProvider = Provider((final ref) {
 });
 
 /// Provide a single command.
-final commandProvider = FutureProvider.family(
-  (final ref, final arg) {},
+final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
+  (final ref, final id) async {
+    final projectContext = ref.watch(projectContextProvider);
+    final command = await projectContext.db.commandsDao.getCommand(id: id);
+    return ValueContext(projectContext: projectContext, value: command);
+  },
 );
