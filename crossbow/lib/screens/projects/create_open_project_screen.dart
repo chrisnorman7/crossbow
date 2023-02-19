@@ -66,7 +66,8 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
                     },
                   ),
                 ListTile(
-                  autofocus: recentProjectPath == null,
+                  autofocus: recentProjectFile == null ||
+                      recentProjectFile.existsSync() == false,
                   title: Text(Intl.message('Create New Project')),
                   subtitle: Text(
                     singleActivatorToString(
