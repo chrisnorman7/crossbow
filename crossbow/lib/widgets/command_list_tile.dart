@@ -1,15 +1,18 @@
-import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../hotkeys.dart';
 import '../messages.dart';
+import '../screens/commands/edit_command_screen.dart';
+import '../src/providers.dart';
+import '../util.dart';
 
 /// A list tile that allows editing a command.
 class CommandListTile extends ConsumerWidget {
   /// Create an instance.
   const CommandListTile({
-    required this.database,
     required this.commandId,
     required this.title,
     required this.nullable,
@@ -17,9 +20,6 @@ class CommandListTile extends ConsumerWidget {
     this.autofocus = false,
     super.key,
   });
-
-  /// The database to use.
-  final CrossbowBackendDatabase database;
 
   /// The ID of the command to edit.
   final int? commandId;
@@ -39,21 +39,49 @@ class CommandListTile extends ConsumerWidget {
   /// Build the widget.
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
+    final projectContext = ref.watch(projectContextProvider);
+    final commands = projectContext.db.commandsDao;
     final id = commandId;
+    final Widget child;
+    if (id == null) {
+      child = ListTile(
+        autofocus: autofocus,
+        title: Text(title),
+        subtitle: Text(unsetMessage),
+        onTap: () async {
+          final command =
+              await commands.createCommand(messageText: 'Program me!');
+          onChanged(command.id);
+        },
+      );
+    } else {
+      child = PushWidgetListTile(
+        title: title,
+        builder: (final context) =>
+            EditCommandScreen(commandId: id, onChanged: onChanged),
+        autofocus: autofocus,
+        subtitle: setMessage,
+      );
+    }
     return CallbackShortcuts(
       bindings: {
         deleteHotkey: () async {
           if (id != null && nullable) {
-            await database.commandsDao.deleteCommand(id: id);
+            await intlConfirm(
+              context: context,
+              message:
+                  Intl.message('Are you sure you want to delete this command?'),
+              title: confirmDeleteTitle,
+              yesCallback: () async {
+                Navigator.of(context).pop();
+                await commands.deleteCommand(id: id);
+                onChanged(null);
+              },
+            );
           }
         }
       },
-      child: ListTile(
-        autofocus: autofocus,
-        title: Text(title),
-        subtitle: Text(id == null ? unsetMessage : setMessage),
-        onTap: () {},
-      ),
+      child: child,
     );
   }
 }

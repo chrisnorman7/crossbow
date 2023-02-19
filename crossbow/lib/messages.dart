@@ -44,3 +44,12 @@ final unsetMessage = Intl.message('Unset');
 
 /// The set message.
 final setMessage = Intl.message('Set');
+
+/// The confirm delete title.
+final confirmDeleteTitle = Intl.message('Confirm Delete');
+
+/// Yes.
+final yes = Intl.message('Yes');
+
+/// No.
+final no = Intl.message('No');

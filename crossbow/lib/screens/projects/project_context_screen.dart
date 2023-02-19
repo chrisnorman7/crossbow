@@ -86,7 +86,6 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
           title: projectNameMessage,
         ),
         CommandListTile(
-          database: projectContext.db,
           commandId: project.initialCommandId,
           title: Intl.message('Initial Command'),
           nullable: false,

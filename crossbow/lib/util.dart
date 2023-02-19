@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:backstreets_widgets/util.dart';
 import 'package:flutter/material.dart';
 
 import 'messages.dart';
@@ -23,3 +24,21 @@ String singleActivatorToString({
   keys.add(singleActivator.trigger.keyLabel);
   return keys.join(join);
 }
+
+/// Confirm something.
+Future<void> intlConfirm({
+  required final BuildContext context,
+  required final String message,
+  required final String title,
+  final VoidCallback? yesCallback,
+  final VoidCallback? noCallback,
+}) =>
+    confirm(
+      context: context,
+      message: message,
+      noCallback: noCallback,
+      noLabel: no,
+      title: title,
+      yesCallback: yesCallback,
+      yesLabel: yes,
+    );
