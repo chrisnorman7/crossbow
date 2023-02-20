@@ -32,8 +32,15 @@ class $AssetReferencesTable extends AssetReferences
   late final GeneratedColumn<String> folderName = GeneratedColumn<String>(
       'folder_name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _gainMeta = const VerificationMeta('gain');
   @override
-  List<GeneratedColumn> get $columns => [id, name, folderName];
+  late final GeneratedColumn<double> gain = GeneratedColumn<double>(
+      'gain', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.7));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, folderName, gain];
   @override
   String get aliasedName => _alias ?? 'asset_references';
   @override
@@ -58,6 +65,10 @@ class $AssetReferencesTable extends AssetReferences
     } else if (isInserting) {
       context.missing(_folderNameMeta);
     }
+    if (data.containsKey('gain')) {
+      context.handle(
+          _gainMeta, gain.isAcceptableOrUnknown(data['gain']!, _gainMeta));
+    }
     return context;
   }
 
@@ -73,6 +84,8 @@ class $AssetReferencesTable extends AssetReferences
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       folderName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}folder_name'])!,
+      gain: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}gain'])!,
     );
   }
 
@@ -91,14 +104,21 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
 
   /// The folder that contains the asset with the given [name].
   final String folderName;
+
+  /// The gain to play this sound at.
+  final double gain;
   const AssetReference(
-      {required this.id, required this.name, required this.folderName});
+      {required this.id,
+      required this.name,
+      required this.folderName,
+      required this.gain});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['folder_name'] = Variable<String>(folderName);
+    map['gain'] = Variable<double>(gain);
     return map;
   }
 
@@ -107,6 +127,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       id: Value(id),
       name: Value(name),
       folderName: Value(folderName),
+      gain: Value(gain),
     );
   }
 
@@ -117,6 +138,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       folderName: serializer.fromJson<String>(json['folderName']),
+      gain: serializer.fromJson<double>(json['gain']),
     );
   }
   @override
@@ -126,68 +148,82 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'folderName': serializer.toJson<String>(folderName),
+      'gain': serializer.toJson<double>(gain),
     };
   }
 
-  AssetReference copyWith({int? id, String? name, String? folderName}) =>
+  AssetReference copyWith(
+          {int? id, String? name, String? folderName, double? gain}) =>
       AssetReference(
         id: id ?? this.id,
         name: name ?? this.name,
         folderName: folderName ?? this.folderName,
+        gain: gain ?? this.gain,
       );
   @override
   String toString() {
     return (StringBuffer('AssetReference(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('folderName: $folderName')
+          ..write('folderName: $folderName, ')
+          ..write('gain: $gain')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, folderName);
+  int get hashCode => Object.hash(id, name, folderName, gain);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AssetReference &&
           other.id == this.id &&
           other.name == this.name &&
-          other.folderName == this.folderName);
+          other.folderName == this.folderName &&
+          other.gain == this.gain);
 }
 
 class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> folderName;
+  final Value<double> gain;
   const AssetReferencesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.folderName = const Value.absent(),
+    this.gain = const Value.absent(),
   });
   AssetReferencesCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     required String folderName,
+    this.gain = const Value.absent(),
   }) : folderName = Value(folderName);
   static Insertable<AssetReference> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? folderName,
+    Expression<double>? gain,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (folderName != null) 'folder_name': folderName,
+      if (gain != null) 'gain': gain,
     });
   }
 
   AssetReferencesCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? folderName}) {
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? folderName,
+      Value<double>? gain}) {
     return AssetReferencesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       folderName: folderName ?? this.folderName,
+      gain: gain ?? this.gain,
     );
   }
 
@@ -203,6 +239,9 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     if (folderName.present) {
       map['folder_name'] = Variable<String>(folderName.value);
     }
+    if (gain.present) {
+      map['gain'] = Variable<double>(gain.value);
+    }
     return map;
   }
 
@@ -211,7 +250,8 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     return (StringBuffer('AssetReferencesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('folderName: $folderName')
+          ..write('folderName: $folderName, ')
+          ..write('gain: $gain')
           ..write(')'))
         .toString();
   }
