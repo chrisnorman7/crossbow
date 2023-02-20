@@ -4,6 +4,7 @@ import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
+import 'src/daos/asset_references_dao.dart';
 import 'src/daos/call_commands_dao.dart';
 import 'src/daos/commands_dao.dart';
 import 'src/daos/menus_dao.dart';
@@ -196,6 +197,7 @@ class Commands extends Table with _WithPrimaryKey, _WithCallCommandId {
     CallCommandsDao,
     StopGamesDao,
     PopLevelsDao,
+    AssetReferencesDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
