@@ -221,6 +221,17 @@ void main() {
           expect(updatedMenuItem.callCommandId, callCommand.id);
         },
       );
+
+      test(
+        '.setMenuName',
+        () async {
+          final menu = await menus.createMenu(name: 'Test Menu');
+          final renamedMenu =
+              await menus.setMenuName(menuId: menu.id, name: 'Main Menu');
+          expect(renamedMenu.id, menu.id);
+          expect(renamedMenu.name, 'Main Menu');
+        },
+      );
     },
   );
 }
