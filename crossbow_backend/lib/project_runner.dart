@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:open_url/open_url.dart';
+import 'package:path/path.dart' as path;
 import 'package:ziggurat/menus.dart' as ziggurat_menus;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
@@ -84,6 +86,26 @@ class ProjectRunner {
     synthizerContext.destroy();
     synthizer.shutdown();
     await db.close();
+  }
+
+  /// Get an asset from the given [assetReference].
+  ziggurat.AssetReference getAssetReference(
+    final AssetReference assetReference,
+  ) {
+    final name = path.join(
+      projectContext.assetsDirectory.path,
+      assetReference.folderName,
+      assetReference.name,
+    );
+    final directory = Directory(name);
+    if (directory.existsSync()) {
+      return ziggurat.AssetReference.collection(name);
+    }
+    final file = File(name);
+    if (file.existsSync()) {
+      return ziggurat.AssetReference.file(name);
+    }
+    throw FileSystemException('Cannot find the given path.', name);
   }
 
   /// Run the given [command].

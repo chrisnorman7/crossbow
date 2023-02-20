@@ -1,0 +1,1 @@
+This file is here so that the containing folde gets checked into Git.
