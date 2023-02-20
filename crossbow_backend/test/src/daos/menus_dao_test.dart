@@ -232,6 +232,21 @@ void main() {
           expect(renamedMenu.name, 'Main Menu');
         },
       );
+
+      test(
+        '.setMenuItemName',
+        () async {
+          final menu = await menus.createMenu(name: 'Main Menu');
+          final playMenuItem =
+              await menus.createMenuItem(menuId: menu.id, name: 'Play');
+          final startMenuItem = await menus.setMenuItemName(
+            menuItemId: playMenuItem.id,
+            name: 'Start Game',
+          );
+          expect(startMenuItem.id, playMenuItem.id);
+          expect(startMenuItem.name, 'Start Game');
+        },
+      );
     },
   );
 }
