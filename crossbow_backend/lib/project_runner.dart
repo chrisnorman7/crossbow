@@ -97,16 +97,23 @@ class ProjectRunner {
       assetReference.folderName,
       assetReference.name,
     );
+    final encryptionKey =
+        projectContext.assetReferenceEncryptionKeys[assetReference.id];
     final directory = Directory(name);
     if (directory.existsSync()) {
       return ziggurat.AssetReference.collection(
         name,
+        encryptionKey: encryptionKey,
         gain: assetReference.gain,
       );
     }
     final file = File(name);
     if (file.existsSync()) {
-      return ziggurat.AssetReference.file(name, gain: assetReference.gain);
+      return ziggurat.AssetReference.file(
+        name,
+        encryptionKey: encryptionKey,
+        gain: assetReference.gain,
+      );
     }
     throw FileSystemException('Cannot find the given path.', name);
   }

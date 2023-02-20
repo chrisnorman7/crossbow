@@ -7,7 +7,7 @@ import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
-import 'package:ziggurat/ziggurat.dart' hide Command;
+import 'package:ziggurat/ziggurat.dart' hide AssetReference, Command;
 
 import '../../crossbow_backend.dart';
 
@@ -18,6 +18,7 @@ class ProjectContext {
     required this.file,
     required this.project,
     required this.db,
+    this.assetReferenceEncryptionKeys = const {},
   });
 
   /// Create an instance from a file.
@@ -73,6 +74,10 @@ class ProjectContext {
 
   /// The database to use.
   final CrossbowBackendDatabase db;
+
+  /// The map of [AssetReference] `id`s to encryption keys for decrypting
+  /// assets.
+  final Map<int, String> assetReferenceEncryptionKeys;
 
   /// Get the initial command to run.
   Future<Command> get initialCommand =>

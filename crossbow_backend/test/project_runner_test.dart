@@ -29,8 +29,14 @@ void main() async {
     initialCommandId: command.id,
     assetsDirectory: 'test_assets',
   );
-  final projectContext =
-      ProjectContext(file: File('project.json'), project: project, db: db);
+  final projectContext = ProjectContext(
+    file: File('project.json'),
+    project: project,
+    db: db,
+    assetReferenceEncryptionKeys: {
+      boots.id: 'asdf123',
+    },
+  );
   group(
     'ProjectRunner',
     () {
@@ -86,6 +92,7 @@ void main() async {
               boots.name,
             ),
           );
+          expect(assetReference.encryptionKey, 'asdf123');
           expect(assetReference.gain, boots.gain);
           expect(assetReference.type, ziggurat.AssetType.collection);
           expect(
