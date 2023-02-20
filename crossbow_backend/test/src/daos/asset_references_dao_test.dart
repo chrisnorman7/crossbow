@@ -40,6 +40,25 @@ Future<void> main() async {
           expect(music.name, 'john_theme.mp3');
         },
       );
+
+      test(
+        '.setGain',
+        () async {
+          final assetReference = await assetReferences.createAssetReference(
+            folderName: 'test',
+            name: 'test',
+            gain: 1.0,
+          );
+          expect(assetReference.gain, 1.0);
+          final updatedAssetReference = await assetReferences.setGain(
+            assetReferenceId: assetReference.id,
+            gain: 0.5,
+          );
+          expect(updatedAssetReference.folderName, assetReference.folderName);
+          expect(updatedAssetReference.gain, 0.5);
+          expect(updatedAssetReference.name, assetReference.name);
+        },
+      );
     },
   );
 }

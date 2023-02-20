@@ -15,11 +15,13 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<AssetReference> createAssetReference({
     required final String folderName,
     required final String name,
+    final double gain = 0.7,
   }) async =>
       into(assetReferences).insertReturning(
         AssetReferencesCompanion(
           folderName: Value(folderName),
           name: Value(name),
+          gain: Value(gain),
         ),
       );
 
@@ -37,6 +39,18 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
         name: Value(name),
       ),
     ))
+        .single;
+  }
+
+  /// Set the gain for the asset reference with the given [assetReferenceId].
+  Future<AssetReference> setGain({
+    required final int assetReferenceId,
+    required final double gain,
+  }) async {
+    final query = update(assetReferences)
+      ..where((final table) => table.id.equals(assetReferenceId));
+    return (await query
+            .writeReturning(AssetReferencesCompanion(gain: Value(gain))))
         .single;
   }
 }
