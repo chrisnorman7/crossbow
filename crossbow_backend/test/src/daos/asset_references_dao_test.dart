@@ -1,3 +1,4 @@
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:test/test.dart';
 
 import '../../custom_database.dart';
@@ -20,6 +21,27 @@ Future<void> main() async {
           expect(assetReference.folderName, 'music');
           expect(assetReference.id, isNonZero);
           expect(assetReference.name, 'main_theme.mp3');
+        },
+      );
+
+      test(
+        '.getAssetReference',
+        () async {
+          final assetReference = await assetReferences.createAssetReference(
+            folderName: 'folder',
+            name: 'filename',
+            gain: 1.0,
+          );
+          expect(
+            await assetReferences.getAssetReference(id: assetReference.id),
+            predicate<AssetReference>(
+              (final value) =>
+                  value.folderName == assetReference.folderName &&
+                  value.gain == assetReference.gain &&
+                  value.id == assetReference.id &&
+                  value.name == assetReference.name,
+            ),
+          );
         },
       );
 

@@ -10,6 +10,7 @@ import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import 'database.dart';
+import 'src/contexts/message_context.dart';
 import 'src/contexts/project_context.dart';
 import 'src/json/project.dart';
 
@@ -121,9 +122,16 @@ class ProjectRunner {
   /// Run the given [command].
   Future<void> handleCommand(final Command command) async {
     final messageText = command.messageText;
-    if (messageText != null) {
-      game.outputText(messageText);
-    }
+    final assetReferenceId = command.messageSoundId;
+    final assetReference = assetReferenceId == null
+        ? null
+        : await db.assetReferencesDao.getAssetReference(id: assetReferenceId);
+    final messageContext = MessageContext(
+      command: command,
+      text: messageText,
+      assetReference: assetReference,
+    );
+    await handleMessageContext(messageContext);
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
       final pushMenuRow = await db.pushMenusDao.getPushMenu(id: pushMenuId);
@@ -148,6 +156,22 @@ class ProjectRunner {
     final url = command.url;
     if (url != null) {
       await openUrl(url);
+    }
+  }
+
+  /// Handle the given [messageContext].
+  Future<void> handleMessageContext(final MessageContext messageContext) async {
+    final text = messageContext.text;
+    final assetReference = messageContext.assetReference;
+    if (text != null || assetReference != null) {
+      game.outputMessage(
+        ziggurat.Message(
+          gain: assetReference?.gain ?? 0.7,
+          sound:
+              assetReference == null ? null : getAssetReference(assetReference),
+          text: text,
+        ),
+      );
     }
   }
 

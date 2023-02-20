@@ -25,6 +25,13 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       );
 
+  /// Get the asset reference with the given [id].
+  Future<AssetReference> getAssetReference({required final int id}) async {
+    final query = select(assetReferences)
+      ..where((final table) => table.id.equals(id));
+    return query.getSingle();
+  }
+
   /// Edit the asset reference with the given [assetReferenceId].
   Future<AssetReference> editAssetReference({
     required final int assetReferenceId,
