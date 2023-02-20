@@ -13,10 +13,16 @@ import 'custom_database.dart';
 
 void main() async {
   final db = getDatabase();
-  final clink = await db.assetReferencesDao
-      .createAssetReference(folderName: 'interface', name: 'clink.wav');
-  final boots = await db.assetReferencesDao
-      .createAssetReference(folderName: 'footsteps', name: 'boots');
+  final clink = await db.assetReferencesDao.createAssetReference(
+    folderName: 'interface',
+    name: 'clink.wav',
+    gain: 1.0,
+  );
+  final boots = await db.assetReferencesDao.createAssetReference(
+    folderName: 'footsteps',
+    name: 'boots',
+    gain: 0.5,
+  );
   final command = await db.commandsDao.createCommand(messageSoundId: clink.id);
   final project = Project(
     projectName: 'Test Project',
@@ -60,7 +66,7 @@ void main() async {
         () async {
           var assetReference = projectRunner.getAssetReference(clink);
           expect(assetReference.encryptionKey, null);
-          expect(assetReference.gain, 0.7);
+          expect(assetReference.gain, clink.gain);
           expect(
             assetReference.name,
             path.join(
@@ -80,6 +86,7 @@ void main() async {
               boots.name,
             ),
           );
+          expect(assetReference.gain, boots.gain);
           expect(assetReference.type, ziggurat.AssetType.collection);
           expect(
             assetReference.getFile(random).path,

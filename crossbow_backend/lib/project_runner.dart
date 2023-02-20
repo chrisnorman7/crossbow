@@ -99,11 +99,14 @@ class ProjectRunner {
     );
     final directory = Directory(name);
     if (directory.existsSync()) {
-      return ziggurat.AssetReference.collection(name);
+      return ziggurat.AssetReference.collection(
+        name,
+        gain: assetReference.gain,
+      );
     }
     final file = File(name);
     if (file.existsSync()) {
-      return ziggurat.AssetReference.file(name);
+      return ziggurat.AssetReference.file(name, gain: assetReference.gain);
     }
     throw FileSystemException('Cannot find the given path.', name);
   }
