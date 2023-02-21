@@ -74,6 +74,7 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: command.id,
                 assetReferenceId: value,
               );
+              invalidateCommandProvider(ref)
             },
             nullable: true,
             title: outputSound,
