@@ -77,3 +77,6 @@ const unknownMessage = 'Unknown';
 
 /// Clear.
 final clearMessage = Intl.message('Clear');
+
+/// Seconds.
+final secondsMessage = Intl.message('Seconds');

@@ -176,3 +176,12 @@ final projectRunnerProvider = Provider((final ref) {
     soundBackend: soundBackend,
   );
 });
+
+/// Provide a single pop level.
+final popLevelProvider = FutureProvider.family<ValueContext<PopLevel>, int>(
+  (final ref, final id) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final popLevel = await projectContext.db.popLevelsDao.getPopLevel(id: id);
+    return ValueContext(projectContext: projectContext, value: popLevel);
+  },
+);
