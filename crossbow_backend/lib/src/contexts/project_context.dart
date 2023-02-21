@@ -22,14 +22,23 @@ class ProjectContext {
   });
 
   /// Create an instance from a file.
-  factory ProjectContext.fromFile(final File file) {
+  factory ProjectContext.fromFile(
+    final File file, {
+    final Map<int, String> assetReferenceEncryptionKeys = const {},
+  }) {
     final data = file.readAsStringSync();
     final json = jsonDecode(data);
     final project = Project.fromJson(json);
-    final databaseFile =
-        File(path.join(file.parent.path, project.databaseFilename));
+    final databaseFile = File(
+      path.join(file.parent.path, project.databaseFilename),
+    );
     final db = CrossbowBackendDatabase.fromFile(databaseFile);
-    return ProjectContext(file: file, project: project, db: db);
+    return ProjectContext(
+      file: file,
+      project: project,
+      db: db,
+      assetReferenceEncryptionKeys: assetReferenceEncryptionKeys,
+    );
   }
 
   /// Create and return a blank project.
