@@ -213,7 +213,7 @@ void main() {
           final command = await db.commandsDao.createCommand();
           final callCommand =
               await db.callCommandsDao.createCallCommand(commandId: command.id);
-          final updatedMenuItem = await menus.setCallCommand(
+          final updatedMenuItem = await menus.setMenuItemCallCommand(
             menuItemId: menuItem.id,
             callCommandId: callCommand.id,
           );
@@ -230,6 +230,30 @@ void main() {
               await menus.setMenuName(menuId: menu.id, name: 'Main Menu');
           expect(renamedMenu.id, menu.id);
           expect(renamedMenu.name, 'Main Menu');
+        },
+      );
+
+      test(
+        '.setOnCancelCallCommandId',
+        () async {
+          final command = await db.commandsDao.createCommand();
+          final callCommand =
+              await db.callCommandsDao.createCallCommand(commandId: command.id);
+          final menu = await menus.createMenu(
+            name: 'Test Menu',
+            onCancelCallCommandId: callCommand.id,
+          );
+          expect(menu.onCancelCallCommandId, callCommand.id);
+          var updatedMenu =
+              await menus.setOnCancelCallCommandId(menuId: menu.id);
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.onCancelCallCommandId, null);
+          updatedMenu = await menus.setOnCancelCallCommandId(
+            menuId: menu.id,
+            callCommandId: callCommand.id,
+          );
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.onCancelCallCommandId, callCommand.id);
         },
       );
 

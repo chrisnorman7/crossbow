@@ -17,13 +17,15 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? activateItemSoundId,
     final int? musicId,
     final int? selectItemSoundId,
+    final int? onCancelCallCommandId,
   }) =>
       into(menus).insertReturning(
         MenusCompanion(
           name: Value(name),
           activateItemSoundId: Value(activateItemSoundId),
-          musicId: Value(musicId),
           selectItemSoundId: Value(selectItemSoundId),
+          musicId: Value(musicId),
+          onCancelCallCommandId: Value(onCancelCallCommandId),
         ),
       );
 
@@ -99,7 +101,7 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Set the [MenuItem] with the given [menuItemId] to have a [CallCommand]
   /// with the given [callCommandId].
-  Future<MenuItem> setCallCommand({
+  Future<MenuItem> setMenuItemCallCommand({
     required final int menuItemId,
     required final int callCommandId,
   }) async {
@@ -119,6 +121,19 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final query = update(menus)
       ..where((final table) => table.id.equals(menuId));
     return (await query.writeReturning(MenusCompanion(name: Value(name))))
+        .single;
+  }
+
+  /// Set the `onCancelCallCommandId` for the menu with the given [menuId].
+  Future<Menu> setOnCancelCallCommandId({
+    required final int menuId,
+    final int? callCommandId,
+  }) async {
+    final query = update(menus)
+      ..where((final table) => table.id.equals(menuId));
+    return (await query.writeReturning(
+      MenusCompanion(onCancelCallCommandId: Value(callCommandId)),
+    ))
         .single;
   }
 
