@@ -19,14 +19,18 @@ class SelectAssetScreen extends ConsumerStatefulWidget {
   const SelectAssetScreen({
     required this.onChanged,
     this.assetContext,
+    this.nullable = true,
     super.key,
   });
 
   /// The current asset.
   final AssetContext? assetContext;
 
+  /// Whether or not the [assetContext] can be set to `null`.
+  final bool nullable;
+
   /// The function to call when the [assetContext] has changed.
-  final ValueChanged<AssetContext> onChanged;
+  final ValueChanged<AssetContext?> onChanged;
 
   /// Create state for this widget.
   @override
@@ -55,15 +59,27 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
           .whereType<Directory>()
           .map<String>(
             (final e) => path.basename(e.path),
-          )
-          .toList();
-      return SelectItem<String>(
-        values: directories,
-        onDone: (final value) => setState(
-          () {
-            _folderName = value;
-          },
-        ),
+          );
+      return SelectItem<String?>(
+        values: [null, ...directories],
+        onDone: (final value) {
+          if (value == null) {
+            Navigator.of(context).pop();
+            widget.onChanged(null);
+          } else {
+            setState(
+              () {
+                _folderName = value;
+              },
+            );
+          }
+        },
+        getWidget: (final value) {
+          if (value == null) {
+            return Text(clearMessage);
+          }
+          return Text(value);
+        },
         shouldPop: false,
         title: Intl.message('Select Folder'),
         value: widget.assetContext?.folderName,

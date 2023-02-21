@@ -72,67 +72,78 @@ class AssetReferenceListTile extends ConsumerWidget {
   }) {
     final projectContext = assetReferenceContext.projectContext;
     final assetReference = assetReferenceContext.value;
-    final child = CallbackShortcuts(
-      bindings: {
-        deleteHotkey: () {
-          if (nullable && assetReference != null) {
-            intlConfirm(
-              context: context,
-              message: Intl.message(
-                'Do you want to clear this asset reference?',
-              ),
-              title: confirmDeleteTitle,
-              yesCallback: () async {
-                Navigator.of(context).pop();
-                await projectContext.db.assetReferencesDao
-                    .deleteAssetReference(id: assetReference.id);
-                onChanged(null);
-              },
-            );
+    final child = Builder(
+      builder: (final context) => CallbackShortcuts(
+        bindings: {
+          deleteHotkey: () {
+            if (nullable && assetReference != null) {
+              intlConfirm(
+                context: context,
+                message: Intl.message(
+                  'Do you want to clear this asset reference?',
+                ),
+                title: confirmDeleteTitle,
+                yesCallback: () async {
+                  Navigator.of(context).pop();
+                  await projectContext.db.assetReferencesDao
+                      .deleteAssetReference(id: assetReference.id);
+                  onChanged(null);
+                },
+              );
+            }
           }
-        }
-      },
-      child: ListTile(
-        autofocus: autofocus,
-        title: Text(title),
-        subtitle: Text(
-          assetReference == null
-              ? unsetMessage
-              : path.join(assetReference.folderName, assetReference.name),
-        ),
-        onTap: () {
-          PlaySoundSemantics.of(context)?.stop();
-          pushWidget(
-            context: context,
-            builder: (final context) => SelectAssetScreen(
-              onChanged: (final value) async {
-                final assetReferences = projectContext.db.assetReferencesDao;
-                if (assetReference == null) {
-                  onChanged(
-                    (await assetReferences.createAssetReference(
-                      folderName: value.folderName,
-                      name: value.name,
-                    ))
-                        .id,
-                  );
-                } else {
-                  await assetReferences.editAssetReference(
-                    assetReferenceId: assetReference.id,
-                    folderName: value.folderName,
-                    name: value.name,
-                  );
-                  onChanged(assetReference.id);
-                }
-              },
-              assetContext: assetReference == null
-                  ? null
-                  : AssetContext(
-                      folderName: assetReference.folderName,
-                      name: assetReference.name,
-                    ),
-            ),
-          );
         },
+        child: ListTile(
+          autofocus: autofocus,
+          title: Text(title),
+          subtitle: Text(
+            assetReference == null
+                ? unsetMessage
+                : path.join(assetReference.folderName, assetReference.name),
+          ),
+          onTap: () {
+            PlaySoundSemantics.of(context)?.stop();
+            pushWidget(
+              context: context,
+              builder: (final context) => SelectAssetScreen(
+                onChanged: (final value) async {
+                  final assetReferences = projectContext.db.assetReferencesDao;
+                  if (value == null) {
+                    if (assetReference != null) {
+                      await assetReferences.deleteAssetReference(
+                        id: assetReference.id,
+                      );
+                    }
+                    onChanged(null);
+                  } else {
+                    if (assetReference == null) {
+                      onChanged(
+                        (await assetReferences.createAssetReference(
+                          folderName: value.folderName,
+                          name: value.name,
+                        ))
+                            .id,
+                      );
+                    } else {
+                      await assetReferences.editAssetReference(
+                        assetReferenceId: assetReference.id,
+                        folderName: value.folderName,
+                        name: value.name,
+                      );
+                      onChanged(assetReference.id);
+                    }
+                  }
+                },
+                assetContext: assetReference == null
+                    ? null
+                    : AssetContext(
+                        folderName: assetReference.folderName,
+                        name: assetReference.name,
+                      ),
+              ),
+            );
+          },
+        ),
       ),
     );
     if (assetReference == null) {

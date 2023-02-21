@@ -74,3 +74,6 @@ final directoryMessage = Intl.message('Directory');
 
 /// Unknown message.
 const unknownMessage = 'Unknown';
+
+/// Clear.
+final clearMessage = Intl.message('Clear');

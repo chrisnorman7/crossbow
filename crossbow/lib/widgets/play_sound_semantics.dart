@@ -69,4 +69,11 @@ class PlaySoundSemanticsState extends ConsumerState<PlaySoundSemantics> {
       looping: widget.looping,
     );
   }
+
+  /// Dispose of the widget.
+  @override
+  void dispose() {
+    super.dispose();
+    stop();
+  }
 }

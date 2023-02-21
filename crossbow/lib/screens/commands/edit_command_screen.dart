@@ -74,6 +74,9 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: command.id,
                 assetReferenceId: value,
               );
+              if (value != null) {
+                ref.invalidate(assetReferenceProvider.call(value));
+              }
               invalidateCommandProvider(ref);
             },
             nullable: true,
