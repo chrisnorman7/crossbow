@@ -11,5 +11,6 @@
     "synthizer",
     "todos",
     "unawaited"
-  ]
+  ],
+  "cmake.sourceDirectory": "c:\\Users\\chris\\src\\crossbow\\crossbow\\windows"
 }
