@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ziggurat/sound.dart';
+import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
@@ -113,3 +117,62 @@ final assetReferenceProvider =
     return ValueContext(projectContext: projectContext, value: assetReference);
   },
 );
+
+/// Provide a SDL instance.
+final sdlProvider = Provider<Sdl>(
+  (final ref) => Sdl(),
+);
+
+/// Provide a random instance.
+final randomProvider = Provider((final ref) => Random());
+
+/// Provide a buffer cache.
+final bufferCacheProvider = Provider((final ref) {
+  final synthizer = ref.watch(synthizerProvider);
+  return BufferCache(
+    synthizer: synthizer,
+    maxSize: 1.gb,
+    random: ref.watch(randomProvider),
+  );
+});
+
+/// Provide a sound backend.
+final soundBackendProvider = Provider(
+  (final ref) {
+    final context = ref.watch(synthizerContextProvider);
+    final bufferCache = ref.watch(bufferCacheProvider);
+    return SynthizerSoundBackend(
+      context: context,
+      bufferCache: bufferCache,
+    );
+  },
+);
+
+/// Provide a ziggurat game.
+final gameProvider = Provider(
+  (final ref) {
+    final sdl = ref.watch(sdlProvider);
+    final soundBackend = ref.watch(soundBackendProvider);
+    return ziggurat.Game(
+      sdl: sdl,
+      title: 'Game Provider',
+      soundBackend: soundBackend,
+    );
+  },
+);
+
+/// Provide a project runner.
+final projectRunnerProvider = Provider((final ref) {
+  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  final sdl = ref.watch(sdlProvider);
+  final synthizerContext = ref.watch(synthizerContextProvider);
+  final random = ref.watch(randomProvider);
+  final soundBackend = ref.watch(soundBackendProvider);
+  return ProjectRunner(
+    projectContext: projectContext,
+    sdl: sdl,
+    synthizerContext: synthizerContext,
+    random: random,
+    soundBackend: soundBackend,
+  );
+});

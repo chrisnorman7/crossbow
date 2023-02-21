@@ -178,4 +178,13 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
       await projectContext.db.close();
     }
   }
+
+  /// Dispose of the widget.
+  @override
+  void dispose() {
+    super.dispose();
+    ref.watch(bufferCacheProvider).destroy();
+    ref.watch(synthizerContextProvider).destroy();
+    ref.watch(synthizerProvider).shutdown();
+  }
 }
