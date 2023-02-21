@@ -2,6 +2,7 @@ import 'package:backstreets_widgets/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_pop_level_screen.dart';
 import '../src/providers.dart';
@@ -45,28 +46,38 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
   Widget build(final BuildContext context) {
     final popLevelId = widget.popLevelId;
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    return ListTile(
-      autofocus: widget.autofocus,
-      title: Text(widget.title),
-      subtitle: Text(popLevelId == null ? unsetMessage : setMessage),
-      onTap: () async {
-        final int id;
-        if (popLevelId == null) {
-          id = (await projectContext.db.popLevelsDao.createPopLevel()).id;
-          widget.onChanged(id);
-        } else {
-          id = popLevelId;
-        }
-        if (mounted) {
-          await pushWidget(
-            context: context,
-            builder: (final context) => EditPopLevelScreen(
-              popLevelId: id,
-              onChanged: widget.onChanged,
-            ),
-          );
+    return CallbackShortcuts(
+      bindings: {
+        deleteHotkey: () async {
+          if (popLevelId != null) {
+            await projectContext.db.popLevelsDao.deletePopLevel(id: popLevelId);
+            widget.onChanged(null);
+          }
         }
       },
+      child: ListTile(
+        autofocus: widget.autofocus,
+        title: Text(widget.title),
+        subtitle: Text(popLevelId == null ? unsetMessage : setMessage),
+        onTap: () async {
+          final int id;
+          if (popLevelId == null) {
+            id = (await projectContext.db.popLevelsDao.createPopLevel()).id;
+            widget.onChanged(id);
+          } else {
+            id = popLevelId;
+          }
+          if (mounted) {
+            await pushWidget(
+              context: context,
+              builder: (final context) => EditPopLevelScreen(
+                popLevelId: id,
+                onChanged: widget.onChanged,
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
