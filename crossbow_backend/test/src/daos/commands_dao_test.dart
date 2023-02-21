@@ -100,6 +100,29 @@ void main() {
       );
 
       test(
+        '.setMessageSoundId',
+        () async {
+          final assetReference =
+              await db.assetReferencesDao.createAssetReference(
+            folderName: 'test',
+            name: 'test',
+          );
+          final command = await commands.createCommand(
+            messageSoundId: assetReference.id,
+          );
+          expect(command.messageSoundId, assetReference.id);
+          var updatedCommand =
+              await commands.setMessageSoundId(commandId: command.id);
+          expect(updatedCommand.messageSoundId, null);
+          updatedCommand = await commands.setMessageSoundId(
+            commandId: command.id,
+            assetReferenceId: assetReference.id,
+          );
+          expect(updatedCommand.messageSoundId, assetReference.id);
+        },
+      );
+
+      test(
         '.setStopGame',
         () async {
           final command = await commands.createCommand();

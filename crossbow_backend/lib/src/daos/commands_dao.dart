@@ -69,6 +69,20 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         .single;
   }
 
+  /// Set the ID of the sound to play for the command with the given
+  /// [commandId].
+  Future<Command> setMessageSoundId({
+    required final int commandId,
+    final int? assetReferenceId,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query.writeReturning(
+      CommandsCompanion(messageSoundId: Value(assetReferenceId)),
+    ))
+        .single;
+  }
+
   /// Set the stop game for the command with the given [commandId].
   Future<Command> setStopGame({
     required final int commandId,
