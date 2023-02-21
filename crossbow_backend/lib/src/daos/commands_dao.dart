@@ -96,9 +96,9 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Set the pop level for the command with the given [commandID].
-  Future<Command> setPopLevel({
+  Future<Command> setPopLevelId({
     required final int commandID,
-    required final int popLevelId,
+    final int? popLevelId,
   }) async {
     final query = update(commands)
       ..where((final table) => table.id.equals(commandID));

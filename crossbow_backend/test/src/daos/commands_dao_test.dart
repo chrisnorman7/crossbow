@@ -138,11 +138,17 @@ void main() {
       );
 
       test(
-        '.setPopLevel',
+        '.setPopLevelId',
         () async {
-          final command = await commands.createCommand();
           final popLevel = await db.popLevelsDao.createPopLevel();
-          final updatedCommand = await commands.setPopLevel(
+          final command = await commands.createCommand(popLevelId: popLevel.id);
+          expect(command.popLevelId, popLevel.id);
+          var updatedCommand = await commands.setPopLevelId(
+            commandID: command.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.popLevelId, null);
+          updatedCommand = await commands.setPopLevelId(
             commandID: command.id,
             popLevelId: popLevel.id,
           );
