@@ -222,6 +222,10 @@ class ProjectRunner {
         );
       }
     }
+    final musicId = menu.musicId;
+    final music = musicId == null
+        ? null
+        : await assetReferences.getAssetReference(id: musicId);
     final menuLevel = ziggurat_menus.Menu(
       game: game,
       title: ziggurat.Message(text: menu.name),
@@ -252,6 +256,21 @@ class ProjectRunner {
           );
         },
       ).toList(),
+      music: music == null
+          ? null
+          : Music(
+              sound: getAssetReference(music),
+              gain: music.gain,
+            ),
+      onCancel: () async {
+        final onCancelCallCommandId = menu.onCancelCallCommandId;
+        if (onCancelCallCommandId != null) {
+          final callCommand = await db.callCommandsDao.getCallCommand(
+            id: onCancelCallCommandId,
+          );
+          await handleCallCommand(callCommand);
+        }
+      },
     );
     game.pushLevel(
       menuLevel,

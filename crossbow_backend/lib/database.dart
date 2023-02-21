@@ -103,6 +103,11 @@ class Menus extends Table with _WithPrimaryKey, _WithName {
   IntColumn get activateItemSoundId => integer()
       .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
+
+  /// The ID of a command to call when cancelling the menu.
+  IntColumn get onCancelCallCommandId => integer()
+      .references(CallCommands, #id, onDelete: KeyAction.setNull)
+      .nullable()();
 }
 
 /// The menu items table.
