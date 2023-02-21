@@ -81,6 +81,24 @@ Future<void> main() async {
           expect(updatedAssetReference.name, assetReference.name);
         },
       );
+
+      test(
+        '.deleteAssetReference',
+        () async {
+          final assetReference = await assetReferences.createAssetReference(
+            folderName: 'folder',
+            name: 'name',
+          );
+          expect(
+            await assetReferences.deleteAssetReference(id: assetReference.id),
+            1,
+          );
+          await expectLater(
+            assetReferences.getAssetReference(id: assetReference.id),
+            throwsStateError,
+          );
+        },
+      );
     },
   );
 }

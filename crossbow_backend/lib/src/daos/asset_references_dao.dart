@@ -60,4 +60,11 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(AssetReferencesCompanion(gain: Value(gain))))
         .single;
   }
+
+  /// Delete the asset reference with the given [id].
+  Future<int> deleteAssetReference({required final int id}) async {
+    final query = delete(assetReferences)
+      ..where((final table) => table.id.equals(id));
+    return query.go();
+  }
 }
