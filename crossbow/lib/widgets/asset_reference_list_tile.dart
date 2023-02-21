@@ -13,6 +13,7 @@ import '../src/contexts/asset_context.dart';
 import '../src/contexts/value_context.dart';
 import '../src/providers.dart';
 import '../util.dart';
+import 'play_sound_semantics.dart';
 
 /// A list tile to show the asset reference with the given [assetReferenceId].
 class AssetReferenceListTile extends ConsumerWidget {
@@ -71,7 +72,7 @@ class AssetReferenceListTile extends ConsumerWidget {
   }) {
     final projectContext = assetReferenceContext.projectContext;
     final assetReference = assetReferenceContext.value;
-    return CallbackShortcuts(
+    final child = CallbackShortcuts(
       bindings: {
         deleteHotkey: () {
           if (nullable && assetReference != null) {
@@ -100,6 +101,7 @@ class AssetReferenceListTile extends ConsumerWidget {
               : path.join(assetReference.folderName, assetReference.name),
         ),
         onTap: () {
+          PlaySoundSemantics.of(context)?.stop();
           pushWidget(
             context: context,
             builder: (final context) => SelectAssetScreen(
@@ -133,5 +135,9 @@ class AssetReferenceListTile extends ConsumerWidget {
         },
       ),
     );
+    if (assetReference == null) {
+      return child;
+    }
+    return PlaySoundSemantics(assetReference: assetReference, child: child);
   }
 }

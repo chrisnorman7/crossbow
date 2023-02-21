@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:backstreets_widgets/screens.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -9,6 +11,7 @@ import 'package:path/path.dart' as path;
 import '../messages.dart';
 import '../src/contexts/asset_context.dart';
 import '../src/providers.dart';
+import '../widgets/play_sound_semantics.dart';
 
 /// A screen for selecting an asset, and creating an asset reference.
 class SelectAssetScreen extends ConsumerStatefulWidget {
@@ -47,26 +50,23 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final folderName = _folderName;
     if (folderName == null) {
-      final directories = [
-        null,
-        ...projectContext.assetsDirectory
-            .listSync()
-            .whereType<Directory>()
-            .map<String>(
-              (final e) => path.basename(e.path),
-            )
-      ];
-      return SelectItem<String?>(
+      final directories = projectContext.assetsDirectory
+          .listSync()
+          .whereType<Directory>()
+          .map<String>(
+            (final e) => path.basename(e.path),
+          )
+          .toList();
+      return SelectItem<String>(
         values: directories,
         onDone: (final value) => setState(
           () {
             _folderName = value;
           },
         ),
-        getWidget: (final value) => Text(value ?? upMessage),
         shouldPop: false,
         title: Intl.message('Select Folder'),
-        value: folderName,
+        value: widget.assetContext?.folderName,
       );
     }
     final directory = Directory(
@@ -74,31 +74,59 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
     );
     final items =
         directory.listSync().map<String>((final e) => path.basename(e.path));
-    return SelectItem<String>(
-      values: items.toList(),
-      getWidget: (final value) {
-        final fullPath = path.join(
-          projectContext.assetsDirectory.path,
-          folderName,
-          value,
-        );
-        final String type;
-        final directory = Directory(fullPath);
-        final file = File(fullPath);
-        if (directory.existsSync()) {
-          type = directoryMessage;
-        } else if (file.existsSync()) {
-          type = fileMessage;
-        } else {
-          type = unknownMessage;
-        }
-        return Text('$value ($type)');
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.backspace): () => setState(() {
+              _folderName = null;
+            })
       },
-      onDone: (final value) => widget.onChanged(
-        AssetContext(folderName: folderName, name: value),
+      child: SelectItem<String?>(
+        values: [null, ...items],
+        getWidget: (final value) {
+          if (value == null) {
+            return Text(upMessage);
+          }
+          final fullPath = path.join(
+            projectContext.assetsDirectory.path,
+            folderName,
+            value,
+          );
+          final String type;
+          final directory = Directory(fullPath);
+          final file = File(fullPath);
+          if (directory.existsSync()) {
+            type = directoryMessage;
+          } else if (file.existsSync()) {
+            type = fileMessage;
+          } else {
+            type = unknownMessage;
+          }
+          return PlaySoundSemantics(
+            assetReference: AssetReference(
+              id: -1,
+              name: value,
+              folderName: folderName,
+              gain: 0.7,
+            ),
+            child: Text('$value ($type)'),
+          );
+        },
+        onDone: (final value) {
+          if (value == null) {
+            setState(() {
+              _folderName = null;
+            });
+          } else {
+            Navigator.of(context).pop();
+            widget.onChanged(
+              AssetContext(folderName: folderName, name: value),
+            );
+          }
+        },
+        shouldPop: false,
+        title: Intl.message('Select Asset'),
+        value: widget.assetContext?.name,
       ),
-      title: Intl.message('Select Asset'),
-      value: widget.assetContext?.name,
     );
   }
 }
