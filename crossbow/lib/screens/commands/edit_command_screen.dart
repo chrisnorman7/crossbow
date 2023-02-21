@@ -59,7 +59,7 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: commandId,
                 text: value.isEmpty ? null : value,
               );
-              ref.invalidate(commandProvider.call(commandId));
+              invalidateCommandProvider(ref);
             },
             header: outputText,
             autofocus: true,
@@ -69,5 +69,10 @@ class EditCommandScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Invalidate the command provider.
+  void invalidateCommandProvider(final WidgetRef ref) {
+    ref.invalidate(commandProvider.call(commandId));
   }
 }
