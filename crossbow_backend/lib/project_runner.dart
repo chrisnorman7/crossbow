@@ -193,22 +193,62 @@ class ProjectRunner {
   Future<void> handlePushMenu(final PushMenu pushMenu) async {
     final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
     final menuItems = await db.menusDao.getMenuItems(menuId: menu.id);
+    final assetReferences = db.assetReferencesDao;
+    final selectItemSoundId = menu.selectItemSoundId;
+    final activateItemSoundId = menu.activateItemSoundId;
+    final selectItemSound = selectItemSoundId == null
+        ? null
+        : getAssetReference(
+            await assetReferences.getAssetReference(id: selectItemSoundId),
+          );
+    final activateItemSound = activateItemSoundId == null
+        ? null
+        : getAssetReference(
+            await assetReferences.getAssetReference(id: activateItemSoundId),
+          );
+    final selectItemSounds = <int, ziggurat.AssetReference>{};
+    final activateItemSounds = <int, ziggurat.AssetReference>{};
+    for (final item in menuItems) {
+      final selectSoundId = item.selectSoundId;
+      if (selectSoundId != null) {
+        selectItemSounds[item.id] = getAssetReference(
+          await assetReferences.getAssetReference(id: selectSoundId),
+        );
+      }
+      final activateSoundId = item.activateSoundId;
+      if (activateSoundId != null) {
+        activateItemSounds[item.id] = getAssetReference(
+          await assetReferences.getAssetReference(id: activateSoundId),
+        );
+      }
+    }
     final menuLevel = ziggurat_menus.Menu(
       game: game,
       title: ziggurat.Message(text: menu.name),
       items: menuItems.map<ziggurat_menus.MenuItem>(
         (final e) {
+          final selectSound = selectItemSounds[e.id] ?? selectItemSound;
+          final activateSound = activateItemSounds[e.id] ?? activateItemSound;
           final callCommandId = e.callCommandId;
           return ziggurat_menus.MenuItem(
-            ziggurat.Message(text: e.name),
+            ziggurat.Message(
+              text: e.name,
+              sound: selectSound,
+              gain: selectSound?.gain ?? 0.7,
+              keepAlive: true,
+            ),
             callCommandId == null
                 ? ziggurat_menus.menuItemLabel
-                : ziggurat_menus.Button(() async {
-                    final callCommand = await db.callCommandsDao.getCallCommand(
-                      id: callCommandId,
-                    );
-                    await handleCallCommand(callCommand);
-                  }),
+                : ziggurat_menus.Button(
+                    () async {
+                      final callCommand =
+                          await db.callCommandsDao.getCallCommand(
+                        id: callCommandId,
+                      );
+                      await handleCallCommand(callCommand);
+                    },
+                    activateSound: activateSound,
+                  ),
           );
         },
       ).toList(),
