@@ -59,3 +59,15 @@ final editCommandTitle = Intl.message('Edit Command');
 
 /// Output text.
 final outputText = Intl.message('Output Text');
+
+/// The up message.
+final upMessage = Intl.message('Up');
+
+/// File message.
+final fileMessage = Intl.message('File');
+
+/// Directory message.
+final directoryMessage = Intl.message('Directory');
+
+/// Unknown message.
+const unknownMessage = 'Unknown';

@@ -102,3 +102,14 @@ final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
     return ValueContext(projectContext: projectContext, value: command);
   },
 );
+
+/// Provide an asset reference.
+final assetReferenceProvider =
+    FutureProvider.family<ValueContext<AssetReference>, int>(
+  (final ref, final id) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final assetReference =
+        await projectContext.db.assetReferencesDao.getAssetReference(id: id);
+    return ValueContext(projectContext: projectContext, value: assetReference);
+  },
+);
