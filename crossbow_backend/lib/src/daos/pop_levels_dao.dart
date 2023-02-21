@@ -33,4 +33,11 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(PopLevelsCompanion(fadeLength: Value(fadeLength))))
         .single;
   }
+
+  /// Delete the pop level with the given [id].
+  Future<int> deletePopLevel({required final int id}) async {
+    final query = delete(popLevels)
+      ..where((final table) => table.id.equals(id));
+    return query.go();
+  }
 }
