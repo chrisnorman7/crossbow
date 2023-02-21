@@ -60,6 +60,9 @@ final editCommandTitle = Intl.message('Edit Command');
 /// Output text.
 final outputText = Intl.message('Output Text');
 
+/// Output sound.
+final outputSound = Intl.message('Output Sound');
+
 /// The up message.
 final upMessage = Intl.message('Up');
 

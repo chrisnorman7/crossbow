@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
+import '../../widgets/asset_reference_list_tile.dart';
 
 /// A screen to edit the command with the given [commandId].
 class EditCommandScreen extends ConsumerWidget {
@@ -65,7 +66,18 @@ class EditCommandScreen extends ConsumerWidget {
             autofocus: true,
             labelText: outputText,
             title: outputText,
-          )
+          ),
+          AssetReferenceListTile(
+            assetReferenceId: command.messageSoundId,
+            onChanged: (final value) async {
+              await commands.setMessageSoundId(
+                commandId: command.id,
+                assetReferenceId: value,
+              );
+            },
+            nullable: true,
+            title: outputSound,
+          ),
         ],
       ),
     );
