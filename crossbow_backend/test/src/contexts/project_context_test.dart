@@ -5,7 +5,7 @@ import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import 'custom_database.dart';
+import '../../custom_database.dart';
 
 /// The file where the test database is stored.
 final databaseFile = File('test_db.sqlite3');
@@ -115,8 +115,9 @@ void main() {
           if (file.existsSync()) {
             file.deleteSync();
           }
-          final projectContext =
-              await ProjectContext.blank(projectFile: projectFile);
+          final projectContext = await ProjectContext.blank(
+            projectFile: projectFile,
+          );
           expect(projectContext.project.projectName, 'Untitled Project');
           expect(
             await projectContext.initialCommand,
@@ -130,6 +131,24 @@ void main() {
           projectContext.file.deleteSync();
           expect(projectContext.assetsDirectory.existsSync(), true);
           projectContext.assetsDirectory.deleteSync();
+          await projectContext.db.close();
+        },
+      );
+
+      test(
+        '.dbFile',
+        () async {
+          final projectContext = ProjectContext(
+            file: projectFile,
+            project: project,
+            db: getDatabase(),
+          );
+
+          expect(
+            projectContext.dbFile.path,
+            path.join(projectFile.parent.path, project.databaseFilename),
+          );
+          await projectContext.db.close();
         },
       );
     },

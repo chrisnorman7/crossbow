@@ -97,6 +97,10 @@ class ProjectContext {
   /// The database to use.
   final CrossbowBackendDatabase db;
 
+  /// The file where the database is stored.
+  File get dbFile =>
+      File(path.join(projectDirectory.path, project.databaseFilename));
+
   /// The map of [AssetReference] `id`s to encryption keys for decrypting
   /// assets.
   final Map<int, String> assetReferenceEncryptionKeys;
