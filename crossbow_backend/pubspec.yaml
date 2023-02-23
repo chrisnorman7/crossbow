@@ -12,7 +12,6 @@ dependencies:
   dart_style: ^2.2.4
   dart_synthizer: ^0.11.1
   drift: ^2.5.0
-  encrypt: ^5.0.1
   jinja: ^0.4.2
   json_annotation: ^4.8.0
   logging: ^1.1.1
@@ -21,7 +20,7 @@ dependencies:
   path: ^1.8.3
   recase: ^4.1.0
   sqlite3: ^1.9.1
-  ziggurat: ^0.56.0
+  ziggurat: ^0.58.0
   # path: ^1.8.0
 
 dev_dependencies:
