@@ -11,6 +11,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
+import 'contexts/menu_context.dart';
 import 'contexts/value_context.dart';
 import 'json/app_preferences.dart';
 
@@ -193,5 +194,31 @@ final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
     final db = projectContext.db;
     final menus = await db.select(db.menus).get();
     return ValueContext(projectContext: projectContext, value: menus);
+  },
+);
+
+/// Get the context for a menu.
+final menuProvider = FutureProvider.family<MenuContext, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menus = projectContext.db.menusDao;
+    final menu = await menus.getMenu(id: arg);
+    final menuItems = await menus.getMenuItems(menuId: menu.id);
+    return MenuContext(
+      projectContext: projectContext,
+      menu: menu,
+      menuItems: menuItems,
+    );
+  },
+);
+
+/// Provide menu items.
+final menuItemsProvider =
+    FutureProvider.family<ValueContext<List<MenuItem>>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menuItems =
+        await projectContext.db.menusDao.getMenuItems(menuId: arg);
+    return ValueContext(projectContext: projectContext, value: menuItems);
   },
 );

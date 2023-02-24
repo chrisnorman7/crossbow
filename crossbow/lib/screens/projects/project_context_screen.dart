@@ -1,15 +1,20 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../constants.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
+import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
+import 'edit_menu_screen.dart';
 
 /// The main project screen.
 class ProjectContextScreen extends ConsumerStatefulWidget {
@@ -42,7 +47,12 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
             TabbedScaffoldTab(
               title: Intl.message('Menus'),
               icon: Text(Intl.message('Project menus.')),
-              builder: (final context) => const Placeholder(),
+              builder: getMenusPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: newMenu,
+                tooltip: Intl.message('New Menu'),
+                child: newIcon,
+              ),
             )
           ],
         ),
@@ -111,6 +121,61 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
         )
       ],
     );
+  }
+
+  /// Get a list view of the menus in the project.
+  Widget getMenusPage(final BuildContext context) {
+    final value = ref.watch(menusProvider);
+    return CallbackShortcuts(
+      bindings: {newShortcut: () => newMenu},
+      child: value.when(
+        data: (final data) {
+          final menus = data.value;
+          return BuiltSearchableListView(
+            items: menus,
+            builder: (final context, final index) {
+              final menu = menus[index];
+              return SearchableListTile(
+                searchString: menu.name,
+                child: AssetReferencePlaySoundSemantics(
+                  assetReferenceId: menu.musicId,
+                  looping: true,
+                  child: ListTile(
+                    autofocus: index == 0,
+                    title: Text(menu.name),
+                    onTap: () async {
+                      await pushWidget(
+                        context: context,
+                        builder: (final context) =>
+                            EditMenuScreen(menuId: menu.id),
+                      );
+                      ref.invalidate(menusProvider);
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        error: ErrorListView.withPositional,
+        loading: LoadingWidget.new,
+      ),
+    );
+  }
+
+  /// Create a new menu.
+  Future<void> newMenu() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menu = await projectContext.db.menusDao.createMenu(
+      name: 'Untitled Menu',
+    );
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => EditMenuScreen(menuId: menu.id),
+      );
+    }
+    ref.invalidate(menusProvider);
   }
 
   /// Edit the project.

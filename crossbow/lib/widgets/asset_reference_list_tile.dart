@@ -24,6 +24,7 @@ class AssetReferenceListTile extends ConsumerWidget {
     required this.nullable,
     required this.title,
     this.autofocus = false,
+    this.looping = false,
     super.key,
   });
 
@@ -42,6 +43,9 @@ class AssetReferenceListTile extends ConsumerWidget {
   /// Whether this list tile should be auto focused.
   final bool autofocus;
 
+  /// Whether the connected asset should loop.
+  final bool looping;
+
   /// Build the widget.
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
@@ -50,8 +54,10 @@ class AssetReferenceListTile extends ConsumerWidget {
     if (id == null) {
       return getBody(
         context: context,
-        assetReferenceContext:
-            ValueContext(projectContext: projectContext, value: null),
+        assetReferenceContext: ValueContext(
+          projectContext: projectContext,
+          value: null,
+        ),
       );
     }
     final value = ref.watch(assetReferenceProvider.call(id));
@@ -149,6 +155,10 @@ class AssetReferenceListTile extends ConsumerWidget {
     if (assetReference == null) {
       return child;
     }
-    return PlaySoundSemantics(assetReference: assetReference, child: child);
+    return PlaySoundSemantics(
+      assetReference: assetReference,
+      looping: looping,
+      child: child,
+    );
   }
 }

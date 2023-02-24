@@ -80,3 +80,6 @@ final clearMessage = Intl.message('Clear');
 
 /// Seconds.
 final secondsMessage = Intl.message('Seconds');
+
+/// Menu name.
+final menuNameLabel = Intl.message('Menu Name');
