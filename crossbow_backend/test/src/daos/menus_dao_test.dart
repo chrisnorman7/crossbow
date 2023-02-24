@@ -271,6 +271,26 @@ void main() {
           expect(startMenuItem.name, 'Start Game');
         },
       );
+
+      test(
+        '.setMusicId',
+        () async {
+          final music = await db.assetReferencesDao.createAssetReference(
+            folderName: 'music',
+            name: 'main_theme.mp3',
+          );
+          final menu =
+              await menus.createMenu(name: 'Test Menu', musicId: music.id);
+          expect(menu.musicId, music.id);
+          var updatedMenu = await menus.setMusicId(menuId: menu.id);
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.musicId, null);
+          updatedMenu =
+              await menus.setMusicId(menuId: menu.id, musicId: music.id);
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.musicId, music.id);
+        },
+      );
     },
   );
 }
