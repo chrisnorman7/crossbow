@@ -4,10 +4,10 @@ import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:ziggurat/sound.dart';
+import 'package:ziggurat/util.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../constants.dart';
@@ -35,10 +35,7 @@ class ProjectContext {
     if (encryptionKey == null) {
       data = file.readAsStringSync();
     } else {
-      final encrypter = Encrypter(AES(Key.fromBase64(encryptionKey)));
-      final iv = IV.fromLength(16);
-      final encrypted = Encrypted(file.readAsBytesSync());
-      data = encrypter.decrypt(encrypted, iv: iv);
+      data = decryptFileString(file: file, encryptionKey: encryptionKey);
     }
     final json = jsonDecode(data);
     final project = Project.fromJson(json);
