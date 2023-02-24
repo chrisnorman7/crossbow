@@ -273,22 +273,52 @@ void main() {
       );
 
       test(
-        '.setMusicId',
+        '.setActivateItemSoundId',
         () async {
-          final music = await db.assetReferencesDao.createAssetReference(
-            folderName: 'music',
-            name: 'main_theme.mp3',
+          final assetReference =
+              await db.assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'activate_sound.mp3',
           );
-          final menu =
-              await menus.createMenu(name: 'Test Menu', musicId: music.id);
-          expect(menu.musicId, music.id);
-          var updatedMenu = await menus.setMusicId(menuId: menu.id);
+          final menu = await menus.createMenu(
+            name: 'Test Menu',
+            activateItemSoundId: assetReference.id,
+          );
+          expect(menu.activateItemSoundId, assetReference.id);
+          var updatedMenu = await menus.setActivateItemSoundId(menuId: menu.id);
           expect(updatedMenu.id, menu.id);
-          expect(updatedMenu.musicId, null);
-          updatedMenu =
-              await menus.setMusicId(menuId: menu.id, musicId: music.id);
+          expect(updatedMenu.activateItemSoundId, null);
+          updatedMenu = await menus.setActivateItemSoundId(
+            menuId: menu.id,
+            activateItemSoundId: assetReference.id,
+          );
           expect(updatedMenu.id, menu.id);
-          expect(updatedMenu.musicId, music.id);
+          expect(updatedMenu.activateItemSoundId, assetReference.id);
+        },
+      );
+
+      test(
+        '.setSelectItemSoundId',
+        () async {
+          final assetReference =
+              await db.assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'activate_sound.mp3',
+          );
+          final menu = await menus.createMenu(
+            name: 'Test Menu',
+            selectItemSoundId: assetReference.id,
+          );
+          expect(menu.selectItemSoundId, assetReference.id);
+          var updatedMenu = await menus.setSelectItemSoundId(menuId: menu.id);
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.selectItemSoundId, null);
+          updatedMenu = await menus.setSelectItemSoundId(
+            menuId: menu.id,
+            selectItemSoundId: assetReference.id,
+          );
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.selectItemSoundId, assetReference.id);
         },
       );
     },

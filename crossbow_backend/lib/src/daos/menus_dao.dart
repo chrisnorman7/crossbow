@@ -158,4 +158,30 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return (await query.writeReturning(MenusCompanion(musicId: Value(musicId))))
         .single;
   }
+
+  /// Set the [activateItemSoundId] for the menu with the given [menuId].
+  Future<Menu> setActivateItemSoundId({
+    required final int menuId,
+    final int? activateItemSoundId,
+  }) async {
+    final query = update(menus)
+      ..where((final table) => table.id.equals(menuId));
+    return (await query.writeReturning(
+      MenusCompanion(activateItemSoundId: Value(activateItemSoundId)),
+    ))
+        .single;
+  }
+
+  /// Set the [selectItemSoundId] for the menu with the given [menuId].
+  Future<Menu> setSelectItemSoundId({
+    required final int menuId,
+    final int? selectItemSoundId,
+  }) async {
+    final query = update(menus)
+      ..where((final table) => table.id.equals(menuId));
+    return (await query.writeReturning(
+      MenusCompanion(selectItemSoundId: Value(selectItemSoundId)),
+    ))
+        .single;
+  }
 }
