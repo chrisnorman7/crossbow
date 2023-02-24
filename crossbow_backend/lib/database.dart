@@ -235,8 +235,4 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
         },
         onUpgrade: (final m, final from, final to) async {},
       );
-
-  /// Dump all rows to the given [file].
-  Future<void> dump(final File file) =>
-      customStatement('vacuum into ?', [file.path]);
 }
