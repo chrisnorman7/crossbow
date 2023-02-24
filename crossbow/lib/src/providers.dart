@@ -185,3 +185,13 @@ final popLevelProvider = FutureProvider.family<ValueContext<PopLevel>, int>(
     return ValueContext(projectContext: projectContext, value: popLevel);
   },
 );
+
+/// A provider for all menus.
+final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
+  (final ref) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final menus = await db.select(db.menus).get();
+    return ValueContext(projectContext: projectContext, value: menus);
+  },
+);
