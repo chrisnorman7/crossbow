@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../constants.dart';
 import '../../messages.dart';
 import '../../src/contexts/menu_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
+import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/call_command_list_tile.dart';
 
 /// A screen for editing the menu with the given [menuId].
@@ -60,8 +62,15 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         TabbedScaffoldTab(
           title: Intl.message('Menu Items'),
           icon: Text(menuContext.menuItems.length.toString()),
-          builder: (final context) =>
-              getMenuItemsPage(context: context, menuItems: menuItems),
+          builder: (final context) => getMenuItemsPage(
+            context: context,
+            menuItems: menuItems,
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: newMenuItem,
+            tooltip: Intl.message('New Menu Item'),
+            child: newIcon,
+          ),
         )
       ],
     );
@@ -146,10 +155,18 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           final menuItem = menuItems[index];
           return SearchableListTile(
             searchString: menuItem.name,
-            child: ListTile(
-              autofocus: index == 0,
-              title: Text(menuItem.name),
-              onTap: () {},
+            child: AssetReferencePlaySoundSemantics(
+              assetReferenceId: menuItem.selectSoundId,
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(menuItem.name),
+                subtitle: Text(
+                  menuItem.callCommandId == null
+                      ? Intl.message('Label')
+                      : Intl.message('Button'),
+                ),
+                onTap: () {},
+              ),
             ),
           );
         },
@@ -158,4 +175,19 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   /// Invalidate the [menuProvider].
   void invalidateMenuProvider() =>
       ref.invalidate(menuProvider.call(widget.menuId));
+
+  /// Create a new menu item.
+  Future<void> newMenuItem() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menus = projectContext.db.menusDao;
+    final menuId = widget.menuId;
+    final menuItems = await menus.getMenuItems(menuId: menuId);
+    final menuItem = await menus.createMenuItem(
+      menuId: menuId,
+      name: 'Untitled Menu Item',
+      position: menuItems.length,
+    );
+    invalidateMenuProvider();
+    print(menuItem);
+  }
 }
