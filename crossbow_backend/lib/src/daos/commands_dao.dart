@@ -117,4 +117,17 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return (await query.writeReturning(CommandsCompanion(url: Value(url))))
         .single;
   }
+
+  /// Set the [callCommandId] for the command with the given [commandId].
+  Future<Command> setCallCommandId({
+    required final int commandId,
+    final int? callCommandId,
+  }) async {
+    final query = update(commands)
+      ..where((final table) => table.id.equals(commandId));
+    return (await query.writeReturning(
+      CommandsCompanion(callCommandId: Value(callCommandId)),
+    ))
+        .single;
+  }
 }
