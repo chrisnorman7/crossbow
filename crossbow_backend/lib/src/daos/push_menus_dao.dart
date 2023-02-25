@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../../crossbow_backend.dart';
+import '../../database.dart';
 
 part 'push_menus_dao.g.dart';
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/database.dart';
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -201,9 +202,11 @@ final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
 final menuProvider = FutureProvider.family<MenuContext, int>(
   (final ref, final arg) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final menus = projectContext.db.menusDao;
-    final menu = await menus.getMenu(id: arg);
-    final menuItems = await menus.getMenuItems(menuId: menu.id);
+    final db = projectContext.db;
+    final menusDao = db.menusDao;
+    final menuItemsDao = db.menuItemsDao;
+    final menu = await menusDao.getMenu(id: arg);
+    final menuItems = await menuItemsDao.getMenuItems(menuId: menu.id);
     return MenuContext(
       projectContext: projectContext,
       menu: menu,
@@ -218,7 +221,16 @@ final menuItemsProvider =
   (final ref, final arg) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final menuItems =
-        await projectContext.db.menusDao.getMenuItems(menuId: arg);
+        await projectContext.db.menuItemsDao.getMenuItems(menuId: arg);
     return ValueContext(projectContext: projectContext, value: menuItems);
+  },
+);
+
+/// Provide a single menu item.
+final menuItemProvider = FutureProvider.family<ValueContext<MenuItem>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menuItem = await projectContext.db.menuItemsDao.getMenuItem(id: arg);
+    return ValueContext(projectContext: projectContext, value: menuItem);
   },
 );

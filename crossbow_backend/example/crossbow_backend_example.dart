@@ -7,8 +7,9 @@ Future<void> main() async {
   final projectContext =
       await ProjectContext.blank(projectFile: File('project.json'));
   final db = projectContext.db;
-  final menus = db.menusDao;
-  final menu = await menus.createMenu(name: 'Main Menu');
+  final menusDao = db.menusDao;
+  final menuItemsDao = db.menuItemsDao;
+  final menu = await menusDao.createMenu(name: 'Main Menu');
   final commands = db.commandsDao;
   final openGitHubCommand = await commands.createCommand(
     messageText: 'Opening GitHub...',
@@ -16,7 +17,7 @@ Future<void> main() async {
   );
   final openGitHubCallCommand = await db.callCommandsDao
       .createCallCommand(commandId: openGitHubCommand.id);
-  await menus.createMenuItem(
+  await menuItemsDao.createMenuItem(
     menuId: menu.id,
     name: 'Open GitHub',
     callCommandId: openGitHubCallCommand.id,
@@ -30,7 +31,7 @@ Future<void> main() async {
   );
   final quitCallCommand =
       await db.callCommandsDao.createCallCommand(commandId: quitCommand.id);
-  await menus.createMenuItem(
+  await menuItemsDao.createMenuItem(
     menuId: menu.id,
     name: 'Quit Game',
     callCommandId: quitCallCommand.id,

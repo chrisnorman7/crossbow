@@ -192,7 +192,7 @@ class ProjectRunner {
   /// Push the given [pushMenu].
   Future<void> handlePushMenu(final PushMenu pushMenu) async {
     final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
-    final menuItems = await db.menusDao.getMenuItems(menuId: menu.id);
+    final menuItems = await db.menuItemsDao.getMenuItems(menuId: menu.id);
     final assetReferences = db.assetReferencesDao;
     final selectItemSoundId = menu.selectItemSoundId;
     final activateItemSoundId = menu.activateItemSoundId;

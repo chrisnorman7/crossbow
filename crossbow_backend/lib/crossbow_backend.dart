@@ -2,7 +2,6 @@
 library crossbow_backend;
 
 export 'constants.dart';
-export 'database.dart';
 export 'project_runner.dart';
 export 'src/contexts/project_context.dart';
 export 'src/daos/asset_references_dao.dart';

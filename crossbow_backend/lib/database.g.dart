@@ -2944,6 +2944,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final $MenusTable menus = $MenusTable(this);
   late final $MenuItemsTable menuItems = $MenuItemsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
+  late final MenuItemsDao menuItemsDao =
+      MenuItemsDao(this as CrossbowBackendDatabase);
   late final CommandsDao commandsDao =
       CommandsDao(this as CrossbowBackendDatabase);
   late final PushMenusDao pushMenusDao =

@@ -83,3 +83,6 @@ final secondsMessage = Intl.message('Seconds');
 
 /// Menu name.
 final menuNameLabel = Intl.message('Menu Name');
+
+/// Call command.
+final callCommandMessage = Intl.message('Call Command');

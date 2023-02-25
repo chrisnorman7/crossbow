@@ -7,6 +7,7 @@ import 'package:drift/native.dart';
 import 'src/daos/asset_references_dao.dart';
 import 'src/daos/call_commands_dao.dart';
 import 'src/daos/commands_dao.dart';
+import 'src/daos/menu_items_dao.dart';
 import 'src/daos/menus_dao.dart';
 import 'src/daos/pop_levels_dao.dart';
 import 'src/daos/push_menus_dao.dart';
@@ -200,6 +201,7 @@ class Commands extends Table with _WithPrimaryKey, _WithCallCommandId {
   ],
   daos: [
     MenusDao,
+    MenuItemsDao,
     CommandsDao,
     PushMenusDao,
     CallCommandsDao,

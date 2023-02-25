@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/database.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:jinja/jinja.dart';
 import 'package:path/path.dart' as path;

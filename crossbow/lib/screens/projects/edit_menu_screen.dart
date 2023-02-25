@@ -1,7 +1,8 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
-import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,7 @@ import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/call_command_list_tile.dart';
+import 'menus/edit_menu_item_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
 class EditMenuScreen extends ConsumerStatefulWidget {
@@ -88,7 +90,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         TextListTile(
           value: menu.name,
           onChanged: (final value) async {
-            await menus.setMenuName(menuId: menu.id, name: value);
+            await menus.setName(menuId: menu.id, name: value);
             invalidateMenuProvider();
           },
           header: menuNameLabel,
@@ -165,7 +167,15 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                       ? Intl.message('Label')
                       : Intl.message('Button'),
                 ),
-                onTap: () {},
+                onTap: () async {
+                  await pushWidget(
+                    context: context,
+                    builder: (final context) => EditMenuItemScreen(
+                      menuId: menuItem.menuId,
+                      menuItemId: menuItem.id,
+                    ),
+                  );
+                },
               ),
             ),
           );
@@ -179,15 +189,23 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   /// Create a new menu item.
   Future<void> newMenuItem() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final menus = projectContext.db.menusDao;
     final menuId = widget.menuId;
-    final menuItems = await menus.getMenuItems(menuId: menuId);
-    final menuItem = await menus.createMenuItem(
+    final menuItemsDao = projectContext.db.menuItemsDao;
+    final menuItems = await menuItemsDao.getMenuItems(menuId: menuId);
+    final menuItem = await menuItemsDao.createMenuItem(
       menuId: menuId,
       name: 'Untitled Menu Item',
       position: menuItems.length,
     );
     invalidateMenuProvider();
-    print(menuItem);
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => EditMenuItemScreen(
+          menuId: menuId,
+          menuItemId: menuItem.id,
+        ),
+      );
+    }
   }
 }
