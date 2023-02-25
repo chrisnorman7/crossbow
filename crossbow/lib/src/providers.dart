@@ -13,6 +13,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
 import 'contexts/menu_context.dart';
+import 'contexts/menu_item_context.dart';
 import 'contexts/value_context.dart';
 import 'json/app_preferences.dart';
 
@@ -227,10 +228,16 @@ final menuItemsProvider =
 );
 
 /// Provide a single menu item.
-final menuItemProvider = FutureProvider.family<ValueContext<MenuItem>, int>(
+final menuItemProvider = FutureProvider.family<MenuItemContext, int>(
   (final ref, final arg) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final menuItem = await projectContext.db.menuItemsDao.getMenuItem(id: arg);
-    return ValueContext(projectContext: projectContext, value: menuItem);
+    final db = projectContext.db;
+    final menuItem = await db.menuItemsDao.getMenuItem(id: arg);
+    final menu = await db.menusDao.getMenu(id: menuItem.menuId);
+    return MenuItemContext(
+      projectContext: projectContext,
+      menu: menu,
+      menuItem: menuItem,
+    );
   },
 );

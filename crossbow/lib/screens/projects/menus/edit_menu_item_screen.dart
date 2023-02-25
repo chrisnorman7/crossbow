@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../messages.dart';
-import '../../../src/contexts/value_context.dart';
+import '../../../src/contexts/menu_item_context.dart';
 import '../../../src/providers.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
 import '../../../widgets/call_command_list_tile.dart';
@@ -46,11 +46,12 @@ class EditMenuItemScreen extends ConsumerWidget {
   /// Get the body of the widget.
   Widget getBody({
     required final BuildContext context,
-    required final ValueContext<MenuItem> menuItemContext,
+    required final MenuItemContext menuItemContext,
     required final WidgetRef ref,
   }) {
     final menuItemsDao = menuItemContext.projectContext.db.menuItemsDao;
-    final menuItem = menuItemContext.value;
+    final menuItem = menuItemContext.menuItem;
+    final menu = menuItemContext.menu;
     return SimpleScaffold(
       title: Intl.message('Edit Menu Item'),
       body: ListView(
@@ -58,19 +59,23 @@ class EditMenuItemScreen extends ConsumerWidget {
           TextListTile(
             value: menuItem.name,
             onChanged: (final value) async {
-              await menuItemsDao.setName(menuItemId: menuId, name: value);
+              await menuItemsDao.setName(menuItemId: menuItemId, name: value);
               invalidateMenuProvider(ref);
             },
             header: Intl.message('Menu Item Name'),
             autofocus: true,
           ),
           AssetReferenceListTile(
-            assetReferenceId: menuItem.selectSoundId,
+            assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
             onChanged: (final value) async {
+              await menuItemsDao.setSelectSoundId(
+                menuItemId: menuItemId,
+                selectSoundId: value,
+              );
               invalidateMenuProvider(ref);
             },
             nullable: true,
-            title: callCommandMessage,
+            title: Intl.message('Select Sound'),
           ),
           CallCommandListTile(
             callCommandId: menuItem.callCommandId,
@@ -82,6 +87,19 @@ class EditMenuItemScreen extends ConsumerWidget {
               invalidateMenuProvider(ref);
             },
             title: callCommandMessage,
+          ),
+          AssetReferenceListTile(
+            assetReferenceId:
+                menuItem.activateSoundId ?? menu.activateItemSoundId,
+            onChanged: (final value) async {
+              await menuItemsDao.setActivateSoundId(
+                menuItemId: menuItemId,
+                activateSoundId: value,
+              );
+              invalidateMenuProvider(ref);
+            },
+            nullable: true,
+            title: Intl.message('Activate Sound'),
           )
         ],
       ),
