@@ -10,6 +10,7 @@ import '../../messages.dart';
 import '../../src/contexts/menu_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
+import '../../widgets/call_command_list_tile.dart';
 
 /// A screen for editing the menu with the given [menuId].
 class EditMenuScreen extends ConsumerStatefulWidget {
@@ -118,6 +119,17 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           },
           nullable: true,
           title: Intl.message('Select Item Sound'),
+        ),
+        CallCommandListTile(
+          callCommandId: menu.onCancelCallCommandId,
+          onChanged: (final value) async {
+            await menus.setOnCancelCallCommandId(
+              menuId: menu.id,
+              callCommandId: value,
+            );
+            invalidateMenuProvider();
+          },
+          title: Intl.message('Cancel Command'),
         )
       ],
     );

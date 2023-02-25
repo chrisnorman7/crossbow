@@ -9,6 +9,7 @@ import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
+import '../../widgets/call_command_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
 
 /// A screen to edit the command with the given [commandId].
@@ -94,6 +95,17 @@ class EditCommandScreen extends ConsumerWidget {
               invalidateCommandProvider(ref);
             },
             title: Intl.message('Pop Level'),
+          ),
+          CallCommandListTile(
+            callCommandId: command.callCommandId,
+            onChanged: (final value) async {
+              await commands.setCallCommandId(
+                commandId: command.id,
+                callCommandId: value,
+              );
+              invalidateCommandProvider(ref);
+            },
+            title: Intl.message('Call Command'),
           )
         ],
       ),
