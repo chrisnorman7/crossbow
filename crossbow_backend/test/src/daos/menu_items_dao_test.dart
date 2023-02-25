@@ -10,6 +10,7 @@ void main() {
       final db = getDatabase();
       final menusDao = db.menusDao;
       final menuItemsDao = db.menuItemsDao;
+      final assetReferencesDao = db.assetReferencesDao;
 
       test(
         '.createMenuItem',
@@ -208,6 +209,62 @@ void main() {
           );
           expect(startMenuItem.id, playMenuItem.id);
           expect(startMenuItem.name, 'Start Game');
+        },
+      );
+
+      test(
+        '.setSelectSoundId',
+        () async {
+          final assetReference = await assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'select.mp3',
+          );
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final menuItem = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Test Menu Item',
+            selectSoundId: assetReference.id,
+          );
+          expect(menuItem.selectSoundId, assetReference.id);
+          var updatedMenuItem = await menuItemsDao.setSelectSoundId(
+            menuItemId: menuItem.id,
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.selectSoundId, null);
+          updatedMenuItem = await menuItemsDao.setSelectSoundId(
+            menuItemId: menuItem.id,
+            selectSoundId: assetReference.id,
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.selectSoundId, assetReference.id);
+        },
+      );
+
+      test(
+        '.setActivateSoundId',
+        () async {
+          final assetReference = await assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'activate.mp3',
+          );
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final menuItem = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Test Menu Item',
+            activateSoundId: assetReference.id,
+          );
+          expect(menuItem.activateSoundId, assetReference.id);
+          var updatedMenuItem = await menuItemsDao.setActivateSoundId(
+            menuItemId: menuItem.id,
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.activateSoundId, null);
+          updatedMenuItem = await menuItemsDao.setActivateSoundId(
+            menuItemId: menuItem.id,
+            activateSoundId: assetReference.id,
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.activateSoundId, assetReference.id);
         },
       );
     },
