@@ -14,6 +14,7 @@ import '../../src/providers.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
+import '../../widgets/play_sound_semantics.dart';
 import 'edit_menu_screen.dart';
 
 /// The main project screen.
@@ -140,17 +141,20 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                 child: AssetReferencePlaySoundSemantics(
                   assetReferenceId: menu.musicId,
                   looping: true,
-                  child: ListTile(
-                    autofocus: index == 0,
-                    title: Text(menu.name),
-                    onTap: () async {
-                      await pushWidget(
-                        context: context,
-                        builder: (final context) =>
-                            EditMenuScreen(menuId: menu.id),
-                      );
-                      ref.invalidate(menusProvider);
-                    },
+                  child: Builder(
+                    builder: (final context) => ListTile(
+                      autofocus: index == 0,
+                      title: Text(menu.name),
+                      onTap: () async {
+                        PlaySoundSemantics.of(context)?.stop();
+                        await pushWidget(
+                          context: context,
+                          builder: (final context) =>
+                              EditMenuScreen(menuId: menu.id),
+                        );
+                        ref.invalidate(menusProvider);
+                      },
+                    ),
                   ),
                 ),
               );
