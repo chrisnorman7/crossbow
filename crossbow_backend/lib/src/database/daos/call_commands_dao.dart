@@ -42,11 +42,4 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(id));
     return query.getSingle();
   }
-
-  /// Delete the call command with the given [callCommandId].
-  Future<int> deleteCallCommand({required final int callCommandId}) async {
-    final commandsDao = db.commandsDao;
-    final callCommand = await getCallCommand(id: callCommandId);
-    return commandsDao.deleteCommand(id: callCommand.commandId);
-  }
 }

@@ -3,11 +3,12 @@ import 'package:drift/drift.dart';
 import '../database.dart';
 import '../tables/call_commands.dart';
 import '../tables/commands.dart';
+import '../tables/push_menus.dart';
 
 part 'commands_dao.g.dart';
 
 /// The DAO for commands.
-@DriftAccessor(tables: [Commands, CallCommands])
+@DriftAccessor(tables: [Commands, CallCommands, PushMenus])
 class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$CommandsDaoMixin {
   /// Create an instance.
@@ -52,10 +53,8 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the command with the given [id].
-  Future<int> deleteCommand({required final int id}) async {
-    final query = delete(commands)..where((final table) => table.id.equals(id));
-    return query.go();
-  }
+  Future<int> deleteCommand({required final int id}) async =>
+      (delete(commands)..where((final table) => table.id.equals(id))).go();
 
   /// Add message [text] to the command with the given [commandId].
   Future<Command> setMessageText({

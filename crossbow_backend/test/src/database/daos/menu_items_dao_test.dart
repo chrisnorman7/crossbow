@@ -246,6 +246,35 @@ void main() {
           expect(updatedMenuItem.activateSoundId, assetReference.id);
         },
       );
+
+      test(
+        '.getCallCommands',
+        () async {
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final menuItem = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Test',
+          );
+          final command = await db.commandsDao.createCommand();
+          final createdCallCommands = [
+            await db.callCommandsDao.createCallCommand(
+              commandId: command.id,
+              callingMenuItemId: menuItem.id,
+            ),
+            await db.callCommandsDao.createCallCommand(
+              commandId: command.id,
+              callingMenuItemId: menuItem.id,
+              after: 1234,
+            ),
+          ];
+          final queryCallCommands =
+              await menuItemsDao.getCallCommands(menuItemId: menuItem.id);
+          expect(queryCallCommands.length, createdCallCommands.length);
+          for (var i = 0; i < createdCallCommands.length; i++) {
+            expect(createdCallCommands[i].id, queryCallCommands[i].id);
+          }
+        },
+      );
     },
   );
 }

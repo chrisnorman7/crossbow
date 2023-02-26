@@ -70,6 +70,11 @@ void main() {
             commandId: command.id,
             pushMenuId: pushMenu.id,
           );
+          final callingCommand = await commands.createCommand();
+          final callCommand = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand.id,
+          );
           expect(await commands.deleteCommand(id: command.id), 1);
           expect(
             await pushMenus.getPushMenu(id: pushMenu.id),
@@ -80,6 +85,10 @@ void main() {
                   value.id == pushMenu.id &&
                   value.menuId == pushMenu.menuId,
             ),
+          );
+          expect(
+            () => callCommandsDao.getCallCommand(id: callCommand.id),
+            throwsStateError,
           );
         },
       );
@@ -177,14 +186,36 @@ void main() {
         () async {
           final command = await commands.createCommand();
           final menu = await menus.createMenu(name: 'Test Menu');
+          final menuItem = await db.menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Test',
+          );
           await callCommandsDao.createCallCommand(
             commandId: command.id,
             onCancelMenuId: menu.id,
+            callingMenuItemId: menuItem.id,
           );
           expect(
             await commands.getCallCommands(commandId: command.id),
             isEmpty,
           );
+          final createdCallCommands = [
+            await callCommandsDao.createCallCommand(
+              commandId: command.id,
+              callingCommandId: command.id,
+            ),
+            await callCommandsDao.createCallCommand(
+              commandId: command.id,
+              callingCommandId: command.id,
+              after: 1234,
+            ),
+          ];
+          final queryCallCommands =
+              await commands.getCallCommands(commandId: command.id);
+          expect(queryCallCommands.length, createdCallCommands.length);
+          for (var i = 0; i < createdCallCommands.length; i++) {
+            expect(createdCallCommands[i].id, queryCallCommands[i].id);
+          }
         },
       );
     },
