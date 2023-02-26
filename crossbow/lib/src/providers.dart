@@ -202,27 +202,16 @@ final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
 /// Get the context for a menu.
 final menuProvider = FutureProvider.family<MenuContext, int>(
   (final ref, final arg) async {
-    final menuItemsContext =
-        await ref.watch(menuItemsProvider.call(arg).future);
-    final menu =
-        await menuItemsContext.projectContext.db.menusDao.getMenu(id: arg);
-    return MenuContext(
-      projectContext: menuItemsContext.projectContext,
-      menu: menu,
-      menuItems: menuItemsContext.value,
-    );
-  },
-);
-
-/// Provide menu items.
-final menuItemsProvider =
-    FutureProvider.family<ValueContext<List<MenuItem>>, int>(
-  (final ref, final arg) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menu = await projectContext.db.menusDao.getMenu(id: arg);
     final menuItems = await projectContext.db.menuItemsDao.getMenuItems(
       menuId: arg,
     );
-    return ValueContext(projectContext: projectContext, value: menuItems);
+    return MenuContext(
+      projectContext: projectContext,
+      menu: menu,
+      menuItems: menuItems,
+    );
   },
 );
 
