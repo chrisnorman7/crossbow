@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/database.dart';
@@ -152,12 +153,19 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   }) {
     final menu = menuContext.menu;
     final menuItems = menuContext.menuItems;
-    return BuiltSearchableListView(
-      items: menuItems,
-      builder: (final context, final index) {
+    return ReorderableList(
+      itemBuilder: (final context, final index) {
         final menuItem = menuItems[index];
-        return SearchableListTile(
-          searchString: menuItem.name,
+        return CallbackShortcuts(
+          bindings: {
+            moveDownShortcut: () => reorderMenuItems(
+                  oldIndex: index,
+                  newIndex: index + 1,
+                ),
+            moveUpShortcut: () =>
+                reorderMenuItems(oldIndex: index, newIndex: index - 1)
+          },
+          key: ValueKey(menuItem.id),
           child: AssetReferencePlaySoundSemantics(
             assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
             child: ListTile(
@@ -181,6 +189,11 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           ),
         );
       },
+      itemCount: menuItems.length,
+      onReorder: (final oldIndex, final newIndex) => reorderMenuItems(
+        oldIndex: oldIndex,
+        newIndex: newIndex,
+      ),
     );
   }
 
@@ -208,6 +221,35 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           menuItemId: menuItem.id,
         ),
       );
+    }
+  }
+
+  /// Reorder menu items.
+  Future<void> reorderMenuItems({
+    required final int newIndex,
+    required final int oldIndex,
+  }) async {
+    if (newIndex < 0) {
+      return;
+    }
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final menuItemsDao = projectContext.db.menuItemsDao;
+    final menuItems = await menuItemsDao.getMenuItems(menuId: widget.menuId);
+    final oldMenuItem = menuItems[oldIndex];
+    final newMenuItem =
+        newIndex >= menuItems.length ? null : menuItems[newIndex];
+    await menuItemsDao.moveMenuItem(
+      menuItemId: oldMenuItem.id,
+      position: newIndex,
+    );
+    if (newMenuItem != null) {
+      await menuItemsDao.moveMenuItem(
+        menuItemId: newMenuItem.id,
+        position: oldIndex,
+      );
+    }
+    if (mounted) {
+      invalidateMenuProvider();
     }
   }
 }

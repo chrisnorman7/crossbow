@@ -9,6 +9,7 @@
     "jinja",
     "pubspec",
     "recase",
+    "Reorderable",
     "riverpod",
     "sdl",
     "synthizer",
