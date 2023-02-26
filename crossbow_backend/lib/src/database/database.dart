@@ -48,7 +48,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   /// Migrate the database.
   @override
@@ -59,6 +59,13 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
         onCreate: (final m) async {
           await m.createAll();
         },
-        onUpgrade: (final m, final from, final to) async {},
+        onUpgrade: (final m, final from, final to) async {
+          if (from < 2) {
+            await m.alterTable(TableMigration(commands));
+            await m.alterTable(TableMigration(menus));
+            await m.alterTable(TableMigration(menuItems));
+            await m.alterTable(TableMigration(callCommands));
+          }
+        },
       );
 }

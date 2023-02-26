@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 
 import '../mixins.dart';
 import 'asset_references.dart';
-import 'call_commands.dart';
 import 'menus.dart';
 
 /// The menu items table.
@@ -25,7 +24,4 @@ class MenuItems extends Table with WithPrimaryKey, WithName {
   IntColumn get position => integer().withDefault(const Constant(0))();
 
   /// The ID of a call command.
-  IntColumn get callCommandId => integer()
-      .references(CallCommands, #id, onDelete: KeyAction.setNull)
-      .nullable()();
 }

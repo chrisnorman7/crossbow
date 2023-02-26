@@ -872,6 +872,676 @@ class CommandTriggersCompanion extends UpdateCompanion<CommandTrigger> {
   }
 }
 
+class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MenusTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _musicIdMeta =
+      const VerificationMeta('musicId');
+  @override
+  late final GeneratedColumn<int> musicId = GeneratedColumn<int>(
+      'music_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _selectItemSoundIdMeta =
+      const VerificationMeta('selectItemSoundId');
+  @override
+  late final GeneratedColumn<int> selectItemSoundId = GeneratedColumn<int>(
+      'select_item_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _activateItemSoundIdMeta =
+      const VerificationMeta('activateItemSoundId');
+  @override
+  late final GeneratedColumn<int> activateItemSoundId = GeneratedColumn<int>(
+      'activate_item_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, musicId, selectItemSoundId, activateItemSoundId];
+  @override
+  String get aliasedName => _alias ?? 'menus';
+  @override
+  String get actualTableName => 'menus';
+  @override
+  VerificationContext validateIntegrity(Insertable<Menu> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('music_id')) {
+      context.handle(_musicIdMeta,
+          musicId.isAcceptableOrUnknown(data['music_id']!, _musicIdMeta));
+    }
+    if (data.containsKey('select_item_sound_id')) {
+      context.handle(
+          _selectItemSoundIdMeta,
+          selectItemSoundId.isAcceptableOrUnknown(
+              data['select_item_sound_id']!, _selectItemSoundIdMeta));
+    }
+    if (data.containsKey('activate_item_sound_id')) {
+      context.handle(
+          _activateItemSoundIdMeta,
+          activateItemSoundId.isAcceptableOrUnknown(
+              data['activate_item_sound_id']!, _activateItemSoundIdMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Menu map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Menu(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      musicId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}music_id']),
+      selectItemSoundId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}select_item_sound_id']),
+      activateItemSoundId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}activate_item_sound_id']),
+    );
+  }
+
+  @override
+  $MenusTable createAlias(String alias) {
+    return $MenusTable(attachedDatabase, alias);
+  }
+}
+
+class Menu extends DataClass implements Insertable<Menu> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The music to use for this menu.
+  final int? musicId;
+
+  /// The sound to use when selecting an item.
+  final int? selectItemSoundId;
+
+  /// The sound to use when selecting an item.
+  final int? activateItemSoundId;
+  const Menu(
+      {required this.id,
+      required this.name,
+      this.musicId,
+      this.selectItemSoundId,
+      this.activateItemSoundId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || musicId != null) {
+      map['music_id'] = Variable<int>(musicId);
+    }
+    if (!nullToAbsent || selectItemSoundId != null) {
+      map['select_item_sound_id'] = Variable<int>(selectItemSoundId);
+    }
+    if (!nullToAbsent || activateItemSoundId != null) {
+      map['activate_item_sound_id'] = Variable<int>(activateItemSoundId);
+    }
+    return map;
+  }
+
+  MenusCompanion toCompanion(bool nullToAbsent) {
+    return MenusCompanion(
+      id: Value(id),
+      name: Value(name),
+      musicId: musicId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(musicId),
+      selectItemSoundId: selectItemSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(selectItemSoundId),
+      activateItemSoundId: activateItemSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activateItemSoundId),
+    );
+  }
+
+  factory Menu.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Menu(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      musicId: serializer.fromJson<int?>(json['musicId']),
+      selectItemSoundId: serializer.fromJson<int?>(json['selectItemSoundId']),
+      activateItemSoundId:
+          serializer.fromJson<int?>(json['activateItemSoundId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'musicId': serializer.toJson<int?>(musicId),
+      'selectItemSoundId': serializer.toJson<int?>(selectItemSoundId),
+      'activateItemSoundId': serializer.toJson<int?>(activateItemSoundId),
+    };
+  }
+
+  Menu copyWith(
+          {int? id,
+          String? name,
+          Value<int?> musicId = const Value.absent(),
+          Value<int?> selectItemSoundId = const Value.absent(),
+          Value<int?> activateItemSoundId = const Value.absent()}) =>
+      Menu(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        musicId: musicId.present ? musicId.value : this.musicId,
+        selectItemSoundId: selectItemSoundId.present
+            ? selectItemSoundId.value
+            : this.selectItemSoundId,
+        activateItemSoundId: activateItemSoundId.present
+            ? activateItemSoundId.value
+            : this.activateItemSoundId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Menu(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('musicId: $musicId, ')
+          ..write('selectItemSoundId: $selectItemSoundId, ')
+          ..write('activateItemSoundId: $activateItemSoundId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, musicId, selectItemSoundId, activateItemSoundId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Menu &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.musicId == this.musicId &&
+          other.selectItemSoundId == this.selectItemSoundId &&
+          other.activateItemSoundId == this.activateItemSoundId);
+}
+
+class MenusCompanion extends UpdateCompanion<Menu> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int?> musicId;
+  final Value<int?> selectItemSoundId;
+  final Value<int?> activateItemSoundId;
+  const MenusCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.musicId = const Value.absent(),
+    this.selectItemSoundId = const Value.absent(),
+    this.activateItemSoundId = const Value.absent(),
+  });
+  MenusCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.musicId = const Value.absent(),
+    this.selectItemSoundId = const Value.absent(),
+    this.activateItemSoundId = const Value.absent(),
+  });
+  static Insertable<Menu> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? musicId,
+    Expression<int>? selectItemSoundId,
+    Expression<int>? activateItemSoundId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (musicId != null) 'music_id': musicId,
+      if (selectItemSoundId != null) 'select_item_sound_id': selectItemSoundId,
+      if (activateItemSoundId != null)
+        'activate_item_sound_id': activateItemSoundId,
+    });
+  }
+
+  MenusCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<int?>? musicId,
+      Value<int?>? selectItemSoundId,
+      Value<int?>? activateItemSoundId}) {
+    return MenusCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      musicId: musicId ?? this.musicId,
+      selectItemSoundId: selectItemSoundId ?? this.selectItemSoundId,
+      activateItemSoundId: activateItemSoundId ?? this.activateItemSoundId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (musicId.present) {
+      map['music_id'] = Variable<int>(musicId.value);
+    }
+    if (selectItemSoundId.present) {
+      map['select_item_sound_id'] = Variable<int>(selectItemSoundId.value);
+    }
+    if (activateItemSoundId.present) {
+      map['activate_item_sound_id'] = Variable<int>(activateItemSoundId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MenusCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('musicId: $musicId, ')
+          ..write('selectItemSoundId: $selectItemSoundId, ')
+          ..write('activateItemSoundId: $activateItemSoundId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MenuItemsTable extends MenuItems
+    with TableInfo<$MenuItemsTable, MenuItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MenuItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _menuIdMeta = const VerificationMeta('menuId');
+  @override
+  late final GeneratedColumn<int> menuId = GeneratedColumn<int>(
+      'menu_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES menus (id) ON DELETE CASCADE'));
+  static const VerificationMeta _selectSoundIdMeta =
+      const VerificationMeta('selectSoundId');
+  @override
+  late final GeneratedColumn<int> selectSoundId = GeneratedColumn<int>(
+      'select_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _activateSoundIdMeta =
+      const VerificationMeta('activateSoundId');
+  @override
+  late final GeneratedColumn<int> activateSoundId = GeneratedColumn<int>(
+      'activate_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, menuId, selectSoundId, activateSoundId, position];
+  @override
+  String get aliasedName => _alias ?? 'menu_items';
+  @override
+  String get actualTableName => 'menu_items';
+  @override
+  VerificationContext validateIntegrity(Insertable<MenuItem> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('menu_id')) {
+      context.handle(_menuIdMeta,
+          menuId.isAcceptableOrUnknown(data['menu_id']!, _menuIdMeta));
+    } else if (isInserting) {
+      context.missing(_menuIdMeta);
+    }
+    if (data.containsKey('select_sound_id')) {
+      context.handle(
+          _selectSoundIdMeta,
+          selectSoundId.isAcceptableOrUnknown(
+              data['select_sound_id']!, _selectSoundIdMeta));
+    }
+    if (data.containsKey('activate_sound_id')) {
+      context.handle(
+          _activateSoundIdMeta,
+          activateSoundId.isAcceptableOrUnknown(
+              data['activate_sound_id']!, _activateSoundIdMeta));
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MenuItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MenuItem(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      menuId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}menu_id'])!,
+      selectSoundId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}select_sound_id']),
+      activateSoundId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}activate_sound_id']),
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+    );
+  }
+
+  @override
+  $MenuItemsTable createAlias(String alias) {
+    return $MenuItemsTable(attachedDatabase, alias);
+  }
+}
+
+class MenuItem extends DataClass implements Insertable<MenuItem> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The menu this menu item belongs to.
+  final int menuId;
+
+  /// The sound to use when this item is selected.
+  final int? selectSoundId;
+
+  /// The sound to use when this item is activated.
+  final int? activateSoundId;
+
+  /// The position of this item in the menu.
+  final int position;
+  const MenuItem(
+      {required this.id,
+      required this.name,
+      required this.menuId,
+      this.selectSoundId,
+      this.activateSoundId,
+      required this.position});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['menu_id'] = Variable<int>(menuId);
+    if (!nullToAbsent || selectSoundId != null) {
+      map['select_sound_id'] = Variable<int>(selectSoundId);
+    }
+    if (!nullToAbsent || activateSoundId != null) {
+      map['activate_sound_id'] = Variable<int>(activateSoundId);
+    }
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  MenuItemsCompanion toCompanion(bool nullToAbsent) {
+    return MenuItemsCompanion(
+      id: Value(id),
+      name: Value(name),
+      menuId: Value(menuId),
+      selectSoundId: selectSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(selectSoundId),
+      activateSoundId: activateSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activateSoundId),
+      position: Value(position),
+    );
+  }
+
+  factory MenuItem.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MenuItem(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      menuId: serializer.fromJson<int>(json['menuId']),
+      selectSoundId: serializer.fromJson<int?>(json['selectSoundId']),
+      activateSoundId: serializer.fromJson<int?>(json['activateSoundId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'menuId': serializer.toJson<int>(menuId),
+      'selectSoundId': serializer.toJson<int?>(selectSoundId),
+      'activateSoundId': serializer.toJson<int?>(activateSoundId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  MenuItem copyWith(
+          {int? id,
+          String? name,
+          int? menuId,
+          Value<int?> selectSoundId = const Value.absent(),
+          Value<int?> activateSoundId = const Value.absent(),
+          int? position}) =>
+      MenuItem(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        menuId: menuId ?? this.menuId,
+        selectSoundId:
+            selectSoundId.present ? selectSoundId.value : this.selectSoundId,
+        activateSoundId: activateSoundId.present
+            ? activateSoundId.value
+            : this.activateSoundId,
+        position: position ?? this.position,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MenuItem(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('menuId: $menuId, ')
+          ..write('selectSoundId: $selectSoundId, ')
+          ..write('activateSoundId: $activateSoundId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, menuId, selectSoundId, activateSoundId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MenuItem &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.menuId == this.menuId &&
+          other.selectSoundId == this.selectSoundId &&
+          other.activateSoundId == this.activateSoundId &&
+          other.position == this.position);
+}
+
+class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> menuId;
+  final Value<int?> selectSoundId;
+  final Value<int?> activateSoundId;
+  final Value<int> position;
+  const MenuItemsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.menuId = const Value.absent(),
+    this.selectSoundId = const Value.absent(),
+    this.activateSoundId = const Value.absent(),
+    this.position = const Value.absent(),
+  });
+  MenuItemsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    required int menuId,
+    this.selectSoundId = const Value.absent(),
+    this.activateSoundId = const Value.absent(),
+    this.position = const Value.absent(),
+  }) : menuId = Value(menuId);
+  static Insertable<MenuItem> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? menuId,
+    Expression<int>? selectSoundId,
+    Expression<int>? activateSoundId,
+    Expression<int>? position,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (menuId != null) 'menu_id': menuId,
+      if (selectSoundId != null) 'select_sound_id': selectSoundId,
+      if (activateSoundId != null) 'activate_sound_id': activateSoundId,
+      if (position != null) 'position': position,
+    });
+  }
+
+  MenuItemsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<int>? menuId,
+      Value<int?>? selectSoundId,
+      Value<int?>? activateSoundId,
+      Value<int>? position}) {
+    return MenuItemsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      menuId: menuId ?? this.menuId,
+      selectSoundId: selectSoundId ?? this.selectSoundId,
+      activateSoundId: activateSoundId ?? this.activateSoundId,
+      position: position ?? this.position,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (menuId.present) {
+      map['menu_id'] = Variable<int>(menuId.value);
+    }
+    if (selectSoundId.present) {
+      map['select_sound_id'] = Variable<int>(selectSoundId.value);
+    }
+    if (activateSoundId.present) {
+      map['activate_sound_id'] = Variable<int>(activateSoundId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MenuItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('menuId: $menuId, ')
+          ..write('selectSoundId: $selectSoundId, ')
+          ..write('activateSoundId: $activateSoundId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PushMenusTable extends PushMenus
     with TableInfo<$PushMenusTable, PushMenu> {
   @override
@@ -902,7 +1572,10 @@ class $PushMenusTable extends PushMenus
   @override
   late final GeneratedColumn<int> menuId = GeneratedColumn<int>(
       'menu_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES menus (id) ON DELETE CASCADE'));
   @override
   List<GeneratedColumn> get $columns => [id, after, fadeLength, menuId];
   @override
@@ -1544,12 +2217,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
       'url', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _callCommandIdMeta =
-      const VerificationMeta('callCommandId');
-  @override
-  late final GeneratedColumn<int> callCommandId = GeneratedColumn<int>(
-      'call_command_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1558,8 +2225,7 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
         messageSoundId,
         popLevelId,
         stopGameId,
-        url,
-        callCommandId
+        url
       ];
   @override
   String get aliasedName => _alias ?? 'commands';
@@ -1607,12 +2273,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
       context.handle(
           _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
     }
-    if (data.containsKey('call_command_id')) {
-      context.handle(
-          _callCommandIdMeta,
-          callCommandId.isAcceptableOrUnknown(
-              data['call_command_id']!, _callCommandIdMeta));
-    }
     return context;
   }
 
@@ -1636,8 +2296,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           .read(DriftSqlType.int, data['${effectivePrefix}stop_game_id']),
       url: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}url']),
-      callCommandId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}call_command_id']),
     );
   }
 
@@ -1668,9 +2326,6 @@ class Command extends DataClass implements Insertable<Command> {
 
   /// A URL to open.
   final String? url;
-
-  /// The ID of a call command.
-  final int? callCommandId;
   const Command(
       {required this.id,
       this.pushMenuId,
@@ -1678,8 +2333,7 @@ class Command extends DataClass implements Insertable<Command> {
       this.messageSoundId,
       this.popLevelId,
       this.stopGameId,
-      this.url,
-      this.callCommandId});
+      this.url});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1701,9 +2355,6 @@ class Command extends DataClass implements Insertable<Command> {
     }
     if (!nullToAbsent || url != null) {
       map['url'] = Variable<String>(url);
-    }
-    if (!nullToAbsent || callCommandId != null) {
-      map['call_command_id'] = Variable<int>(callCommandId);
     }
     return map;
   }
@@ -1727,9 +2378,6 @@ class Command extends DataClass implements Insertable<Command> {
           ? const Value.absent()
           : Value(stopGameId),
       url: url == null && nullToAbsent ? const Value.absent() : Value(url),
-      callCommandId: callCommandId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(callCommandId),
     );
   }
 
@@ -1744,7 +2392,6 @@ class Command extends DataClass implements Insertable<Command> {
       popLevelId: serializer.fromJson<int?>(json['popLevelId']),
       stopGameId: serializer.fromJson<int?>(json['stopGameId']),
       url: serializer.fromJson<String?>(json['url']),
-      callCommandId: serializer.fromJson<int?>(json['callCommandId']),
     );
   }
   @override
@@ -1758,7 +2405,6 @@ class Command extends DataClass implements Insertable<Command> {
       'popLevelId': serializer.toJson<int?>(popLevelId),
       'stopGameId': serializer.toJson<int?>(stopGameId),
       'url': serializer.toJson<String?>(url),
-      'callCommandId': serializer.toJson<int?>(callCommandId),
     };
   }
 
@@ -1769,8 +2415,7 @@ class Command extends DataClass implements Insertable<Command> {
           Value<int?> messageSoundId = const Value.absent(),
           Value<int?> popLevelId = const Value.absent(),
           Value<int?> stopGameId = const Value.absent(),
-          Value<String?> url = const Value.absent(),
-          Value<int?> callCommandId = const Value.absent()}) =>
+          Value<String?> url = const Value.absent()}) =>
       Command(
         id: id ?? this.id,
         pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
@@ -1780,8 +2425,6 @@ class Command extends DataClass implements Insertable<Command> {
         popLevelId: popLevelId.present ? popLevelId.value : this.popLevelId,
         stopGameId: stopGameId.present ? stopGameId.value : this.stopGameId,
         url: url.present ? url.value : this.url,
-        callCommandId:
-            callCommandId.present ? callCommandId.value : this.callCommandId,
       );
   @override
   String toString() {
@@ -1792,15 +2435,14 @@ class Command extends DataClass implements Insertable<Command> {
           ..write('messageSoundId: $messageSoundId, ')
           ..write('popLevelId: $popLevelId, ')
           ..write('stopGameId: $stopGameId, ')
-          ..write('url: $url, ')
-          ..write('callCommandId: $callCommandId')
+          ..write('url: $url')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, pushMenuId, messageText, messageSoundId,
-      popLevelId, stopGameId, url, callCommandId);
+  int get hashCode => Object.hash(
+      id, pushMenuId, messageText, messageSoundId, popLevelId, stopGameId, url);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1811,8 +2453,7 @@ class Command extends DataClass implements Insertable<Command> {
           other.messageSoundId == this.messageSoundId &&
           other.popLevelId == this.popLevelId &&
           other.stopGameId == this.stopGameId &&
-          other.url == this.url &&
-          other.callCommandId == this.callCommandId);
+          other.url == this.url);
 }
 
 class CommandsCompanion extends UpdateCompanion<Command> {
@@ -1823,7 +2464,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int?> popLevelId;
   final Value<int?> stopGameId;
   final Value<String?> url;
-  final Value<int?> callCommandId;
   const CommandsCompanion({
     this.id = const Value.absent(),
     this.pushMenuId = const Value.absent(),
@@ -1832,7 +2472,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.popLevelId = const Value.absent(),
     this.stopGameId = const Value.absent(),
     this.url = const Value.absent(),
-    this.callCommandId = const Value.absent(),
   });
   CommandsCompanion.insert({
     this.id = const Value.absent(),
@@ -1842,7 +2481,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.popLevelId = const Value.absent(),
     this.stopGameId = const Value.absent(),
     this.url = const Value.absent(),
-    this.callCommandId = const Value.absent(),
   });
   static Insertable<Command> custom({
     Expression<int>? id,
@@ -1852,7 +2490,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     Expression<int>? popLevelId,
     Expression<int>? stopGameId,
     Expression<String>? url,
-    Expression<int>? callCommandId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1862,7 +2499,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       if (popLevelId != null) 'pop_level_id': popLevelId,
       if (stopGameId != null) 'stop_game_id': stopGameId,
       if (url != null) 'url': url,
-      if (callCommandId != null) 'call_command_id': callCommandId,
     });
   }
 
@@ -1873,8 +2509,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       Value<int?>? messageSoundId,
       Value<int?>? popLevelId,
       Value<int?>? stopGameId,
-      Value<String?>? url,
-      Value<int?>? callCommandId}) {
+      Value<String?>? url}) {
     return CommandsCompanion(
       id: id ?? this.id,
       pushMenuId: pushMenuId ?? this.pushMenuId,
@@ -1883,7 +2518,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       popLevelId: popLevelId ?? this.popLevelId,
       stopGameId: stopGameId ?? this.stopGameId,
       url: url ?? this.url,
-      callCommandId: callCommandId ?? this.callCommandId,
     );
   }
 
@@ -1911,9 +2545,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
-    if (callCommandId.present) {
-      map['call_command_id'] = Variable<int>(callCommandId.value);
-    }
     return map;
   }
 
@@ -1926,8 +2557,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
           ..write('messageSoundId: $messageSoundId, ')
           ..write('popLevelId: $popLevelId, ')
           ..write('stopGameId: $stopGameId, ')
-          ..write('url: $url, ')
-          ..write('callCommandId: $callCommandId')
+          ..write('url: $url')
           ..write(')'))
         .toString();
   }
@@ -1953,6 +2583,33 @@ class $CallCommandsTable extends CallCommands
   late final GeneratedColumn<int> after = GeneratedColumn<int>(
       'after', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _callingCommandIdMeta =
+      const VerificationMeta('callingCommandId');
+  @override
+  late final GeneratedColumn<int> callingCommandId = GeneratedColumn<int>(
+      'calling_command_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES commands (id) ON DELETE CASCADE'));
+  static const VerificationMeta _callingMenuItemMeta =
+      const VerificationMeta('callingMenuItem');
+  @override
+  late final GeneratedColumn<int> callingMenuItem = GeneratedColumn<int>(
+      'calling_menu_item', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES menu_items (id) ON DELETE CASCADE'));
+  static const VerificationMeta _onCancelMenuIdMeta =
+      const VerificationMeta('onCancelMenuId');
+  @override
+  late final GeneratedColumn<int> onCancelMenuId = GeneratedColumn<int>(
+      'on_cancel_menu_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES menus (id) ON DELETE CASCADE'));
   static const VerificationMeta _commandIdMeta =
       const VerificationMeta('commandId');
   @override
@@ -1963,7 +2620,8 @@ class $CallCommandsTable extends CallCommands
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES commands (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns => [id, after, commandId];
+  List<GeneratedColumn> get $columns =>
+      [id, after, callingCommandId, callingMenuItem, onCancelMenuId, commandId];
   @override
   String get aliasedName => _alias ?? 'call_commands';
   @override
@@ -1979,6 +2637,24 @@ class $CallCommandsTable extends CallCommands
     if (data.containsKey('after')) {
       context.handle(
           _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
+    }
+    if (data.containsKey('calling_command_id')) {
+      context.handle(
+          _callingCommandIdMeta,
+          callingCommandId.isAcceptableOrUnknown(
+              data['calling_command_id']!, _callingCommandIdMeta));
+    }
+    if (data.containsKey('calling_menu_item')) {
+      context.handle(
+          _callingMenuItemMeta,
+          callingMenuItem.isAcceptableOrUnknown(
+              data['calling_menu_item']!, _callingMenuItemMeta));
+    }
+    if (data.containsKey('on_cancel_menu_id')) {
+      context.handle(
+          _onCancelMenuIdMeta,
+          onCancelMenuId.isAcceptableOrUnknown(
+              data['on_cancel_menu_id']!, _onCancelMenuIdMeta));
     }
     if (data.containsKey('command_id')) {
       context.handle(_commandIdMeta,
@@ -1999,6 +2675,12 @@ class $CallCommandsTable extends CallCommands
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       after: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
+      callingCommandId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}calling_command_id']),
+      callingMenuItem: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}calling_menu_item']),
+      onCancelMenuId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}on_cancel_menu_id']),
       commandId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}command_id'])!,
     );
@@ -2017,15 +2699,39 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   /// How many milliseconds to wait before doing something.
   final int? after;
 
+  /// The ID of the command that will call this row.
+  final int? callingCommandId;
+
+  /// The ID of the menu item that will call this command.
+  final int? callingMenuItem;
+
+  /// The ID of the menu whose on cancel action will call this command.
+  final int? onCancelMenuId;
+
   /// The ID of the command to call.
   final int commandId;
-  const CallCommand({required this.id, this.after, required this.commandId});
+  const CallCommand(
+      {required this.id,
+      this.after,
+      this.callingCommandId,
+      this.callingMenuItem,
+      this.onCancelMenuId,
+      required this.commandId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     if (!nullToAbsent || after != null) {
       map['after'] = Variable<int>(after);
+    }
+    if (!nullToAbsent || callingCommandId != null) {
+      map['calling_command_id'] = Variable<int>(callingCommandId);
+    }
+    if (!nullToAbsent || callingMenuItem != null) {
+      map['calling_menu_item'] = Variable<int>(callingMenuItem);
+    }
+    if (!nullToAbsent || onCancelMenuId != null) {
+      map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId);
     }
     map['command_id'] = Variable<int>(commandId);
     return map;
@@ -2036,6 +2742,15 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       id: Value(id),
       after:
           after == null && nullToAbsent ? const Value.absent() : Value(after),
+      callingCommandId: callingCommandId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(callingCommandId),
+      callingMenuItem: callingMenuItem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(callingMenuItem),
+      onCancelMenuId: onCancelMenuId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(onCancelMenuId),
       commandId: Value(commandId),
     );
   }
@@ -2046,6 +2761,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     return CallCommand(
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
+      callingCommandId: serializer.fromJson<int?>(json['callingCommandId']),
+      callingMenuItem: serializer.fromJson<int?>(json['callingMenuItem']),
+      onCancelMenuId: serializer.fromJson<int?>(json['onCancelMenuId']),
       commandId: serializer.fromJson<int>(json['commandId']),
     );
   }
@@ -2055,6 +2773,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
+      'callingCommandId': serializer.toJson<int?>(callingCommandId),
+      'callingMenuItem': serializer.toJson<int?>(callingMenuItem),
+      'onCancelMenuId': serializer.toJson<int?>(onCancelMenuId),
       'commandId': serializer.toJson<int>(commandId),
     };
   }
@@ -2062,10 +2783,21 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   CallCommand copyWith(
           {int? id,
           Value<int?> after = const Value.absent(),
+          Value<int?> callingCommandId = const Value.absent(),
+          Value<int?> callingMenuItem = const Value.absent(),
+          Value<int?> onCancelMenuId = const Value.absent(),
           int? commandId}) =>
       CallCommand(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
+        callingCommandId: callingCommandId.present
+            ? callingCommandId.value
+            : this.callingCommandId,
+        callingMenuItem: callingMenuItem.present
+            ? callingMenuItem.value
+            : this.callingMenuItem,
+        onCancelMenuId:
+            onCancelMenuId.present ? onCancelMenuId.value : this.onCancelMenuId,
         commandId: commandId ?? this.commandId,
       );
   @override
@@ -2073,53 +2805,83 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     return (StringBuffer('CallCommand(')
           ..write('id: $id, ')
           ..write('after: $after, ')
+          ..write('callingCommandId: $callingCommandId, ')
+          ..write('callingMenuItem: $callingMenuItem, ')
+          ..write('onCancelMenuId: $onCancelMenuId, ')
           ..write('commandId: $commandId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after, commandId);
+  int get hashCode => Object.hash(
+      id, after, callingCommandId, callingMenuItem, onCancelMenuId, commandId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CallCommand &&
           other.id == this.id &&
           other.after == this.after &&
+          other.callingCommandId == this.callingCommandId &&
+          other.callingMenuItem == this.callingMenuItem &&
+          other.onCancelMenuId == this.onCancelMenuId &&
           other.commandId == this.commandId);
 }
 
 class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
   final Value<int> id;
   final Value<int?> after;
+  final Value<int?> callingCommandId;
+  final Value<int?> callingMenuItem;
+  final Value<int?> onCancelMenuId;
   final Value<int> commandId;
   const CallCommandsCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
+    this.callingCommandId = const Value.absent(),
+    this.callingMenuItem = const Value.absent(),
+    this.onCancelMenuId = const Value.absent(),
     this.commandId = const Value.absent(),
   });
   CallCommandsCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
+    this.callingCommandId = const Value.absent(),
+    this.callingMenuItem = const Value.absent(),
+    this.onCancelMenuId = const Value.absent(),
     required int commandId,
   }) : commandId = Value(commandId);
   static Insertable<CallCommand> custom({
     Expression<int>? id,
     Expression<int>? after,
+    Expression<int>? callingCommandId,
+    Expression<int>? callingMenuItem,
+    Expression<int>? onCancelMenuId,
     Expression<int>? commandId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
+      if (callingCommandId != null) 'calling_command_id': callingCommandId,
+      if (callingMenuItem != null) 'calling_menu_item': callingMenuItem,
+      if (onCancelMenuId != null) 'on_cancel_menu_id': onCancelMenuId,
       if (commandId != null) 'command_id': commandId,
     });
   }
 
   CallCommandsCompanion copyWith(
-      {Value<int>? id, Value<int?>? after, Value<int>? commandId}) {
+      {Value<int>? id,
+      Value<int?>? after,
+      Value<int?>? callingCommandId,
+      Value<int?>? callingMenuItem,
+      Value<int?>? onCancelMenuId,
+      Value<int>? commandId}) {
     return CallCommandsCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
+      callingCommandId: callingCommandId ?? this.callingCommandId,
+      callingMenuItem: callingMenuItem ?? this.callingMenuItem,
+      onCancelMenuId: onCancelMenuId ?? this.onCancelMenuId,
       commandId: commandId ?? this.commandId,
     );
   }
@@ -2133,6 +2895,15 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     if (after.present) {
       map['after'] = Variable<int>(after.value);
     }
+    if (callingCommandId.present) {
+      map['calling_command_id'] = Variable<int>(callingCommandId.value);
+    }
+    if (callingMenuItem.present) {
+      map['calling_menu_item'] = Variable<int>(callingMenuItem.value);
+    }
+    if (onCancelMenuId.present) {
+      map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId.value);
+    }
     if (commandId.present) {
       map['command_id'] = Variable<int>(commandId.value);
     }
@@ -2144,785 +2915,10 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     return (StringBuffer('CallCommandsCompanion(')
           ..write('id: $id, ')
           ..write('after: $after, ')
+          ..write('callingCommandId: $callingCommandId, ')
+          ..write('callingMenuItem: $callingMenuItem, ')
+          ..write('onCancelMenuId: $onCancelMenuId, ')
           ..write('commandId: $commandId')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $MenusTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('Untitled Object'));
-  static const VerificationMeta _musicIdMeta =
-      const VerificationMeta('musicId');
-  @override
-  late final GeneratedColumn<int> musicId = GeneratedColumn<int>(
-      'music_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _selectItemSoundIdMeta =
-      const VerificationMeta('selectItemSoundId');
-  @override
-  late final GeneratedColumn<int> selectItemSoundId = GeneratedColumn<int>(
-      'select_item_sound_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _activateItemSoundIdMeta =
-      const VerificationMeta('activateItemSoundId');
-  @override
-  late final GeneratedColumn<int> activateItemSoundId = GeneratedColumn<int>(
-      'activate_item_sound_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _onCancelCallCommandIdMeta =
-      const VerificationMeta('onCancelCallCommandId');
-  @override
-  late final GeneratedColumn<int> onCancelCallCommandId = GeneratedColumn<int>(
-      'on_cancel_call_command_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES call_commands (id) ON DELETE SET NULL'));
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        musicId,
-        selectItemSoundId,
-        activateItemSoundId,
-        onCancelCallCommandId
-      ];
-  @override
-  String get aliasedName => _alias ?? 'menus';
-  @override
-  String get actualTableName => 'menus';
-  @override
-  VerificationContext validateIntegrity(Insertable<Menu> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    }
-    if (data.containsKey('music_id')) {
-      context.handle(_musicIdMeta,
-          musicId.isAcceptableOrUnknown(data['music_id']!, _musicIdMeta));
-    }
-    if (data.containsKey('select_item_sound_id')) {
-      context.handle(
-          _selectItemSoundIdMeta,
-          selectItemSoundId.isAcceptableOrUnknown(
-              data['select_item_sound_id']!, _selectItemSoundIdMeta));
-    }
-    if (data.containsKey('activate_item_sound_id')) {
-      context.handle(
-          _activateItemSoundIdMeta,
-          activateItemSoundId.isAcceptableOrUnknown(
-              data['activate_item_sound_id']!, _activateItemSoundIdMeta));
-    }
-    if (data.containsKey('on_cancel_call_command_id')) {
-      context.handle(
-          _onCancelCallCommandIdMeta,
-          onCancelCallCommandId.isAcceptableOrUnknown(
-              data['on_cancel_call_command_id']!, _onCancelCallCommandIdMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Menu map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Menu(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      musicId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}music_id']),
-      selectItemSoundId: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}select_item_sound_id']),
-      activateItemSoundId: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}activate_item_sound_id']),
-      onCancelCallCommandId: attachedDatabase.typeMapping.read(DriftSqlType.int,
-          data['${effectivePrefix}on_cancel_call_command_id']),
-    );
-  }
-
-  @override
-  $MenusTable createAlias(String alias) {
-    return $MenusTable(attachedDatabase, alias);
-  }
-}
-
-class Menu extends DataClass implements Insertable<Menu> {
-  /// The primary key.
-  final int id;
-
-  /// The name of this object.
-  final String name;
-
-  /// The music to use for this menu.
-  final int? musicId;
-
-  /// The sound to use when selecting an item.
-  final int? selectItemSoundId;
-
-  /// The sound to use when selecting an item.
-  final int? activateItemSoundId;
-
-  /// The ID of a command to call when cancelling the menu.
-  final int? onCancelCallCommandId;
-  const Menu(
-      {required this.id,
-      required this.name,
-      this.musicId,
-      this.selectItemSoundId,
-      this.activateItemSoundId,
-      this.onCancelCallCommandId});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || musicId != null) {
-      map['music_id'] = Variable<int>(musicId);
-    }
-    if (!nullToAbsent || selectItemSoundId != null) {
-      map['select_item_sound_id'] = Variable<int>(selectItemSoundId);
-    }
-    if (!nullToAbsent || activateItemSoundId != null) {
-      map['activate_item_sound_id'] = Variable<int>(activateItemSoundId);
-    }
-    if (!nullToAbsent || onCancelCallCommandId != null) {
-      map['on_cancel_call_command_id'] = Variable<int>(onCancelCallCommandId);
-    }
-    return map;
-  }
-
-  MenusCompanion toCompanion(bool nullToAbsent) {
-    return MenusCompanion(
-      id: Value(id),
-      name: Value(name),
-      musicId: musicId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(musicId),
-      selectItemSoundId: selectItemSoundId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(selectItemSoundId),
-      activateItemSoundId: activateItemSoundId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(activateItemSoundId),
-      onCancelCallCommandId: onCancelCallCommandId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(onCancelCallCommandId),
-    );
-  }
-
-  factory Menu.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Menu(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      musicId: serializer.fromJson<int?>(json['musicId']),
-      selectItemSoundId: serializer.fromJson<int?>(json['selectItemSoundId']),
-      activateItemSoundId:
-          serializer.fromJson<int?>(json['activateItemSoundId']),
-      onCancelCallCommandId:
-          serializer.fromJson<int?>(json['onCancelCallCommandId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'musicId': serializer.toJson<int?>(musicId),
-      'selectItemSoundId': serializer.toJson<int?>(selectItemSoundId),
-      'activateItemSoundId': serializer.toJson<int?>(activateItemSoundId),
-      'onCancelCallCommandId': serializer.toJson<int?>(onCancelCallCommandId),
-    };
-  }
-
-  Menu copyWith(
-          {int? id,
-          String? name,
-          Value<int?> musicId = const Value.absent(),
-          Value<int?> selectItemSoundId = const Value.absent(),
-          Value<int?> activateItemSoundId = const Value.absent(),
-          Value<int?> onCancelCallCommandId = const Value.absent()}) =>
-      Menu(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        musicId: musicId.present ? musicId.value : this.musicId,
-        selectItemSoundId: selectItemSoundId.present
-            ? selectItemSoundId.value
-            : this.selectItemSoundId,
-        activateItemSoundId: activateItemSoundId.present
-            ? activateItemSoundId.value
-            : this.activateItemSoundId,
-        onCancelCallCommandId: onCancelCallCommandId.present
-            ? onCancelCallCommandId.value
-            : this.onCancelCallCommandId,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('Menu(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('musicId: $musicId, ')
-          ..write('selectItemSoundId: $selectItemSoundId, ')
-          ..write('activateItemSoundId: $activateItemSoundId, ')
-          ..write('onCancelCallCommandId: $onCancelCallCommandId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, musicId, selectItemSoundId,
-      activateItemSoundId, onCancelCallCommandId);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Menu &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.musicId == this.musicId &&
-          other.selectItemSoundId == this.selectItemSoundId &&
-          other.activateItemSoundId == this.activateItemSoundId &&
-          other.onCancelCallCommandId == this.onCancelCallCommandId);
-}
-
-class MenusCompanion extends UpdateCompanion<Menu> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int?> musicId;
-  final Value<int?> selectItemSoundId;
-  final Value<int?> activateItemSoundId;
-  final Value<int?> onCancelCallCommandId;
-  const MenusCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.musicId = const Value.absent(),
-    this.selectItemSoundId = const Value.absent(),
-    this.activateItemSoundId = const Value.absent(),
-    this.onCancelCallCommandId = const Value.absent(),
-  });
-  MenusCompanion.insert({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.musicId = const Value.absent(),
-    this.selectItemSoundId = const Value.absent(),
-    this.activateItemSoundId = const Value.absent(),
-    this.onCancelCallCommandId = const Value.absent(),
-  });
-  static Insertable<Menu> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? musicId,
-    Expression<int>? selectItemSoundId,
-    Expression<int>? activateItemSoundId,
-    Expression<int>? onCancelCallCommandId,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (musicId != null) 'music_id': musicId,
-      if (selectItemSoundId != null) 'select_item_sound_id': selectItemSoundId,
-      if (activateItemSoundId != null)
-        'activate_item_sound_id': activateItemSoundId,
-      if (onCancelCallCommandId != null)
-        'on_cancel_call_command_id': onCancelCallCommandId,
-    });
-  }
-
-  MenusCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<int?>? musicId,
-      Value<int?>? selectItemSoundId,
-      Value<int?>? activateItemSoundId,
-      Value<int?>? onCancelCallCommandId}) {
-    return MenusCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      musicId: musicId ?? this.musicId,
-      selectItemSoundId: selectItemSoundId ?? this.selectItemSoundId,
-      activateItemSoundId: activateItemSoundId ?? this.activateItemSoundId,
-      onCancelCallCommandId:
-          onCancelCallCommandId ?? this.onCancelCallCommandId,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (musicId.present) {
-      map['music_id'] = Variable<int>(musicId.value);
-    }
-    if (selectItemSoundId.present) {
-      map['select_item_sound_id'] = Variable<int>(selectItemSoundId.value);
-    }
-    if (activateItemSoundId.present) {
-      map['activate_item_sound_id'] = Variable<int>(activateItemSoundId.value);
-    }
-    if (onCancelCallCommandId.present) {
-      map['on_cancel_call_command_id'] =
-          Variable<int>(onCancelCallCommandId.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MenusCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('musicId: $musicId, ')
-          ..write('selectItemSoundId: $selectItemSoundId, ')
-          ..write('activateItemSoundId: $activateItemSoundId, ')
-          ..write('onCancelCallCommandId: $onCancelCallCommandId')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $MenuItemsTable extends MenuItems
-    with TableInfo<$MenuItemsTable, MenuItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $MenuItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('Untitled Object'));
-  static const VerificationMeta _menuIdMeta = const VerificationMeta('menuId');
-  @override
-  late final GeneratedColumn<int> menuId = GeneratedColumn<int>(
-      'menu_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES menus (id) ON DELETE CASCADE'));
-  static const VerificationMeta _selectSoundIdMeta =
-      const VerificationMeta('selectSoundId');
-  @override
-  late final GeneratedColumn<int> selectSoundId = GeneratedColumn<int>(
-      'select_sound_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _activateSoundIdMeta =
-      const VerificationMeta('activateSoundId');
-  @override
-  late final GeneratedColumn<int> activateSoundId = GeneratedColumn<int>(
-      'activate_sound_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _positionMeta =
-      const VerificationMeta('position');
-  @override
-  late final GeneratedColumn<int> position = GeneratedColumn<int>(
-      'position', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
-  static const VerificationMeta _callCommandIdMeta =
-      const VerificationMeta('callCommandId');
-  @override
-  late final GeneratedColumn<int> callCommandId = GeneratedColumn<int>(
-      'call_command_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES call_commands (id) ON DELETE SET NULL'));
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        menuId,
-        selectSoundId,
-        activateSoundId,
-        position,
-        callCommandId
-      ];
-  @override
-  String get aliasedName => _alias ?? 'menu_items';
-  @override
-  String get actualTableName => 'menu_items';
-  @override
-  VerificationContext validateIntegrity(Insertable<MenuItem> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    }
-    if (data.containsKey('menu_id')) {
-      context.handle(_menuIdMeta,
-          menuId.isAcceptableOrUnknown(data['menu_id']!, _menuIdMeta));
-    } else if (isInserting) {
-      context.missing(_menuIdMeta);
-    }
-    if (data.containsKey('select_sound_id')) {
-      context.handle(
-          _selectSoundIdMeta,
-          selectSoundId.isAcceptableOrUnknown(
-              data['select_sound_id']!, _selectSoundIdMeta));
-    }
-    if (data.containsKey('activate_sound_id')) {
-      context.handle(
-          _activateSoundIdMeta,
-          activateSoundId.isAcceptableOrUnknown(
-              data['activate_sound_id']!, _activateSoundIdMeta));
-    }
-    if (data.containsKey('position')) {
-      context.handle(_positionMeta,
-          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
-    }
-    if (data.containsKey('call_command_id')) {
-      context.handle(
-          _callCommandIdMeta,
-          callCommandId.isAcceptableOrUnknown(
-              data['call_command_id']!, _callCommandIdMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  MenuItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MenuItem(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      menuId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}menu_id'])!,
-      selectSoundId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}select_sound_id']),
-      activateSoundId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}activate_sound_id']),
-      position: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      callCommandId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}call_command_id']),
-    );
-  }
-
-  @override
-  $MenuItemsTable createAlias(String alias) {
-    return $MenuItemsTable(attachedDatabase, alias);
-  }
-}
-
-class MenuItem extends DataClass implements Insertable<MenuItem> {
-  /// The primary key.
-  final int id;
-
-  /// The name of this object.
-  final String name;
-
-  /// The menu this menu item belongs to.
-  final int menuId;
-
-  /// The sound to use when this item is selected.
-  final int? selectSoundId;
-
-  /// The sound to use when this item is activated.
-  final int? activateSoundId;
-
-  /// The position of this item in the menu.
-  final int position;
-
-  /// The ID of a call command.
-  final int? callCommandId;
-  const MenuItem(
-      {required this.id,
-      required this.name,
-      required this.menuId,
-      this.selectSoundId,
-      this.activateSoundId,
-      required this.position,
-      this.callCommandId});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['menu_id'] = Variable<int>(menuId);
-    if (!nullToAbsent || selectSoundId != null) {
-      map['select_sound_id'] = Variable<int>(selectSoundId);
-    }
-    if (!nullToAbsent || activateSoundId != null) {
-      map['activate_sound_id'] = Variable<int>(activateSoundId);
-    }
-    map['position'] = Variable<int>(position);
-    if (!nullToAbsent || callCommandId != null) {
-      map['call_command_id'] = Variable<int>(callCommandId);
-    }
-    return map;
-  }
-
-  MenuItemsCompanion toCompanion(bool nullToAbsent) {
-    return MenuItemsCompanion(
-      id: Value(id),
-      name: Value(name),
-      menuId: Value(menuId),
-      selectSoundId: selectSoundId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(selectSoundId),
-      activateSoundId: activateSoundId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(activateSoundId),
-      position: Value(position),
-      callCommandId: callCommandId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(callCommandId),
-    );
-  }
-
-  factory MenuItem.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MenuItem(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      menuId: serializer.fromJson<int>(json['menuId']),
-      selectSoundId: serializer.fromJson<int?>(json['selectSoundId']),
-      activateSoundId: serializer.fromJson<int?>(json['activateSoundId']),
-      position: serializer.fromJson<int>(json['position']),
-      callCommandId: serializer.fromJson<int?>(json['callCommandId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'menuId': serializer.toJson<int>(menuId),
-      'selectSoundId': serializer.toJson<int?>(selectSoundId),
-      'activateSoundId': serializer.toJson<int?>(activateSoundId),
-      'position': serializer.toJson<int>(position),
-      'callCommandId': serializer.toJson<int?>(callCommandId),
-    };
-  }
-
-  MenuItem copyWith(
-          {int? id,
-          String? name,
-          int? menuId,
-          Value<int?> selectSoundId = const Value.absent(),
-          Value<int?> activateSoundId = const Value.absent(),
-          int? position,
-          Value<int?> callCommandId = const Value.absent()}) =>
-      MenuItem(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        menuId: menuId ?? this.menuId,
-        selectSoundId:
-            selectSoundId.present ? selectSoundId.value : this.selectSoundId,
-        activateSoundId: activateSoundId.present
-            ? activateSoundId.value
-            : this.activateSoundId,
-        position: position ?? this.position,
-        callCommandId:
-            callCommandId.present ? callCommandId.value : this.callCommandId,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('MenuItem(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('menuId: $menuId, ')
-          ..write('selectSoundId: $selectSoundId, ')
-          ..write('activateSoundId: $activateSoundId, ')
-          ..write('position: $position, ')
-          ..write('callCommandId: $callCommandId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, menuId, selectSoundId,
-      activateSoundId, position, callCommandId);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MenuItem &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.menuId == this.menuId &&
-          other.selectSoundId == this.selectSoundId &&
-          other.activateSoundId == this.activateSoundId &&
-          other.position == this.position &&
-          other.callCommandId == this.callCommandId);
-}
-
-class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int> menuId;
-  final Value<int?> selectSoundId;
-  final Value<int?> activateSoundId;
-  final Value<int> position;
-  final Value<int?> callCommandId;
-  const MenuItemsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.menuId = const Value.absent(),
-    this.selectSoundId = const Value.absent(),
-    this.activateSoundId = const Value.absent(),
-    this.position = const Value.absent(),
-    this.callCommandId = const Value.absent(),
-  });
-  MenuItemsCompanion.insert({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    required int menuId,
-    this.selectSoundId = const Value.absent(),
-    this.activateSoundId = const Value.absent(),
-    this.position = const Value.absent(),
-    this.callCommandId = const Value.absent(),
-  }) : menuId = Value(menuId);
-  static Insertable<MenuItem> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? menuId,
-    Expression<int>? selectSoundId,
-    Expression<int>? activateSoundId,
-    Expression<int>? position,
-    Expression<int>? callCommandId,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (menuId != null) 'menu_id': menuId,
-      if (selectSoundId != null) 'select_sound_id': selectSoundId,
-      if (activateSoundId != null) 'activate_sound_id': activateSoundId,
-      if (position != null) 'position': position,
-      if (callCommandId != null) 'call_command_id': callCommandId,
-    });
-  }
-
-  MenuItemsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<int>? menuId,
-      Value<int?>? selectSoundId,
-      Value<int?>? activateSoundId,
-      Value<int>? position,
-      Value<int?>? callCommandId}) {
-    return MenuItemsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      menuId: menuId ?? this.menuId,
-      selectSoundId: selectSoundId ?? this.selectSoundId,
-      activateSoundId: activateSoundId ?? this.activateSoundId,
-      position: position ?? this.position,
-      callCommandId: callCommandId ?? this.callCommandId,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (menuId.present) {
-      map['menu_id'] = Variable<int>(menuId.value);
-    }
-    if (selectSoundId.present) {
-      map['select_sound_id'] = Variable<int>(selectSoundId.value);
-    }
-    if (activateSoundId.present) {
-      map['activate_sound_id'] = Variable<int>(activateSoundId.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (callCommandId.present) {
-      map['call_command_id'] = Variable<int>(callCommandId.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MenuItemsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('menuId: $menuId, ')
-          ..write('selectSoundId: $selectSoundId, ')
-          ..write('activateSoundId: $activateSoundId, ')
-          ..write('position: $position, ')
-          ..write('callCommandId: $callCommandId')
           ..write(')'))
         .toString();
   }
@@ -2936,13 +2932,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       $CommandTriggerKeyboardKeysTable(this);
   late final $CommandTriggersTable commandTriggers =
       $CommandTriggersTable(this);
+  late final $MenusTable menus = $MenusTable(this);
+  late final $MenuItemsTable menuItems = $MenuItemsTable(this);
   late final $PushMenusTable pushMenus = $PushMenusTable(this);
   late final $PopLevelsTable popLevels = $PopLevelsTable(this);
   late final $StopGamesTable stopGames = $StopGamesTable(this);
   late final $CommandsTable commands = $CommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
-  late final $MenusTable menus = $MenusTable(this);
-  late final $MenuItemsTable menuItems = $MenuItemsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -2966,13 +2962,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         assetReferences,
         commandTriggerKeyboardKeys,
         commandTriggers,
+        menus,
+        menuItems,
         pushMenus,
         popLevels,
         stopGames,
         commands,
-        callCommands,
-        menus,
-        menuItems
+        callCommands
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -2982,6 +2978,55 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('command_triggers', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menus', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menus', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menus', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('menus',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menu_items', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menu_items', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('menu_items', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('menus',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('push_menus', kind: UpdateKind.delete),
             ],
           ),
           WritePropagation(
@@ -3020,59 +3065,24 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
+            on: TableUpdateQuery.onTableName('menu_items',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('menus', kind: UpdateKind.update),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('menus', kind: UpdateKind.update),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('menus', kind: UpdateKind.update),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('call_commands',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('menus', kind: UpdateKind.update),
+              TableUpdate('call_commands', kind: UpdateKind.delete),
             ],
           ),
           WritePropagation(
             on: TableUpdateQuery.onTableName('menus',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('menu_items', kind: UpdateKind.delete),
+              TableUpdate('call_commands', kind: UpdateKind.delete),
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
+            on: TableUpdateQuery.onTableName('commands',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('menu_items', kind: UpdateKind.update),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('menu_items', kind: UpdateKind.update),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('call_commands',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('menu_items', kind: UpdateKind.update),
+              TableUpdate('call_commands', kind: UpdateKind.delete),
             ],
           ),
         ],

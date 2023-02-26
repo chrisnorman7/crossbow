@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 
 import '../mixins.dart';
 import 'asset_references.dart';
-import 'call_commands.dart';
 
 /// The menus table.
 class Menus extends Table with WithPrimaryKey, WithName {
@@ -22,7 +21,4 @@ class Menus extends Table with WithPrimaryKey, WithName {
       .nullable()();
 
   /// The ID of a command to call when cancelling the menu.
-  IntColumn get onCancelCallCommandId => integer()
-      .references(CallCommands, #id, onDelete: KeyAction.setNull)
-      .nullable()();
 }
