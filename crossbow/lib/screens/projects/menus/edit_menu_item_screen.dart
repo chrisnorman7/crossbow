@@ -9,7 +9,7 @@ import '../../../messages.dart';
 import '../../../src/contexts/menu_item_context.dart';
 import '../../../src/providers.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
-import '../../../widgets/call_command_list_tile.dart';
+import '../../../widgets/call_commands_list_tile.dart';
 
 /// A screen to edit the [MenuItem] with the given [menuItemId].
 class EditMenuItemScreen extends ConsumerWidget {
@@ -77,16 +77,10 @@ class EditMenuItemScreen extends ConsumerWidget {
             nullable: true,
             title: Intl.message('Select Sound'),
           ),
-          CallCommandListTile(
-            callCommandId: menuItem.callCommandId,
-            onChanged: (final value) async {
-              await menuItemsDao.setCallCommand(
-                menuItemId: menuItem.id,
-                callCommandId: value,
-              );
-              invalidateMenuProvider(ref);
-            },
-            title: callCommandMessage,
+          CallCommandsListTile(
+            target: CallCommandsTarget.menuItem,
+            id: menuItem.id,
+            title: callCommandsMessage,
           ),
           AssetReferenceListTile(
             assetReferenceId:

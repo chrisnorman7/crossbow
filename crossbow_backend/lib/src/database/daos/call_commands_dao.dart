@@ -15,11 +15,17 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create a new call command to call the command with the given [commandId].
   Future<CallCommand> createCallCommand({
     required final int commandId,
+    final int? callingCommandId,
+    final int? callingMenuItemId,
+    final int? onCancelMenuId,
     final int? after,
   }) =>
       into(callCommands).insertReturning(
         CallCommandsCompanion(
           commandId: Value(commandId),
+          callingCommandId: Value(callingCommandId),
+          callingMenuItemId: Value(callingMenuItemId),
+          onCancelMenuId: Value(onCancelMenuId),
           after: Value(after),
         ),
       );

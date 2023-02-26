@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
+import '../tables/call_commands.dart';
 import '../tables/commands.dart';
 
 part 'commands_dao.g.dart';
 
 /// The DAO for commands.
-@DriftAccessor(tables: [Commands])
+@DriftAccessor(tables: [Commands, CallCommands])
 class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$CommandsDaoMixin {
   /// Create an instance.
@@ -14,7 +15,6 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Create a command.
   Future<Command> createCommand({
-    final int? callCommandId,
     final int? messageSoundId,
     final String? messageText,
     final int? popLevelId,
@@ -24,7 +24,6 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }) =>
       into(commands).insertReturning(
         CommandsCompanion(
-          callCommandId: Value(callCommandId),
           messageSoundId: Value(messageSoundId),
           messageText: Value(messageText),
           popLevelId: Value(popLevelId),
@@ -119,16 +118,9 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         .single;
   }
 
-  /// Set the [callCommandId] for the command with the given [commandId].
-  Future<Command> setCallCommandId({
-    required final int commandId,
-    final int? callCommandId,
-  }) async {
-    final query = update(commands)
-      ..where((final table) => table.id.equals(commandId));
-    return (await query.writeReturning(
-      CommandsCompanion(callCommandId: Value(callCommandId)),
-    ))
-        .single;
-  }
+  /// Get the commands to be called by the command with the given [commandId].
+  Future<List<CallCommand>> getCallCommands({required final int commandId}) =>
+      (select(callCommands)
+            ..where((final table) => table.callingCommandId.equals(commandId)))
+          .get();
 }

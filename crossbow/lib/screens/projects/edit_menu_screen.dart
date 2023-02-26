@@ -15,7 +15,7 @@ import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
-import '../../widgets/call_command_list_tile.dart';
+import '../../widgets/call_commands_list_tile.dart';
 import 'menus/edit_menu_item_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
@@ -132,16 +132,10 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           nullable: true,
           title: Intl.message('Select Item Sound'),
         ),
-        CallCommandListTile(
-          callCommandId: menu.onCancelCallCommandId,
-          onChanged: (final value) async {
-            await menus.setOnCancelCallCommandId(
-              menuId: menu.id,
-              callCommandId: value,
-            );
-            invalidateMenuProvider();
-          },
-          title: Intl.message('Cancel Command'),
+        CallCommandsListTile(
+          target: CallCommandsTarget.menuOnCancel,
+          id: menu.id,
+          title: Intl.message('Cancel Commands'),
         )
       ],
     );
@@ -152,6 +146,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     required final BuildContext context,
     required final MenuContext menuContext,
   }) {
+    final menuItemsDao = menuContext.projectContext.db.menuItemsDao;
     final menu = menuContext.menu;
     final menuItems = menuContext.menuItems;
     return ReorderableList(
@@ -165,16 +160,22 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                 ),
             moveUpShortcut: () =>
                 reorderMenuItems(oldIndex: index, newIndex: index - 1),
-            deleteShortcut: () {
-              if (menuItem.callCommandId != null) {
-                showMessage(
+            deleteShortcut: () async {
+              final callCommands = await menuItemsDao.getCallCommands(
+                menuItemId: menuItem.id,
+              );
+              if (!mounted) {
+                return;
+              }
+              if (callCommands.isNotEmpty) {
+                await showMessage(
                   context: context,
                   message: Intl.message(
                     'You cannot delete menu items that have commands.',
                   ),
                 );
               } else {
-                intlConfirm(
+                await intlConfirm(
                   context: context,
                   message: 'Are you sure you want to delete this menu item?',
                   title: confirmDeleteTitle,
@@ -194,11 +195,6 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
             child: ListTile(
               autofocus: index == 0,
               title: Text(menuItem.name),
-              subtitle: Text(
-                menuItem.callCommandId == null
-                    ? Intl.message('Label')
-                    : Intl.message('Button'),
-              ),
               onTap: () async {
                 await pushWidget(
                   context: context,

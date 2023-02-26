@@ -84,8 +84,8 @@ final secondsMessage = Intl.message('Seconds');
 /// Menu name.
 final menuNameLabel = Intl.message('Menu Name');
 
-/// Call command.
-final callCommandMessage = Intl.message('Call Command');
+/// Call commands.
+final callCommandsMessage = Intl.message('Call Commands');
 
 /// Error title.
 final errorTitle = Intl.message('Error');

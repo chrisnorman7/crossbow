@@ -177,27 +177,6 @@ void main() {
       );
 
       test(
-        '.setCallCommand',
-        () async {
-          final menu = await menusDao.createMenu(name: 'Test Menu');
-          final menuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
-            name: 'Call Command',
-          );
-          expect(menuItem.callCommandId, null);
-          final command = await db.commandsDao.createCommand();
-          final callCommand =
-              await db.callCommandsDao.createCallCommand(commandId: command.id);
-          final updatedMenuItem = await menuItemsDao.setCallCommand(
-            menuItemId: menuItem.id,
-            callCommandId: callCommand.id,
-          );
-          expect(updatedMenuItem.id, menuItem.id);
-          expect(updatedMenuItem.callCommandId, callCommand.id);
-        },
-      );
-
-      test(
         '.setName',
         () async {
           final menu = await menusDao.createMenu(name: 'Main Menu');

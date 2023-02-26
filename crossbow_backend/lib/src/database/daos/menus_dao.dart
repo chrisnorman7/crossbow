@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
+import '../tables/call_commands.dart';
 import '../tables/menus.dart';
 
 part 'menus_dao.g.dart';
 
 /// The DAO for menus.
-@DriftAccessor(tables: [Menus])
+@DriftAccessor(tables: [Menus, CallCommands])
 class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$MenusDaoMixin {
   /// Create an instance.
@@ -26,7 +27,6 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
           activateItemSoundId: Value(activateItemSoundId),
           selectItemSoundId: Value(selectItemSoundId),
           musicId: Value(musicId),
-          onCancelCallCommandId: Value(onCancelCallCommandId),
         ),
       );
 
@@ -50,19 +50,6 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final query = update(menus)
       ..where((final table) => table.id.equals(menuId));
     return (await query.writeReturning(MenusCompanion(name: Value(name))))
-        .single;
-  }
-
-  /// Set the `onCancelCallCommandId` for the menu with the given [menuId].
-  Future<Menu> setOnCancelCallCommandId({
-    required final int menuId,
-    final int? callCommandId,
-  }) async {
-    final query = update(menus)
-      ..where((final table) => table.id.equals(menuId));
-    return (await query.writeReturning(
-      MenusCompanion(onCancelCallCommandId: Value(callCommandId)),
-    ))
         .single;
   }
 
@@ -102,4 +89,12 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     ))
         .single;
   }
+
+  /// Get the on cancel commands for the menu with the given [menuId].
+  Future<List<CallCommand>> getOnCancelCallCommands({
+    required final int menuId,
+  }) =>
+      (select(callCommands)
+            ..where((final table) => table.onCancelMenuId.equals(menuId)))
+          .get();
 }

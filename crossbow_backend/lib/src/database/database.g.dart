@@ -2592,11 +2592,11 @@ class $CallCommandsTable extends CallCommands
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES commands (id) ON DELETE CASCADE'));
-  static const VerificationMeta _callingMenuItemMeta =
-      const VerificationMeta('callingMenuItem');
+  static const VerificationMeta _callingMenuItemIdMeta =
+      const VerificationMeta('callingMenuItemId');
   @override
-  late final GeneratedColumn<int> callingMenuItem = GeneratedColumn<int>(
-      'calling_menu_item', aliasedName, true,
+  late final GeneratedColumn<int> callingMenuItemId = GeneratedColumn<int>(
+      'calling_menu_item_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -2620,8 +2620,14 @@ class $CallCommandsTable extends CallCommands
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES commands (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, after, callingCommandId, callingMenuItem, onCancelMenuId, commandId];
+  List<GeneratedColumn> get $columns => [
+        id,
+        after,
+        callingCommandId,
+        callingMenuItemId,
+        onCancelMenuId,
+        commandId
+      ];
   @override
   String get aliasedName => _alias ?? 'call_commands';
   @override
@@ -2644,11 +2650,11 @@ class $CallCommandsTable extends CallCommands
           callingCommandId.isAcceptableOrUnknown(
               data['calling_command_id']!, _callingCommandIdMeta));
     }
-    if (data.containsKey('calling_menu_item')) {
+    if (data.containsKey('calling_menu_item_id')) {
       context.handle(
-          _callingMenuItemMeta,
-          callingMenuItem.isAcceptableOrUnknown(
-              data['calling_menu_item']!, _callingMenuItemMeta));
+          _callingMenuItemIdMeta,
+          callingMenuItemId.isAcceptableOrUnknown(
+              data['calling_menu_item_id']!, _callingMenuItemIdMeta));
     }
     if (data.containsKey('on_cancel_menu_id')) {
       context.handle(
@@ -2677,8 +2683,8 @@ class $CallCommandsTable extends CallCommands
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
       callingCommandId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}calling_command_id']),
-      callingMenuItem: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}calling_menu_item']),
+      callingMenuItemId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}calling_menu_item_id']),
       onCancelMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}on_cancel_menu_id']),
       commandId: attachedDatabase.typeMapping
@@ -2703,7 +2709,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   final int? callingCommandId;
 
   /// The ID of the menu item that will call this command.
-  final int? callingMenuItem;
+  final int? callingMenuItemId;
 
   /// The ID of the menu whose on cancel action will call this command.
   final int? onCancelMenuId;
@@ -2714,7 +2720,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       {required this.id,
       this.after,
       this.callingCommandId,
-      this.callingMenuItem,
+      this.callingMenuItemId,
       this.onCancelMenuId,
       required this.commandId});
   @override
@@ -2727,8 +2733,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     if (!nullToAbsent || callingCommandId != null) {
       map['calling_command_id'] = Variable<int>(callingCommandId);
     }
-    if (!nullToAbsent || callingMenuItem != null) {
-      map['calling_menu_item'] = Variable<int>(callingMenuItem);
+    if (!nullToAbsent || callingMenuItemId != null) {
+      map['calling_menu_item_id'] = Variable<int>(callingMenuItemId);
     }
     if (!nullToAbsent || onCancelMenuId != null) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId);
@@ -2745,9 +2751,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       callingCommandId: callingCommandId == null && nullToAbsent
           ? const Value.absent()
           : Value(callingCommandId),
-      callingMenuItem: callingMenuItem == null && nullToAbsent
+      callingMenuItemId: callingMenuItemId == null && nullToAbsent
           ? const Value.absent()
-          : Value(callingMenuItem),
+          : Value(callingMenuItemId),
       onCancelMenuId: onCancelMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(onCancelMenuId),
@@ -2762,7 +2768,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
       callingCommandId: serializer.fromJson<int?>(json['callingCommandId']),
-      callingMenuItem: serializer.fromJson<int?>(json['callingMenuItem']),
+      callingMenuItemId: serializer.fromJson<int?>(json['callingMenuItemId']),
       onCancelMenuId: serializer.fromJson<int?>(json['onCancelMenuId']),
       commandId: serializer.fromJson<int>(json['commandId']),
     );
@@ -2774,7 +2780,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
       'callingCommandId': serializer.toJson<int?>(callingCommandId),
-      'callingMenuItem': serializer.toJson<int?>(callingMenuItem),
+      'callingMenuItemId': serializer.toJson<int?>(callingMenuItemId),
       'onCancelMenuId': serializer.toJson<int?>(onCancelMenuId),
       'commandId': serializer.toJson<int>(commandId),
     };
@@ -2784,7 +2790,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           {int? id,
           Value<int?> after = const Value.absent(),
           Value<int?> callingCommandId = const Value.absent(),
-          Value<int?> callingMenuItem = const Value.absent(),
+          Value<int?> callingMenuItemId = const Value.absent(),
           Value<int?> onCancelMenuId = const Value.absent(),
           int? commandId}) =>
       CallCommand(
@@ -2793,9 +2799,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
         callingCommandId: callingCommandId.present
             ? callingCommandId.value
             : this.callingCommandId,
-        callingMenuItem: callingMenuItem.present
-            ? callingMenuItem.value
-            : this.callingMenuItem,
+        callingMenuItemId: callingMenuItemId.present
+            ? callingMenuItemId.value
+            : this.callingMenuItemId,
         onCancelMenuId:
             onCancelMenuId.present ? onCancelMenuId.value : this.onCancelMenuId,
         commandId: commandId ?? this.commandId,
@@ -2806,7 +2812,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('callingCommandId: $callingCommandId, ')
-          ..write('callingMenuItem: $callingMenuItem, ')
+          ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
           ..write('commandId: $commandId')
           ..write(')'))
@@ -2814,8 +2820,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, after, callingCommandId, callingMenuItem, onCancelMenuId, commandId);
+  int get hashCode => Object.hash(id, after, callingCommandId,
+      callingMenuItemId, onCancelMenuId, commandId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2823,7 +2829,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           other.id == this.id &&
           other.after == this.after &&
           other.callingCommandId == this.callingCommandId &&
-          other.callingMenuItem == this.callingMenuItem &&
+          other.callingMenuItemId == this.callingMenuItemId &&
           other.onCancelMenuId == this.onCancelMenuId &&
           other.commandId == this.commandId);
 }
@@ -2832,14 +2838,14 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
   final Value<int> id;
   final Value<int?> after;
   final Value<int?> callingCommandId;
-  final Value<int?> callingMenuItem;
+  final Value<int?> callingMenuItemId;
   final Value<int?> onCancelMenuId;
   final Value<int> commandId;
   const CallCommandsCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.callingCommandId = const Value.absent(),
-    this.callingMenuItem = const Value.absent(),
+    this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
     this.commandId = const Value.absent(),
   });
@@ -2847,7 +2853,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.callingCommandId = const Value.absent(),
-    this.callingMenuItem = const Value.absent(),
+    this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
     required int commandId,
   }) : commandId = Value(commandId);
@@ -2855,7 +2861,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     Expression<int>? id,
     Expression<int>? after,
     Expression<int>? callingCommandId,
-    Expression<int>? callingMenuItem,
+    Expression<int>? callingMenuItemId,
     Expression<int>? onCancelMenuId,
     Expression<int>? commandId,
   }) {
@@ -2863,7 +2869,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       if (id != null) 'id': id,
       if (after != null) 'after': after,
       if (callingCommandId != null) 'calling_command_id': callingCommandId,
-      if (callingMenuItem != null) 'calling_menu_item': callingMenuItem,
+      if (callingMenuItemId != null) 'calling_menu_item_id': callingMenuItemId,
       if (onCancelMenuId != null) 'on_cancel_menu_id': onCancelMenuId,
       if (commandId != null) 'command_id': commandId,
     });
@@ -2873,14 +2879,14 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       {Value<int>? id,
       Value<int?>? after,
       Value<int?>? callingCommandId,
-      Value<int?>? callingMenuItem,
+      Value<int?>? callingMenuItemId,
       Value<int?>? onCancelMenuId,
       Value<int>? commandId}) {
     return CallCommandsCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
       callingCommandId: callingCommandId ?? this.callingCommandId,
-      callingMenuItem: callingMenuItem ?? this.callingMenuItem,
+      callingMenuItemId: callingMenuItemId ?? this.callingMenuItemId,
       onCancelMenuId: onCancelMenuId ?? this.onCancelMenuId,
       commandId: commandId ?? this.commandId,
     );
@@ -2898,8 +2904,8 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     if (callingCommandId.present) {
       map['calling_command_id'] = Variable<int>(callingCommandId.value);
     }
-    if (callingMenuItem.present) {
-      map['calling_menu_item'] = Variable<int>(callingMenuItem.value);
+    if (callingMenuItemId.present) {
+      map['calling_menu_item_id'] = Variable<int>(callingMenuItemId.value);
     }
     if (onCancelMenuId.present) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId.value);
@@ -2916,7 +2922,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('callingCommandId: $callingCommandId, ')
-          ..write('callingMenuItem: $callingMenuItem, ')
+          ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
           ..write('commandId: $commandId')
           ..write(')'))

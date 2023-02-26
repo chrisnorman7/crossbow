@@ -16,7 +16,6 @@ void main() {
         '.createCommand',
         () async {
           final command = await commands.createCommand();
-          expect(command.callCommandId, null);
           expect(command.id, isNonZero);
           expect(command.messageSoundId, null);
           expect(command.messageText, null);
@@ -169,28 +168,6 @@ void main() {
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.url, url);
-        },
-      );
-
-      test(
-        '.setCallCommandId',
-        () async {
-          final command2 = await commands.createCommand();
-          final callCommand = await db.callCommandsDao
-              .createCallCommand(commandId: command2.id);
-          final command1 =
-              await commands.createCommand(callCommandId: callCommand.id);
-          expect(command1.callCommandId, callCommand.id);
-          var updatedCommand =
-              await commands.setCallCommandId(commandId: command1.id);
-          expect(updatedCommand.id, command1.id);
-          expect(updatedCommand.callCommandId, null);
-          updatedCommand = await commands.setCallCommandId(
-            commandId: command1.id,
-            callCommandId: callCommand.id,
-          );
-          expect(updatedCommand.id, command1.id);
-          expect(updatedCommand.callCommandId, callCommand.id);
         },
       );
     },

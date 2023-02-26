@@ -137,12 +137,10 @@ class ProjectRunner {
       final pushMenuRow = await db.pushMenusDao.getPushMenu(id: pushMenuId);
       await handlePushMenu(pushMenuRow);
     }
-    final callCommandId = command.callCommandId;
-    if (callCommandId != null) {
-      final callCommand =
-          await db.callCommandsDao.getCallCommand(id: callCommandId);
-      await handleCallCommand(callCommand);
-    }
+    final callCommands = await db.commandsDao.getCallCommands(
+      commandId: command.id,
+    );
+    await handleCallCommands(callCommands);
     final stopGameId = command.stopGameId;
     if (stopGameId != null) {
       final stopGame = await db.stopGamesDao.getStopGame(id: stopGameId);
@@ -175,17 +173,20 @@ class ProjectRunner {
     }
   }
 
-  /// Handle the given [callCommand].
-  Future<void> handleCallCommand(final CallCommand callCommand) async {
-    final command = await db.commandsDao.getCommand(id: callCommand.commandId);
-    final after = callCommand.after;
-    if (after == null) {
-      await handleCommand(command);
-    } else {
-      game.callAfter(
-        func: () => handleCommand(command),
-        runAfter: after,
-      );
+  /// Handle the given [callCommands].
+  Future<void> handleCallCommands(final List<CallCommand> callCommands) async {
+    for (final callCommand in callCommands) {
+      final command =
+          await db.commandsDao.getCommand(id: callCommand.commandId);
+      final after = callCommand.after;
+      if (after == null) {
+        await handleCommand(command);
+      } else {
+        game.callAfter(
+          func: () => handleCommand(command),
+          runAfter: after,
+        );
+      }
     }
   }
 
@@ -233,7 +234,6 @@ class ProjectRunner {
         (final e) {
           final selectSound = selectItemSounds[e.id] ?? selectItemSound;
           final activateSound = activateItemSounds[e.id] ?? activateItemSound;
-          final callCommandId = e.callCommandId;
           return ziggurat_menus.MenuItem(
             ziggurat.Message(
               text: e.name,
@@ -241,18 +241,15 @@ class ProjectRunner {
               gain: selectSound?.gain ?? 0.7,
               keepAlive: true,
             ),
-            callCommandId == null
-                ? ziggurat_menus.menuItemLabel
-                : ziggurat_menus.Button(
-                    () async {
-                      final callCommand =
-                          await db.callCommandsDao.getCallCommand(
-                        id: callCommandId,
-                      );
-                      await handleCallCommand(callCommand);
-                    },
-                    activateSound: activateSound,
-                  ),
+            ziggurat_menus.Button(
+              () async {
+                final callCommands = await db.menuItemsDao.getCallCommands(
+                  menuItemId: e.id,
+                );
+                await handleCallCommands(callCommands);
+              },
+              activateSound: activateSound,
+            ),
           );
         },
       ).toList(),
@@ -263,13 +260,10 @@ class ProjectRunner {
               gain: music.gain,
             ),
       onCancel: () async {
-        final onCancelCallCommandId = menu.onCancelCallCommandId;
-        if (onCancelCallCommandId != null) {
-          final callCommand = await db.callCommandsDao.getCallCommand(
-            id: onCancelCallCommandId,
-          );
-          await handleCallCommand(callCommand);
-        }
+        final callCommands = await db.menusDao.getOnCancelCallCommands(
+          menuId: menu.id,
+        );
+        await handleCallCommands(callCommands);
       },
     );
     game.pushLevel(

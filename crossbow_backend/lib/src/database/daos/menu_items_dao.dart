@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
+import '../tables/call_commands.dart';
 import '../tables/menu_items.dart';
 
 part 'menu_items_dao.g.dart';
 
 /// A DAO for menu items.
-@DriftAccessor(tables: [MenuItems])
+@DriftAccessor(tables: [MenuItems, CallCommands])
 class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$MenuItemsDaoMixin {
   /// Create an instance.
@@ -28,7 +29,6 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
           menuId: Value(menuId),
           name: Value(name),
           activateSoundId: Value(activateSoundId),
-          callCommandId: Value(callCommandId),
           selectSoundId: Value(selectSoundId),
           position: Value(position),
         ),
@@ -70,20 +70,6 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.go();
   }
 
-  /// Set the [MenuItem] with the given [menuItemId] to have a [CallCommand]
-  /// with the given [callCommandId].
-  Future<MenuItem> setCallCommand({
-    required final int menuItemId,
-    final int? callCommandId,
-  }) async {
-    final query = update(menuItems)
-      ..where((final table) => table.id.equals(menuItemId));
-    return (await query.writeReturning(
-      MenuItemsCompanion(callCommandId: Value(callCommandId)),
-    ))
-        .single;
-  }
-
   /// Rename the menu item with the given [menuItemId].
   Future<MenuItem> setName({
     required final int menuItemId,
@@ -120,4 +106,12 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     ))
         .single;
   }
+
+  /// Get the calling commands for the menu item with the given [menuItemId].
+  Future<List<CallCommand>> getCallCommands({required final int menuItemId}) =>
+      (select(callCommands)
+            ..where(
+              (final table) => table.callingMenuItemId.equals(menuItemId),
+            ))
+          .get();
 }

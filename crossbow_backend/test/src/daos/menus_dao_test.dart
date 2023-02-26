@@ -66,30 +66,6 @@ void main() {
       );
 
       test(
-        '.setOnCancelCallCommandId',
-        () async {
-          final command = await db.commandsDao.createCommand();
-          final callCommand =
-              await db.callCommandsDao.createCallCommand(commandId: command.id);
-          final menu = await menusDao.createMenu(
-            name: 'Test Menu',
-            onCancelCallCommandId: callCommand.id,
-          );
-          expect(menu.onCancelCallCommandId, callCommand.id);
-          var updatedMenu =
-              await menusDao.setOnCancelCallCommandId(menuId: menu.id);
-          expect(updatedMenu.id, menu.id);
-          expect(updatedMenu.onCancelCallCommandId, null);
-          updatedMenu = await menusDao.setOnCancelCallCommandId(
-            menuId: menu.id,
-            callCommandId: callCommand.id,
-          );
-          expect(updatedMenu.id, menu.id);
-          expect(updatedMenu.onCancelCallCommandId, callCommand.id);
-        },
-      );
-
-      test(
         '.setActivateItemSoundId',
         () async {
           final assetReference =

@@ -13,7 +13,7 @@ class CallCommands extends Table with WithPrimaryKey, WithAfter {
       .nullable()();
 
   /// The ID of the menu item that will call this command.
-  IntColumn get callingMenuItem => integer()
+  IntColumn get callingMenuItemId => integer()
       .references(MenuItems, #id, onDelete: KeyAction.cascade)
       .nullable()();
 
