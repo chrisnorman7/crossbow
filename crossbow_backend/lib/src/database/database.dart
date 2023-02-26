@@ -4,14 +4,7 @@ import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
-import '../daos/asset_references_dao.dart';
-import '../daos/call_commands_dao.dart';
-import '../daos/commands_dao.dart';
-import '../daos/menu_items_dao.dart';
-import '../daos/menus_dao.dart';
-import '../daos/pop_levels_dao.dart';
-import '../daos/push_menus_dao.dart';
-import '../daos/stop_games_dao.dart';
+import 'daos/_daos.dart';
 import 'tables/_tables.dart';
 
 part 'database.g.dart';

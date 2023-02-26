@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../database/database.dart';
-import '../database/tables/asset_references.dart';
+import '../database.dart';
+import '../tables/asset_references.dart';
 
 part 'asset_references_dao.g.dart';
 

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../database/database.dart';
-import '../database/tables/call_commands.dart';
+import '../database.dart';
+import '../tables/call_commands.dart';
 
 part 'call_commands_dao.g.dart';
 

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../database/database.dart';
-import '../database/tables/stop_games.dart';
+import '../database.dart';
+import '../tables/stop_games.dart';
 
 part 'stop_games_dao.g.dart';
 

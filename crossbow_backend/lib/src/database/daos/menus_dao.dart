@@ -1,13 +1,12 @@
 import 'package:drift/drift.dart';
 
-import '../database/database.dart';
-import '../database/tables/menu_items.dart';
-import '../database/tables/menus.dart';
+import '../database.dart';
+import '../tables/menus.dart';
 
 part 'menus_dao.g.dart';
 
 /// The DAO for menus.
-@DriftAccessor(tables: [Menus, MenuItems])
+@DriftAccessor(tables: [Menus])
 class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$MenusDaoMixin {
   /// Create an instance.

@@ -1,7 +1,11 @@
 import 'package:drift/drift.dart';
 
 import '../mixins.dart';
-import '_tables.dart';
+import 'asset_references.dart';
+import 'call_commands.dart';
+import 'pop_levels.dart';
+import 'push_menus.dart';
+import 'stop_games.dart';
 
 /// The commands table.
 class Commands extends Table with WithPrimaryKey {
