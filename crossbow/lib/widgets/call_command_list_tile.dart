@@ -1,8 +1,12 @@
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:crossbow_backend/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../messages.dart';
+import '../src/providers.dart';
+import '../util.dart';
 
 /// A list tile to show the [CallCommand] instance with the given
 /// [callCommandId].
@@ -34,10 +38,35 @@ class CallCommandListTile extends ConsumerWidget {
 
   /// Build the widget.
   @override
-  Widget build(final BuildContext context, final WidgetRef ref) => ListTile(
+  Widget build(final BuildContext context, final WidgetRef ref) {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    return CallbackShortcuts(
+      bindings: {
+        deleteShortcut: () {
+          final id = callCommandId;
+          if (id == null) {
+            return;
+          }
+          intlConfirm(
+            context: context,
+            message: Intl.message(
+              'Are you sure you want to clear this command?',
+            ),
+            title: confirmDeleteTitle,
+            yesCallback: () async {
+              Navigator.of(context).pop();
+              await projectContext.db.callCommandsDao
+                  .deleteCallCommand(callCommandId: id);
+            },
+          );
+        }
+      },
+      child: ListTile(
         autofocus: autofocus,
         title: Text(title),
         subtitle: Text(callCommandId == null ? unsetMessage : setMessage),
         onTap: () async {},
-      );
+      ),
+    );
+  }
 }
