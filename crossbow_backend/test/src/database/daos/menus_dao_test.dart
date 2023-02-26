@@ -1,7 +1,7 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:test/test.dart';
 
-import '../../custom_database.dart';
+import '../../../custom_database.dart';
 
 void main() {
   final db = getDatabase();
