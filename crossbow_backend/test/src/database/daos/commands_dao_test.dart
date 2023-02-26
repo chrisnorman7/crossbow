@@ -11,6 +11,7 @@ void main() {
       final commands = db.commandsDao;
       final menus = db.menusDao;
       final pushMenus = db.pushMenusDao;
+      final callCommandsDao = db.callCommandsDao;
 
       test(
         '.createCommand',
@@ -168,6 +169,22 @@ void main() {
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.url, url);
+        },
+      );
+
+      test(
+        '.getCallCommands',
+        () async {
+          final command = await commands.createCommand();
+          final menu = await menus.createMenu(name: 'Test Menu');
+          await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            onCancelMenuId: menu.id,
+          );
+          expect(
+            await commands.getCallCommands(commandId: command.id),
+            isEmpty,
+          );
         },
       );
     },

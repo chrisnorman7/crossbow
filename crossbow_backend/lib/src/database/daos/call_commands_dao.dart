@@ -19,16 +19,22 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? callingMenuItemId,
     final int? onCancelMenuId,
     final int? after,
-  }) =>
-      into(callCommands).insertReturning(
-        CallCommandsCompanion(
-          commandId: Value(commandId),
-          callingCommandId: Value(callingCommandId),
-          callingMenuItemId: Value(callingMenuItemId),
-          onCancelMenuId: Value(onCancelMenuId),
-          after: Value(after),
-        ),
-      );
+  }) {
+    if (callingCommandId == null &&
+        callingMenuItemId == null &&
+        onCancelMenuId == null) {
+      throw StateError('This call command will not be attached to any object.');
+    }
+    return into(callCommands).insertReturning(
+      CallCommandsCompanion(
+        commandId: Value(commandId),
+        callingCommandId: Value(callingCommandId),
+        callingMenuItemId: Value(callingMenuItemId),
+        onCancelMenuId: Value(onCancelMenuId),
+        after: Value(after),
+      ),
+    );
+  }
 
   /// Get the call command with the given [id].
   Future<CallCommand> getCallCommand({required final int id}) {
