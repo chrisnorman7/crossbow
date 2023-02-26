@@ -42,6 +42,36 @@ void main() {
           );
         },
       );
+
+      test(
+        '.deleteCallCommand',
+        () async {
+          final command2 = await commands.createCommand();
+          final callCommand =
+              await callCommands.createCallCommand(commandId: command2.id);
+          final command1 = await commands.createCommand(
+            callCommandId: callCommand.id,
+          );
+          expect(command1.callCommandId, callCommand.id);
+          expect(
+            await callCommands.deleteCallCommand(
+              callCommandId: callCommand.id,
+            ),
+            1,
+          );
+          await expectLater(
+            callCommands.getCallCommand(id: callCommand.id),
+            throwsStateError,
+          );
+          expect(commands.getCommand(id: command2.id), throwsStateError);
+          final updatedCommand = await commands.getCommand(id: command1.id);
+          expect(
+            updatedCommand.id,
+            command1.id,
+          );
+          expect(updatedCommand.callCommandId, null);
+        },
+      );
     },
   );
 }
