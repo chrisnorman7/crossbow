@@ -42,3 +42,11 @@ Future<void> intlConfirm({
       yesCallback: yesCallback,
       yesLabel: yes,
     );
+
+/// Show a message.
+Future<void> intlShowMessage({
+  required final BuildContext context,
+  required final String message,
+  required final String title,
+}) =>
+    showMessage(context: context, message: message, title: title);

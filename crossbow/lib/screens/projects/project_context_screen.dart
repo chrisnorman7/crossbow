@@ -11,6 +11,7 @@ import '../../constants.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
+import '../../util.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
@@ -128,9 +129,10 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   Widget getMenusPage(final BuildContext context) {
     final value = ref.watch(menusProvider);
     return CallbackShortcuts(
-      bindings: {newShortcut: () => newMenu},
+      bindings: {newShortcut: newMenu},
       child: value.when(
         data: (final data) {
+          final projectContext = data.projectContext;
           final menus = data.value;
           return BuiltSearchableListView(
             items: menus,
@@ -142,18 +144,54 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                   assetReferenceId: menu.musicId,
                   looping: true,
                   child: Builder(
-                    builder: (final context) => ListTile(
-                      autofocus: index == 0,
-                      title: Text(menu.name),
-                      onTap: () async {
-                        PlaySoundSemantics.of(context)?.stop();
-                        await pushWidget(
-                          context: context,
-                          builder: (final context) =>
-                              EditMenuScreen(menuId: menu.id),
-                        );
-                        ref.invalidate(menusProvider);
+                    builder: (final context) => CallbackShortcuts(
+                      bindings: {
+                        deleteHotkey: () async {
+                          PlaySoundSemantics.of(context)?.stop();
+                          final menuItems =
+                              await projectContext.db.menuItemsDao.getMenuItems(
+                            menuId: menu.id,
+                          );
+                          if (mounted) {
+                            if (menuItems.isEmpty) {
+                              await intlConfirm(
+                                context: context,
+                                message: Intl.message(
+                                  'Are you sure you want to delete this menu?',
+                                ),
+                                title: confirmDeleteTitle,
+                                yesCallback: () async {
+                                  Navigator.of(context).pop();
+                                  await projectContext.db.menusDao
+                                      .deleteMenu(id: menu.id);
+                                  ref.invalidate(menusProvider);
+                                },
+                              );
+                            } else {
+                              await intlShowMessage(
+                                context: context,
+                                message: Intl.message(
+                                  'You must delete all menu items first.',
+                                ),
+                                title: errorTitle,
+                              );
+                            }
+                          }
+                        }
                       },
+                      child: ListTile(
+                        autofocus: index == 0,
+                        title: Text(menu.name),
+                        onTap: () async {
+                          PlaySoundSemantics.of(context)?.stop();
+                          await pushWidget(
+                            context: context,
+                            builder: (final context) =>
+                                EditMenuScreen(menuId: menu.id),
+                          );
+                          ref.invalidate(menusProvider);
+                        },
+                      ),
                     ),
                   ),
                 ),
