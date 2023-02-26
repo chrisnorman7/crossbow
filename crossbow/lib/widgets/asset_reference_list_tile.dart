@@ -3,7 +3,6 @@ import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 import '../hotkeys.dart';
@@ -12,7 +11,6 @@ import '../screens/select_asset_screen.dart';
 import '../src/contexts/asset_context.dart';
 import '../src/contexts/value_context.dart';
 import '../src/providers.dart';
-import '../util.dart';
 import 'play_sound_semantics.dart';
 
 /// A list tile to show the asset reference with the given [assetReferenceId].
@@ -81,21 +79,11 @@ class AssetReferenceListTile extends ConsumerWidget {
     final child = Builder(
       builder: (final context) => CallbackShortcuts(
         bindings: {
-          deleteHotkey: () {
+          deleteHotkey: () async {
             if (nullable && assetReference != null) {
-              intlConfirm(
-                context: context,
-                message: Intl.message(
-                  'Do you want to clear this asset reference?',
-                ),
-                title: confirmDeleteTitle,
-                yesCallback: () async {
-                  Navigator.of(context).pop();
-                  await projectContext.db.assetReferencesDao
-                      .deleteAssetReference(id: assetReference.id);
-                  onChanged(null);
-                },
-              );
+              await projectContext.db.assetReferencesDao
+                  .deleteAssetReference(id: assetReference.id);
+              onChanged(null);
             }
           }
         },
