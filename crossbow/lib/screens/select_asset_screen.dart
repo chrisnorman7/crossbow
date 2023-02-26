@@ -141,7 +141,9 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
         },
         shouldPop: false,
         title: Intl.message('Select Asset'),
-        value: widget.assetContext?.name,
+        value: folderName == widget.assetContext?.folderName
+            ? widget.assetContext?.name
+            : null,
       ),
     );
   }
