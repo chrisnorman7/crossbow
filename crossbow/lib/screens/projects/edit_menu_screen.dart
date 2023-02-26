@@ -50,7 +50,6 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   /// Get the body for this widget.
   Widget getBody(final MenuContext menuContext) {
     final menu = menuContext.menu;
-    final menuItems = menuContext.menuItems;
     return TabbedScaffold(
       tabs: [
         TabbedScaffoldTab(
@@ -66,7 +65,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           icon: Text(menuContext.menuItems.length.toString()),
           builder: (final context) => getMenuItemsPage(
             context: context,
-            menuItems: menuItems,
+            menuContext: menuContext,
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: newMenuItem,
@@ -149,38 +148,41 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   /// Get the list view of menu items.
   Widget getMenuItemsPage({
     required final BuildContext context,
-    required final List<MenuItem> menuItems,
-  }) =>
-      BuiltSearchableListView(
-        items: menuItems,
-        builder: (final context, final index) {
-          final menuItem = menuItems[index];
-          return SearchableListTile(
-            searchString: menuItem.name,
-            child: AssetReferencePlaySoundSemantics(
-              assetReferenceId: menuItem.selectSoundId,
-              child: ListTile(
-                autofocus: index == 0,
-                title: Text(menuItem.name),
-                subtitle: Text(
-                  menuItem.callCommandId == null
-                      ? Intl.message('Label')
-                      : Intl.message('Button'),
-                ),
-                onTap: () async {
-                  await pushWidget(
-                    context: context,
-                    builder: (final context) => EditMenuItemScreen(
-                      menuId: menuItem.menuId,
-                      menuItemId: menuItem.id,
-                    ),
-                  );
-                },
+    required final MenuContext menuContext,
+  }) {
+    final menu = menuContext.menu;
+    final menuItems = menuContext.menuItems;
+    return BuiltSearchableListView(
+      items: menuItems,
+      builder: (final context, final index) {
+        final menuItem = menuItems[index];
+        return SearchableListTile(
+          searchString: menuItem.name,
+          child: AssetReferencePlaySoundSemantics(
+            assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
+            child: ListTile(
+              autofocus: index == 0,
+              title: Text(menuItem.name),
+              subtitle: Text(
+                menuItem.callCommandId == null
+                    ? Intl.message('Label')
+                    : Intl.message('Button'),
               ),
+              onTap: () async {
+                await pushWidget(
+                  context: context,
+                  builder: (final context) => EditMenuItemScreen(
+                    menuId: menuItem.menuId,
+                    menuItemId: menuItem.id,
+                  ),
+                );
+              },
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
+  }
 
   /// Invalidate the [menuProvider].
   void invalidateMenuProvider() =>
