@@ -60,6 +60,9 @@ class PlaySoundSemanticsState extends ConsumerState<PlaySoundSemantics> {
     stop();
     final assetReference = widget.assetReference;
     final projectRunner = ref.watch(projectRunnerProvider);
+    if (projectRunner == null) {
+      return;
+    }
     final game = ref.watch(gameProvider);
     final asset = projectRunner.getAssetReference(assetReference);
     _sound = game.interfaceSounds.playSound(

@@ -104,7 +104,10 @@ final synthizerContextProvider = Provider((final ref) {
 /// Provide a single command.
 final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
   (final ref, final id) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError('Cannot get command with `null` project context.');
+    }
     final command = await projectContext.db.commandsDao.getCommand(id: id);
     return ValueContext(projectContext: projectContext, value: command);
   },
@@ -114,9 +117,16 @@ final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
 final assetReferenceProvider =
     FutureProvider.family<ValueContext<AssetReference>, int>(
   (final ref, final id) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError(
+        'Cannot get asset reference with `null` project context.',
+      );
+    }
     final assetReference =
-        await projectContext.db.assetReferencesDao.getAssetReference(id: id);
+        await projectContext.db.assetReferencesDao.getAssetReference(
+      id: id,
+    );
     return ValueContext(projectContext: projectContext, value: assetReference);
   },
 );
@@ -166,7 +176,10 @@ final gameProvider = Provider(
 
 /// Provide a project runner.
 final projectRunnerProvider = Provider((final ref) {
-  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  final projectContext = ref.watch(projectContextNotifierProvider);
+  if (projectContext == null) {
+    return null;
+  }
   final sdl = ref.watch(sdlProvider);
   final synthizerContext = ref.watch(synthizerContextProvider);
   final random = ref.watch(randomProvider);
@@ -183,7 +196,10 @@ final projectRunnerProvider = Provider((final ref) {
 /// Provide a single pop level.
 final popLevelProvider = FutureProvider.family<ValueContext<PopLevel>, int>(
   (final ref, final id) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError('Cannot get pop level with `null` project context.');
+    }
     final popLevel = await projectContext.db.popLevelsDao.getPopLevel(id: id);
     return ValueContext(projectContext: projectContext, value: popLevel);
   },
@@ -192,7 +208,10 @@ final popLevelProvider = FutureProvider.family<ValueContext<PopLevel>, int>(
 /// A provider for all menus.
 final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
   (final ref) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError('Cannot get menus with `null` project context.');
+    }
     final db = projectContext.db;
     final menus = await db.select(db.menus).get();
     return ValueContext(projectContext: projectContext, value: menus);
@@ -202,7 +221,10 @@ final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
 /// Get the context for a menu.
 final menuProvider = FutureProvider.family<MenuContext, int>(
   (final ref, final arg) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError('Cannot get menu with `null` project context.');
+    }
     final menu = await projectContext.db.menusDao.getMenu(id: arg);
     final menuItems = await projectContext.db.menuItemsDao.getMenuItems(
       menuId: arg,
@@ -218,7 +240,10 @@ final menuProvider = FutureProvider.family<MenuContext, int>(
 /// Provide a single menu item.
 final menuItemProvider = FutureProvider.family<MenuItemContext, int>(
   (final ref, final arg) async {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final projectContext = ref.watch(projectContextNotifierProvider);
+    if (projectContext == null) {
+      throw StateError('Cannot get menu item with `null` project context.');
+    }
     final db = projectContext.db;
     final menuItem = await db.menuItemsDao.getMenuItem(id: arg);
     final menu = await db.menusDao.getMenu(id: menuItem.menuId);
