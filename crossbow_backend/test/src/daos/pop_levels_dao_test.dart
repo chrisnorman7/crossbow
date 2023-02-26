@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:crossbow_backend/database.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:test/test.dart';
 
 import '../../custom_database.dart';

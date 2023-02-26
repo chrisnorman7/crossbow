@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../../database.dart';
+import '../database/database.dart';
+import '../database/tables/commands.dart';
 
 part 'commands_dao.g.dart';
 

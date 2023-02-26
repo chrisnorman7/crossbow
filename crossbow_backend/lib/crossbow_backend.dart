@@ -11,4 +11,7 @@ export 'src/daos/menus_dao.dart';
 export 'src/daos/pop_levels_dao.dart';
 export 'src/daos/push_menus_dao.dart';
 export 'src/daos/stop_games_dao.dart';
+export 'src/database/database.dart';
+export 'src/database/tables/_tables.dart';
+export 'src/database/tables/asset_references.dart';
 export 'src/json/project.dart';

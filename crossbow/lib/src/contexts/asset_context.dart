@@ -1,4 +1,4 @@
-import 'package:crossbow_backend/database.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 
 /// A context which holds a [folderName] and a [name], and can be used for
 /// creating and editing [AssetReference]s.

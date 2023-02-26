@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../../database.dart';
+import '../database/database.dart';
+import '../database/tables/pop_levels.dart';
 
 part 'pop_levels_dao.g.dart';
 

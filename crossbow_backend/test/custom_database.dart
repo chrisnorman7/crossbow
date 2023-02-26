@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:crossbow_backend/database.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:sqlite3/open.dart';

@@ -9,9 +9,9 @@ import 'package:ziggurat/menus.dart' as ziggurat_menus;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
-import 'database.dart';
 import 'src/contexts/message_context.dart';
 import 'src/contexts/project_context.dart';
+import 'src/database/database.dart';
 import 'src/json/project.dart';
 
 /// A class for running a [projectContext].

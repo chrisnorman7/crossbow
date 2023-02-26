@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
-import 'package:crossbow_backend/database.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 

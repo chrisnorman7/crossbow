@@ -11,8 +11,8 @@ import 'package:ziggurat/util.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../constants.dart';
-import '../../database.dart';
 import '../../project_runner.dart';
+import '../database/database.dart';
 import '../json/project.dart';
 
 /// The context for a particular project.

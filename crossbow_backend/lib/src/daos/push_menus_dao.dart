@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../../database.dart';
+import '../database/database.dart';
+import '../database/tables/push_menus.dart';
 
 part 'push_menus_dao.g.dart';
 

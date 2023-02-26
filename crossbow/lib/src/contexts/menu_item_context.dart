@@ -1,5 +1,4 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
-import 'package:crossbow_backend/database.dart';
 
 /// A context to hold a [menu], and a [menuItem].
 class MenuItemContext {

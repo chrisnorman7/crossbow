@@ -1,4 +1,4 @@
-import '../../database.dart';
+import '../database/database.dart';
 
 /// A context which holds the [text] and [assetReference] of a [command].
 class MessageContext {
