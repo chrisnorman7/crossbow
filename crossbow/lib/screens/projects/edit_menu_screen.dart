@@ -12,6 +12,7 @@ import '../../constants.dart';
 import '../../messages.dart';
 import '../../src/contexts/menu_context.dart';
 import '../../src/providers.dart';
+import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/call_command_list_tile.dart';
@@ -163,7 +164,29 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                   newIndex: index + 1,
                 ),
             moveUpShortcut: () =>
-                reorderMenuItems(oldIndex: index, newIndex: index - 1)
+                reorderMenuItems(oldIndex: index, newIndex: index - 1),
+            deleteShortcut: () {
+              if (menuItem.callCommandId != null) {
+                showMessage(
+                  context: context,
+                  message: Intl.message(
+                    'You cannot delete menu items that have commands.',
+                  ),
+                );
+              } else {
+                intlConfirm(
+                  context: context,
+                  message: 'Are you sure you want to delete this menu item?',
+                  title: confirmDeleteTitle,
+                  yesCallback: () async {
+                    Navigator.of(context).pop();
+                    await menuContext.projectContext.db.menuItemsDao
+                        .deleteMenuItem(id: menuItem.id);
+                    invalidateMenuProvider();
+                  },
+                );
+              }
+            }
           },
           key: ValueKey(menuItem.id),
           child: AssetReferencePlaySoundSemantics(
