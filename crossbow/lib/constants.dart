@@ -9,3 +9,6 @@ final intlNewIcon = Icon(
   Icons.new_label,
   semanticLabel: Intl.message('New'),
 );
+
+/// How much `after` values should be changed by.
+const afterModifier = 100;

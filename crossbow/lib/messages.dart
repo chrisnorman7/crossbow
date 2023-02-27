@@ -95,3 +95,6 @@ final inMessage = Intl.message('in');
 
 /// The delete message.
 final deleteMessage = Intl.message('Delete');
+
+/// The fade length title.
+final fadeLengthTitle = Intl.message('Fade Length');

@@ -87,7 +87,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
               },
               title: Intl.message('Run Delay'),
               min: 0,
-              modifier: 200,
+              modifier: afterModifier,
               subtitle: after == null
                   ? Intl.message('Run immediately')
                   : '${after / 1000} $secondsMessage',

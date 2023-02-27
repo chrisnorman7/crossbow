@@ -12,6 +12,7 @@ import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
+import '../../widgets/push_menu_list_tile.dart';
 
 /// A screen to edit the command with the given [commandId].
 class EditCommandScreen extends ConsumerWidget {
@@ -86,6 +87,16 @@ class EditCommandScreen extends ConsumerWidget {
             nullable: true,
             title: outputSound,
           ),
+          PushMenuListTile(
+            pushMenuId: command.pushMenuId,
+            onChanged: (final value) async {
+              await commands.setPushMenuId(
+                commandId: command.id,
+                pushMenuId: value,
+              );
+              invalidateCommandProvider(ref);
+            },
+          ),
           PopLevelListTile(
             popLevelId: command.popLevelId,
             onChanged: (final value) async {
@@ -110,7 +121,6 @@ class EditCommandScreen extends ConsumerWidget {
   }
 
   /// Invalidate the command provider.
-  void invalidateCommandProvider(final WidgetRef ref) {
-    ref.invalidate(commandProvider.call(commandId));
-  }
+  void invalidateCommandProvider(final WidgetRef ref) =>
+      ref.invalidate(commandProvider.call(commandId));
 }

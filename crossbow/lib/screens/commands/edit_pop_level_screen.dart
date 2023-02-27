@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
+import '../../widgets/fade_length_list_tile.dart';
 
 /// A screen to edit a pop level with the given [popLevelId].
 class EditPopLevelScreen extends ConsumerWidget {
@@ -47,29 +47,24 @@ class EditPopLevelScreen extends ConsumerWidget {
   }) {
     final popLevels = popLevelContext.projectContext.db.popLevelsDao;
     final popLevel = popLevelContext.value;
-    final fadeLength = popLevel.fadeLength;
     return SimpleScaffold(
       title: Intl.message('Edit Pop Level'),
       body: ListView(
         children: [
-          DoubleListTile(
-            value: fadeLength ?? 0.0,
+          FadeLengthListTile(
+            fadeLength: popLevel.fadeLength,
             onChanged: (final value) async {
-              await popLevels.setFadeLength(
-                id: popLevel.id,
-                fadeLength: value == 0 ? null : value,
-              );
-              ref.invalidate(popLevelProvider.call(popLevelId));
+              await popLevels.setFadeLength(id: popLevelId, fadeLength: value);
+              invalidatePopLevelProvider(ref);
             },
-            title: Intl.message('Fade Length'),
             autofocus: true,
-            min: 0,
-            subtitle: fadeLength == null
-                ? unsetMessage
-                : '$fadeLength $secondsMessage',
           )
         ],
       ),
     );
   }
+
+  /// Invalidate the pop levels provider.
+  void invalidatePopLevelProvider(final WidgetRef ref) =>
+      ref.invalidate(popLevelProvider.call(popLevelId));
 }

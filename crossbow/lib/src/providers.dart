@@ -14,6 +14,7 @@ import 'contexts/app_preferences_context.dart';
 import 'contexts/call_commands_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
+import 'contexts/push_menu_context.dart';
 import 'contexts/value_context.dart';
 import 'json/app_preferences.dart';
 
@@ -205,19 +206,6 @@ final popLevelProvider = FutureProvider.family<ValueContext<PopLevel>, int>(
   },
 );
 
-/// A provider for all menus.
-final menusProvider = FutureProvider<ValueContext<List<Menu>>>(
-  (final ref) async {
-    final projectContext = ref.watch(projectContextNotifierProvider);
-    if (projectContext == null) {
-      throw StateError('Cannot get menus with `null` project context.');
-    }
-    final db = projectContext.db;
-    final menus = await db.select(db.menus).get();
-    return ValueContext(projectContext: projectContext, value: menus);
-  },
-);
-
 /// Get the context for a menu.
 final menuProvider = FutureProvider.family<MenuContext, int>(
   (final ref, final arg) async {
@@ -275,5 +263,27 @@ final callCommandsProvider =
         break;
     }
     return ValueContext(projectContext: projectContext, value: callCommands);
+  },
+);
+
+/// Provide all menus.
+final menusProvider =
+    FutureProvider<ValueContext<List<Menu>>>((final ref) async {
+  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  final menus = await projectContext.db.menusDao.getMenus();
+  return ValueContext(projectContext: projectContext, value: menus);
+});
+
+/// Provide a push menu.
+final pushMenuProvider = FutureProvider.family<PushMenuContext, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final pushMenu = await db.pushMenusDao.getPushMenu(id: arg);
+    final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
+    return PushMenuContext(
+      pushMenu: pushMenu,
+      menu: menu,
+    );
   },
 );
