@@ -140,6 +140,25 @@ void main() {
           }
         },
       );
+
+      test(
+        '.getMenus',
+        () async {
+          await menusDao.delete(menusDao.menus).go();
+          final playMenu = await menusDao.createMenu(name: 'Play Menu');
+          final pauseMenu = await menusDao.createMenu(name: 'Pause Menu');
+          final assetsMenu = await menusDao.createMenu(name: 'Assets Menu');
+          final menus = await menusDao.getMenus();
+          expect(menus.length, 3);
+          final orderedMenus = [assetsMenu, pauseMenu, playMenu];
+          for (var i = 0; i < menus.length; i++) {
+            final originalMenu = orderedMenus[i];
+            final retrievedMenu = menus[i];
+            expect(originalMenu.name, retrievedMenu.name);
+            expect(originalMenu.id, retrievedMenu.id);
+          }
+        },
+      );
     },
   );
 }

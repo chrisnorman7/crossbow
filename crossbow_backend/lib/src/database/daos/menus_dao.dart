@@ -97,4 +97,11 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(callCommands)
             ..where((final table) => table.onCancelMenuId.equals(menuId)))
           .get();
+
+  /// Get all menus, ordered by their name.
+  Future<List<Menu>> getMenus() async {
+    final query = select(menus)
+      ..orderBy([(final table) => OrderingTerm.asc(table.name)]);
+    return query.get();
+  }
 }
