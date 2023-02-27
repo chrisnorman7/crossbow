@@ -173,21 +173,23 @@ class ProjectRunner {
     }
   }
 
+  /// Handle the given [callCommand].
+  Future<void> handleCallCommand(final CallCommand callCommand) async {
+    final command = await db.commandsDao.getCommand(id: callCommand.commandId);
+    final after = callCommand.after;
+    if (after == null) {
+      await handleCommand(command);
+    } else {
+      game.callAfter(
+        func: () => handleCommand(command),
+        runAfter: after,
+      );
+    }
+  }
+
   /// Handle the given [callCommands].
   Future<void> handleCallCommands(final List<CallCommand> callCommands) async {
-    for (final callCommand in callCommands) {
-      final command =
-          await db.commandsDao.getCommand(id: callCommand.commandId);
-      final after = callCommand.after;
-      if (after == null) {
-        await handleCommand(command);
-      } else {
-        game.callAfter(
-          func: () => handleCommand(command),
-          runAfter: after,
-        );
-      }
-    }
+    callCommands.forEach(handleCallCommand);
   }
 
   /// Push the given [pushMenu].
