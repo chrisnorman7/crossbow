@@ -42,7 +42,7 @@ Future<void> main() async {
     commandId: projectContext.project.initialCommandId,
     text: 'Welcome to the crossbow example.',
   );
-  await commands.setPushMenu(
+  await commands.setPushMenuId(
     commandId: projectContext.project.initialCommandId,
     pushMenuId: pushMenu.id,
   );
