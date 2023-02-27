@@ -89,3 +89,9 @@ final callCommandsMessage = Intl.message('Call Commands');
 
 /// Error title.
 final errorTitle = Intl.message('Error');
+
+/// In.
+final inMessage = Intl.message('in');
+
+/// The delete message.
+final deleteMessage = Intl.message('Delete');

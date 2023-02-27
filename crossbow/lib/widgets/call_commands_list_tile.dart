@@ -1,36 +1,21 @@
-import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:flutter/material.dart';
 
-/// What sort of command should be edited.
-///
-/// The [values] in this enum affect the generated SQL query.
-enum CallCommandsTarget {
-  /// Commands called by a [Command].
-  command,
-
-  /// Commands called by a [MenuItem].
-  menuItem,
-
-  /// Commands to be called from a [Menu]'s `onCancel` handler.
-  menuOnCancel,
-}
+import '../screens/commands/call_commands_screen.dart';
+import '../src/contexts/call_commands_context.dart';
 
 /// A list tile that allows editing call commands.
 class CallCommandsListTile extends StatelessWidget {
   /// Create an instance.
   const CallCommandsListTile({
-    required this.target,
-    required this.id,
+    required this.callCommandsContext,
     required this.title,
     this.autofocus = false,
     super.key,
   });
 
-  /// The type of the commands to retrieve.
-  final CallCommandsTarget target;
-
-  /// The ID of the [target].
-  final int id;
+  /// The context for getting call commands.
+  final CallCommandsContext callCommandsContext;
 
   /// The title of the list tile.
   final String title;
@@ -43,5 +28,10 @@ class CallCommandsListTile extends StatelessWidget {
   Widget build(final BuildContext context) => ListTile(
         autofocus: autofocus,
         title: Text(title),
+        onTap: () => pushWidget(
+          context: context,
+          builder: (final context) =>
+              CallCommandsScreen(callCommandsContext: callCommandsContext),
+        ),
       );
 }

@@ -53,7 +53,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               floatingActionButton: FloatingActionButton(
                 onPressed: newMenu,
                 tooltip: Intl.message('New Menu'),
-                child: newIcon,
+                child: intlNewIcon,
               ),
             )
           ],

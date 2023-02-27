@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../messages.dart';
+import '../../../src/contexts/call_commands_context.dart';
 import '../../../src/contexts/menu_item_context.dart';
 import '../../../src/providers.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
@@ -78,8 +79,10 @@ class EditMenuItemScreen extends ConsumerWidget {
             title: Intl.message('Select Sound'),
           ),
           CallCommandsListTile(
-            target: CallCommandsTarget.menuItem,
-            id: menuItem.id,
+            callCommandsContext: CallCommandsContext(
+              target: CallCommandsTarget.menuItem,
+              id: menuItem.id,
+            ),
             title: callCommandsMessage,
           ),
           AssetReferenceListTile(

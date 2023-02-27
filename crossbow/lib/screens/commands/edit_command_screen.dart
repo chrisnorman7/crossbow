@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../messages.dart';
+import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
@@ -97,8 +98,10 @@ class EditCommandScreen extends ConsumerWidget {
             title: Intl.message('Pop Level'),
           ),
           CallCommandsListTile(
-            target: CallCommandsTarget.command,
-            id: command.id,
+            callCommandsContext: CallCommandsContext(
+              target: CallCommandsTarget.command,
+              id: command.id,
+            ),
             title: callCommandsMessage,
           )
         ],

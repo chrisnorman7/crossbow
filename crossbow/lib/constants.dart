@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 const appPreferencesKey = 'crossbow_preferences';
 
 /// The icon shown when creating something.
-final newIcon = Icon(
+final intlNewIcon = Icon(
   Icons.new_label,
   semanticLabel: Intl.message('New'),
 );

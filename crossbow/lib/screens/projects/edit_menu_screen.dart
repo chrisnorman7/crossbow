@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../../constants.dart';
 import '../../messages.dart';
+import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/menu_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
@@ -72,7 +73,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           floatingActionButton: FloatingActionButton(
             onPressed: newMenuItem,
             tooltip: Intl.message('New Menu Item'),
-            child: newIcon,
+            child: intlNewIcon,
           ),
         )
       ],
@@ -133,8 +134,10 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           title: Intl.message('Select Item Sound'),
         ),
         CallCommandsListTile(
-          target: CallCommandsTarget.menuOnCancel,
-          id: menu.id,
+          callCommandsContext: CallCommandsContext(
+            target: CallCommandsTarget.menuOnCancel,
+            id: menu.id,
+          ),
           title: Intl.message('Cancel Commands'),
         )
       ],

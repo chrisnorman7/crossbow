@@ -11,6 +11,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
+import 'contexts/call_commands_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
 import 'contexts/value_context.dart';
@@ -251,5 +252,28 @@ final menuItemProvider = FutureProvider.family<MenuItemContext, int>(
       menu: menu,
       menuItem: menuItem,
     );
+  },
+);
+
+/// Provide a list of call commands.
+final callCommandsProvider =
+    FutureProvider.family<ValueContext<List<CallCommand>>, CallCommandsContext>(
+  (final ref, final arg) async {
+    final id = arg.id;
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final List<CallCommand> callCommands;
+    switch (arg.target) {
+      case CallCommandsTarget.command:
+        callCommands = await db.commandsDao.getCallCommands(commandId: id);
+        break;
+      case CallCommandsTarget.menuItem:
+        callCommands = await db.menuItemsDao.getCallCommands(menuItemId: id);
+        break;
+      case CallCommandsTarget.menuOnCancel:
+        callCommands = await db.menusDao.getOnCancelCallCommands(menuId: id);
+        break;
+    }
+    return ValueContext(projectContext: projectContext, value: callCommands);
   },
 );
