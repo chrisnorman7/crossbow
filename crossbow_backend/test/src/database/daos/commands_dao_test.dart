@@ -50,13 +50,18 @@ void main() {
         () async {
           final menu = await menus.createMenu(name: 'Test Menu');
           final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          final initialCommand = await commands.createCommand();
-          final command = await commands.setPushMenu(
-            commandId: initialCommand.id,
+          final command = await commands.createCommand(pushMenuId: pushMenu.id);
+          expect(command.pushMenuId, pushMenu.id);
+          var updatedCommand =
+              await commands.setPushMenuId(commandId: command.id);
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.pushMenuId, null);
+          updatedCommand = await commands.setPushMenuId(
+            commandId: command.id,
             pushMenuId: pushMenu.id,
           );
-          expect(command.id, initialCommand.id);
-          expect(command.pushMenuId, pushMenu.id);
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.pushMenuId, pushMenu.id);
         },
       );
 
@@ -66,7 +71,7 @@ void main() {
           var command = await commands.createCommand();
           final menu = await menus.createMenu(name: 'Test Menu');
           final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          command = await commands.setPushMenu(
+          command = await commands.setPushMenuId(
             commandId: command.id,
             pushMenuId: pushMenu.id,
           );

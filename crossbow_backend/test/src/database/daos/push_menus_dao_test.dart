@@ -42,7 +42,7 @@ void main() {
           var pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
           expect(await pushMenus.deletePushMenu(id: pushMenu.id), 1);
           pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          final command = await commands.setPushMenu(
+          final command = await commands.setPushMenuId(
             commandId: (await commands.createCommand()).id,
             pushMenuId: pushMenu.id,
           );

@@ -41,9 +41,9 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Set the push menu ID for the command with the given [commandId].
-  Future<Command> setPushMenu({
+  Future<Command> setPushMenuId({
     required final int commandId,
-    required final int pushMenuId,
+    final int? pushMenuId,
   }) async {
     final query = update(commands)
       ..where((final table) => table.id.equals(commandId));
