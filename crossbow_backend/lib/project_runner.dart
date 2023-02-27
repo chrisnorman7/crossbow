@@ -173,7 +173,19 @@ class ProjectRunner {
     }
   }
 
+  /// Return `true` if the given [callCommand] should run.
+  Future<bool> callCommandShouldRun(final CallCommand callCommand) async {
+    final randomNumberBase = callCommand.randomNumberBase;
+    if (randomNumberBase == null || random.nextInt(randomNumberBase) == 0) {
+      return true;
+    }
+    return false;
+  }
+
   /// Handle the given [callCommand].
+  ///
+  /// The [handleCallCommands] method should already have established whether or
+  /// not [callCommand] should run by way of the [callCommandShouldRun] method.
   Future<void> handleCallCommand(final CallCommand callCommand) async {
     final command = await db.commandsDao.getCommand(id: callCommand.commandId);
     final after = callCommand.after;
@@ -189,7 +201,11 @@ class ProjectRunner {
 
   /// Handle the given [callCommands].
   Future<void> handleCallCommands(final List<CallCommand> callCommands) async {
-    callCommands.forEach(handleCallCommand);
+    for (final callCommand in callCommands) {
+      if (await callCommandShouldRun(callCommand)) {
+        await handleCallCommand(callCommand);
+      }
+    }
   }
 
   /// Push the given [pushMenu].

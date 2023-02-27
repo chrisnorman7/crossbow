@@ -13,12 +13,15 @@ import 'custom_database.dart';
 
 void main() async {
   final db = getDatabase();
-  final clink = await db.assetReferencesDao.createAssetReference(
+  final assetReferencesDao = db.assetReferencesDao;
+  final commandsDao = db.commandsDao;
+  final callCommandsDao = db.callCommandsDao;
+  final clink = await assetReferencesDao.createAssetReference(
     folderName: 'interface',
     name: 'clink.wav',
     gain: 1.0,
   );
-  final boots = await db.assetReferencesDao.createAssetReference(
+  final boots = await assetReferencesDao.createAssetReference(
     folderName: 'footsteps',
     name: 'boots',
     gain: 0.5,
@@ -104,6 +107,25 @@ void main() async {
               'readme.txt',
             ),
           );
+        },
+      );
+
+      test(
+        '.callCommandShouldRun',
+        () async {
+          final command = await commandsDao.createCommand();
+          var callCommand = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: command.id,
+          );
+          expect(await projectRunner.callCommandShouldRun(callCommand), true);
+          callCommand = await callCommandsDao.setRandomNumberBase(
+            callCommandId: callCommand.id,
+            randomNumberBase: 1,
+          );
+          // Now the random number generator will always return `0`, so the
+          // command should always run.
+          expect(await projectRunner.callCommandShouldRun(callCommand), true);
         },
       );
     },
