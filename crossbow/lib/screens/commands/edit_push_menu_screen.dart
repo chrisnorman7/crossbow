@@ -1,5 +1,4 @@
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,10 +8,8 @@ import '../../constants.dart';
 import '../../messages.dart';
 import '../../src/contexts/push_menu_context.dart';
 import '../../src/providers.dart';
-import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/fade_length_list_tile.dart';
-import '../../widgets/play_sound_semantics.dart';
-import '../select_menu_screen.dart';
+import '../../widgets/menu_list_tile.dart';
 
 /// A screen for editing a push menu with the given [pushMenuId].
 class EditPushMenuScreen extends ConsumerWidget {
@@ -57,31 +54,15 @@ class EditPushMenuScreen extends ConsumerWidget {
       title: Intl.message('Edit Push Menu'),
       body: ListView(
         children: [
-          AssetReferencePlaySoundSemantics(
-            assetReferenceId: menu.musicId,
-            looping: true,
-            child: Builder(
-              builder: (final context) => ListTile(
-                autofocus: true,
-                title: Text(Intl.message('Menu')),
-                subtitle: Text(menu.name),
-                onTap: () {
-                  PlaySoundSemantics.of(context)?.stop();
-                  pushWidget(
-                    context: context,
-                    builder: (final context) => SelectMenuScreen(
-                      onChanged: (final value) async {
-                        await pushMenusDao.setMenuId(
-                          pushMenuId: pushMenuId,
-                          menuId: value,
-                        );
-                      },
-                      currentMenuId: menu.id,
-                    ),
-                  );
-                },
-              ),
-            ),
+          MenuListTile(
+            menuId: menu.id,
+            onChanged: (final value) async {
+              await pushMenusDao.setMenuId(
+                pushMenuId: pushMenuId,
+                menuId: value!,
+              );
+            },
+            autofocus: true,
           ),
           IntListTile(
             value: pushMenu.after ?? 0,
