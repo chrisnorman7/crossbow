@@ -90,6 +90,30 @@ void main() {
           expect(updatedCallCommand.randomNumberBase, 2);
         },
       );
+
+      test(
+        '.setAfter',
+        () async {
+          final command = await commands.createCommand();
+          final callCommand = await callCommands.createCallCommand(
+            commandId: command.id,
+            callingCommandId: command.id,
+            after: 5,
+          );
+          expect(callCommand.after, 5);
+          var updatedCallCommand = await callCommands.setAfter(
+            callCommandId: callCommand.id,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.after, null);
+          updatedCallCommand = await callCommands.setAfter(
+            callCommandId: callCommand.id,
+            after: 2,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.after, 2);
+        },
+      );
     },
   );
 }

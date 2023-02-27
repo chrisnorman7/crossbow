@@ -60,4 +60,16 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     ))
         .single;
   }
+
+  /// Set the [after] value for the call command with the given [callCommandId].
+  Future<CallCommand> setAfter({
+    required final int callCommandId,
+    final int? after,
+  }) async {
+    final query = update(callCommands)
+      ..where((final table) => table.id.equals(callCommandId));
+    return (await query
+            .writeReturning(CallCommandsCompanion(after: Value(after))))
+        .single;
+  }
 }
