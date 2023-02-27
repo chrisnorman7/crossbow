@@ -19,6 +19,7 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? callingMenuItemId,
     final int? onCancelMenuId,
     final int? after,
+    final int? randomNumberBase,
   }) {
     if (callingCommandId == null &&
         callingMenuItemId == null &&
@@ -32,6 +33,7 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         callingMenuItemId: Value(callingMenuItemId),
         onCancelMenuId: Value(onCancelMenuId),
         after: Value(after),
+        randomNumberBase: Value(randomNumberBase),
       ),
     );
   }
@@ -41,5 +43,21 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final query = select(callCommands)
       ..where((final table) => table.id.equals(id));
     return query.getSingle();
+  }
+
+  /// Set the random number base for the call command with the given
+  /// [callCommandId].
+  Future<CallCommand> setRandomNumberBase({
+    required final int callCommandId,
+    final int? randomNumberBase,
+  }) async {
+    final query = update(callCommands)
+      ..where((final table) => table.id.equals(callCommandId));
+    return (await query.writeReturning(
+      CallCommandsCompanion(
+        randomNumberBase: Value(randomNumberBase),
+      ),
+    ))
+        .single;
   }
 }

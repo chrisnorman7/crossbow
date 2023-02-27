@@ -66,6 +66,30 @@ void main() {
           );
         },
       );
+
+      test(
+        '.setRandomNumberBase',
+        () async {
+          final command = await commands.createCommand();
+          final callCommand = await callCommands.createCallCommand(
+            commandId: command.id,
+            callingCommandId: command.id,
+            randomNumberBase: 5,
+          );
+          expect(callCommand.randomNumberBase, 5);
+          var updatedCallCommand = await callCommands.setRandomNumberBase(
+            callCommandId: callCommand.id,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.randomNumberBase, null);
+          updatedCallCommand = await callCommands.setRandomNumberBase(
+            callCommandId: callCommand.id,
+            randomNumberBase: 2,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.randomNumberBase, 2);
+        },
+      );
     },
   );
 }
