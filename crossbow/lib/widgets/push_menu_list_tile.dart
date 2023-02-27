@@ -14,7 +14,7 @@ import 'asset_reference_play_sound_semantics.dart';
 import 'play_sound_semantics.dart';
 
 /// A list tile for configuring a push menu.
-class PushMenuListTile extends ConsumerWidget {
+class PushMenuListTile extends ConsumerStatefulWidget {
   /// Create an instance.
   const PushMenuListTile({
     required this.pushMenuId,
@@ -32,31 +32,30 @@ class PushMenuListTile extends ConsumerWidget {
   /// Whether the list tile should be autofocused or not.
   final bool autofocus;
 
-  /// Build the widget.
+  /// Create state for this widget.
   @override
-  Widget build(final BuildContext context, final WidgetRef ref) {
-    final id = pushMenuId;
+  PushMenuListTileState createState() => PushMenuListTileState();
+}
+
+/// State for [PushMenuListTile].
+class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
+  /// Build a widget.
+  @override
+  Widget build(final BuildContext context) {
+    final id = widget.pushMenuId;
     if (id == null) {
-      return getBody(
-        context: context,
-        ref: ref,
-      );
+      return getBody(null);
     }
     final value = ref.watch(pushMenuProvider.call(id));
     return value.when(
-      data: (final data) =>
-          getBody(context: context, ref: ref, pushMenuContext: data),
+      data: getBody,
       error: ErrorListView.withPositional,
       loading: LoadingWidget.new,
     );
   }
 
   /// Get the body for this widget.
-  Widget getBody({
-    required final BuildContext context,
-    required final WidgetRef ref,
-    final PushMenuContext? pushMenuContext,
-  }) {
+  Widget getBody(final PushMenuContext? pushMenuContext) {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final pushMenusDao = projectContext.db.pushMenusDao;
     final pushMenu = pushMenuContext?.pushMenu;
@@ -70,13 +69,13 @@ class PushMenuListTile extends ConsumerWidget {
               await pushMenusDao.deletePushMenu(
                 id: pushMenu.id,
               );
-              onChanged(null);
+              widget.onChanged(null);
             }
           }
         },
         child: Builder(
           builder: (final context) => ListTile(
-            autofocus: autofocus,
+            autofocus: widget.autofocus,
             title: Text(Intl.message('Push Menu')),
             subtitle: Text(menu == null ? unsetMessage : menu.name),
             onTap: () {
@@ -89,7 +88,14 @@ class PushMenuListTile extends ConsumerWidget {
                       final newPushMenu = await pushMenusDao.createPushMenu(
                         menuId: value,
                       );
-                      onChanged(newPushMenu.id);
+                      widget.onChanged(newPushMenu.id);
+                      if (mounted) {
+                        await pushWidget(
+                          context: context,
+                          builder: (final context) =>
+                              EditPushMenuScreen(pushMenuId: newPushMenu.id),
+                        );
+                      }
                     },
                   ),
                 );

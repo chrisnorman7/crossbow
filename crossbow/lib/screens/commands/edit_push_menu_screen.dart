@@ -29,14 +29,16 @@ class EditPushMenuScreen extends ConsumerWidget {
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
     final value = ref.watch(pushMenuProvider.call(pushMenuId));
-    return value.when(
-      data: (final data) => getBody(
-        context: context,
-        ref: ref,
-        pushMenuContext: data,
+    return Cancel(
+      child: value.when(
+        data: (final data) => getBody(
+          context: context,
+          ref: ref,
+          pushMenuContext: data,
+        ),
+        error: ErrorScreen.withPositional,
+        loading: LoadingScreen.new,
       ),
-      error: ErrorScreen.withPositional,
-      loading: LoadingScreen.new,
     );
   }
 
