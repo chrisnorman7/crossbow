@@ -66,6 +66,13 @@ class EditMenuItemScreen extends ConsumerWidget {
             header: Intl.message('Menu Item Name'),
             autofocus: true,
           ),
+          CallCommandsListTile(
+            callCommandsContext: CallCommandsContext(
+              target: CallCommandsTarget.menuItem,
+              id: menuItem.id,
+            ),
+            title: callCommandsMessage,
+          ),
           AssetReferenceListTile(
             assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
             onChanged: (final value) async {
@@ -77,13 +84,6 @@ class EditMenuItemScreen extends ConsumerWidget {
             },
             nullable: true,
             title: Intl.message('Select Sound'),
-          ),
-          CallCommandsListTile(
-            callCommandsContext: CallCommandsContext(
-              target: CallCommandsTarget.menuItem,
-              id: menuItem.id,
-            ),
-            title: callCommandsMessage,
           ),
           AssetReferenceListTile(
             assetReferenceId:
