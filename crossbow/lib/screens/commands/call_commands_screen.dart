@@ -50,7 +50,6 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     required final BuildContext context,
     required final ValueContext<List<CallCommand>> valueContext,
   }) {
-    final callCommandId = widget.callCommandsContext.id;
     final db = valueContext.projectContext.db;
     final commandsDao = db.commandsDao;
     final callCommandsDao = db.callCommandsDao;
@@ -64,6 +63,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       ],
     );
     final callCommandRows = callCommands.map<TableRow>((final callCommand) {
+      final callCommandId = callCommand.id;
       final after = callCommand.after;
       final randomNumberBase = callCommand.randomNumberBase;
       return TableRow(
