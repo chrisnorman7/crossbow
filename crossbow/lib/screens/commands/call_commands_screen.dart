@@ -94,6 +94,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                 );
                 invalidateCallCommandsProvider();
               },
+              immediatelyMessage: Intl.message('Call immediately'),
             ),
           ),
           TableCell(
