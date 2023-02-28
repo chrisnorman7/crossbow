@@ -12,6 +12,7 @@ import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
+import '../../widgets/random_chance_slider.dart';
 import '../../widgets/seconds_slider.dart';
 import 'edit_command_screen.dart';
 
@@ -98,24 +99,16 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
             ),
           ),
           TableCell(
-            child: Semantics(
-              container: true,
-              label: randomNumberBase == null
-                  ? Intl.message('Every Time')
-                  : randomChanceMessage(randomNumberBase),
-              child: Slider(
-                value: randomNumberBase?.toDouble() ?? 1.0,
-                onChanged: (final value) async {
-                  await callCommandsDao.setRandomNumberBase(
-                    callCommandId: callCommandId,
-                    randomNumberBase: value == 1 ? null : value.floor(),
-                  );
-                  invalidateCallCommandsProvider();
-                },
-                divisions: 100,
-                min: 1.0,
-                max: 101.0,
-              ),
+            child: RandomChanceSlider(
+              chance: randomNumberBase,
+              onChanged: (final value) async {
+                await callCommandsDao.setRandomNumberBase(
+                  callCommandId: callCommandId,
+                  randomNumberBase: value,
+                );
+                invalidateCallCommandsProvider();
+              },
+              everyTimeMessage: everyTimeMessage,
             ),
           ),
           TableCell(

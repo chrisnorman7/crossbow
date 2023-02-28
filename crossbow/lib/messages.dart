@@ -108,3 +108,6 @@ String randomChanceMessage(final int i) => Intl.message(
         'i': [1, 4, 5]
       },
     );
+
+/// The every time message.
+final everyTimeMessage = Intl.message('Every time');
