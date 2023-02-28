@@ -12,6 +12,7 @@ import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
+import '../../widgets/seconds_slider.dart';
 import 'edit_command_screen.dart';
 
 /// Show a table of call commands, retrieved from the given
@@ -84,38 +85,36 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
             ),
           ),
           TableCell(
-            child: IntListTile(
-              value: after ?? 0,
+            child: SecondsSlider(
+              seconds: after == null ? null : after / 1000.0,
               onChanged: (final value) async {
                 await callCommandsDao.setAfter(
                   callCommandId: callCommandId,
-                  after: value == 0 ? null : value,
+                  after: value == null ? null : (value * 1000).floor(),
                 );
                 invalidateCallCommandsProvider();
               },
-              title: Intl.message('Run Delay'),
-              min: 0,
-              modifier: afterModifier,
-              subtitle: after == null
-                  ? Intl.message('Run immediately')
-                  : '${after / 1000} $secondsMessage',
             ),
           ),
           TableCell(
-            child: IntListTile(
-              value: randomNumberBase ?? 1,
-              onChanged: (final value) async {
-                await callCommandsDao.setRandomNumberBase(
-                  callCommandId: callCommandId,
-                  randomNumberBase: value <= 1 ? null : value,
-                );
-                invalidateCallCommandsProvider();
-              },
-              title: Intl.message('Random Chance'),
-              min: 1,
-              subtitle: randomNumberBase == null || randomNumberBase <= 1
-                  ? Intl.message('Run every time')
+            child: Semantics(
+              container: true,
+              label: randomNumberBase == null
+                  ? unsetMessage
                   : '1 $inMessage $randomNumberBase',
+              child: Slider(
+                value: randomNumberBase?.toDouble() ?? 1.0,
+                onChanged: (final value) async {
+                  final v = value.floor();
+                  await callCommandsDao.setRandomNumberBase(
+                    callCommandId: callCommandId,
+                    randomNumberBase: v == 1 ? null : v,
+                  );
+                  invalidateCallCommandsProvider();
+                },
+                min: 1.0,
+                max: 100.0,
+              ),
             ),
           ),
           TableCell(
