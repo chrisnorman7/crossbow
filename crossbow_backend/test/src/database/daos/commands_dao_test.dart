@@ -137,12 +137,16 @@ void main() {
       );
 
       test(
-        '.setStopGame',
+        '.setStopGameId',
         () async {
-          final command = await commands.createCommand();
-          expect(command.stopGameId, null);
           final stopGame = await db.stopGamesDao.createStopGame();
-          final updatedCommand = await commands.setStopGame(
+          final command = await commands.createCommand(stopGameId: stopGame.id);
+          expect(command.stopGameId, stopGame.id);
+          var updatedCommand = await commands.setStopGameId(
+            commandId: command.id,
+          );
+          expect(updatedCommand.stopGameId, null);
+          updatedCommand = await commands.setStopGameId(
             commandId: command.id,
             stopGameId: stopGame.id,
           );

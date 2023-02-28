@@ -83,9 +83,9 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Set the stop game for the command with the given [commandId].
-  Future<Command> setStopGame({
+  Future<Command> setStopGameId({
     required final int commandId,
-    required final int stopGameId,
+    final int? stopGameId,
   }) async {
     final query = update(commands)
       ..where((final table) => table.id.equals(commandId));
