@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +126,27 @@ class EditCommandScreen extends ConsumerWidget {
               );
               invalidateCommandProvider(ref);
             },
-          )
+          ),
+          CallbackShortcuts(
+            bindings: {
+              deleteShortcut: () async {
+                await commands.setUrl(commandId: command.id);
+                invalidateCommandProvider(ref);
+              }
+            },
+            child: TextListTile(
+              value: command.url ?? '',
+              onChanged: (final value) async {
+                await commands.setUrl(
+                  commandId: command.id,
+                  url: value.isEmpty ? null : value,
+                );
+                invalidateCommandProvider(ref);
+              },
+              header: Intl.message('Open URL'),
+              labelText: Intl.message('URL'),
+            ),
+          ),
         ],
       ),
     );
