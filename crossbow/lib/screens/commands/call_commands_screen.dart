@@ -58,8 +58,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     final headerRow = TableRow(
       children: [
         TableCell(child: CenterText(text: Intl.message('Command'))),
-        TableCell(child: CenterText(text: Intl.message('Call After'))),
-        TableCell(child: CenterText(text: Intl.message('Random Base'))),
+        TableCell(child: CenterText(text: Intl.message('Call Delay'))),
+        TableCell(child: CenterText(text: Intl.message('Random Chance'))),
         TableCell(child: CenterText(text: deleteMessage))
       ],
     );
@@ -100,20 +100,20 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
             child: Semantics(
               container: true,
               label: randomNumberBase == null
-                  ? unsetMessage
-                  : '1 $inMessage $randomNumberBase',
+                  ? Intl.message('Every Time')
+                  : randomChanceMessage(randomNumberBase),
               child: Slider(
                 value: randomNumberBase?.toDouble() ?? 1.0,
                 onChanged: (final value) async {
-                  final v = value.floor();
                   await callCommandsDao.setRandomNumberBase(
                     callCommandId: callCommandId,
-                    randomNumberBase: v == 1 ? null : v,
+                    randomNumberBase: value == 1 ? null : value.floor(),
                   );
                   invalidateCallCommandsProvider();
                 },
+                divisions: 100,
                 min: 1.0,
-                max: 100.0,
+                max: 101.0,
               ),
             ),
           ),

@@ -98,3 +98,13 @@ final deleteMessage = Intl.message('Delete');
 
 /// The fade length title.
 final fadeLengthTitle = Intl.message('Fade Length');
+
+/// Random chance message.
+String randomChanceMessage(final int i) => Intl.message(
+      '1 in $i chance',
+      args: [i],
+      desc: 'The message to show for random chances',
+      examples: {
+        'i': [1, 4, 5]
+      },
+    );
