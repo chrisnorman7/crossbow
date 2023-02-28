@@ -287,3 +287,12 @@ final pushMenuProvider = FutureProvider.family<PushMenuContext, int>(
     );
   },
 );
+
+/// Provide a single stop game instance.
+final stopGameProvider = FutureProvider.family<ValueContext<StopGame>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final stopGame = await projectContext.db.stopGamesDao.getStopGame(id: arg);
+    return ValueContext(projectContext: projectContext, value: stopGame);
+  },
+);

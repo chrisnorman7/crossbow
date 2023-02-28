@@ -13,6 +13,7 @@ import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
 import '../../widgets/push_menu_list_tile.dart';
+import '../../widgets/stop_game_list_tile.dart';
 
 /// A screen to edit the command with the given [commandId].
 class EditCommandScreen extends ConsumerWidget {
@@ -87,6 +88,13 @@ class EditCommandScreen extends ConsumerWidget {
             nullable: true,
             title: outputSound,
           ),
+          CallCommandsListTile(
+            callCommandsContext: CallCommandsContext(
+              target: CallCommandsTarget.command,
+              id: command.id,
+            ),
+            title: callCommandsMessage,
+          ),
           PushMenuListTile(
             pushMenuId: command.pushMenuId,
             onChanged: (final value) async {
@@ -108,12 +116,15 @@ class EditCommandScreen extends ConsumerWidget {
             },
             title: Intl.message('Pop Level'),
           ),
-          CallCommandsListTile(
-            callCommandsContext: CallCommandsContext(
-              target: CallCommandsTarget.command,
-              id: command.id,
-            ),
-            title: callCommandsMessage,
+          StopGameListTile(
+            stopGameId: command.stopGameId,
+            onChanged: (final value) async {
+              await commands.setStopGameId(
+                commandId: command.id,
+                stopGameId: value,
+              );
+              invalidateCommandProvider(ref);
+            },
           )
         ],
       ),

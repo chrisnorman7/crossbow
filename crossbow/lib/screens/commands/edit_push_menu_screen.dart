@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../constants.dart';
-import '../../messages.dart';
 import '../../src/contexts/push_menu_context.dart';
 import '../../src/providers.dart';
+import '../../widgets/after_list_tile.dart';
 import '../../widgets/fade_length_list_tile.dart';
 import '../../widgets/menu_list_tile.dart';
 
@@ -48,7 +47,6 @@ class EditPushMenuScreen extends ConsumerWidget {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final pushMenusDao = projectContext.db.pushMenusDao;
     final pushMenu = pushMenuContext.pushMenu;
-    final after = pushMenu.after;
     final menu = pushMenuContext.menu;
     return SimpleScaffold(
       title: Intl.message('Edit Push Menu'),
@@ -64,8 +62,8 @@ class EditPushMenuScreen extends ConsumerWidget {
             },
             autofocus: true,
           ),
-          IntListTile(
-            value: pushMenu.after ?? 0,
+          AfterListTile(
+            after: pushMenu.after,
             onChanged: (final value) async {
               await pushMenusDao.setAfter(
                 pushMenuId: pushMenuId,
@@ -73,10 +71,7 @@ class EditPushMenuScreen extends ConsumerWidget {
               );
               invalidatePushMenuProvider(ref);
             },
-            title: Intl.message('Push After'),
-            min: 0,
-            modifier: afterModifier,
-            subtitle: after == null ? unsetMessage : '$after ms',
+            title: Intl.message('Push Delay'),
           ),
           FadeLengthListTile(
             fadeLength: pushMenu.fadeLength,
