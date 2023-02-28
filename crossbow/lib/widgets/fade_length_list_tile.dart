@@ -1,3 +1,4 @@
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -26,15 +27,18 @@ class FadeLengthListTile extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final f = fadeLength ?? 0.0;
-    return DoubleListTile(
-      value: f,
-      onChanged: (final value) => onChanged(value == 0.0 ? null : value),
-      title: fadeLengthTitle,
-      autofocus: autofocus,
-      min: 0.0,
-      modifier: 0.5,
-      subtitle:
-          fadeLength == null ? unsetMessage : '$fadeLength $secondsMessage',
+    return CallbackShortcuts(
+      bindings: {deleteShortcut: () => onChanged(null)},
+      child: DoubleListTile(
+        value: f,
+        onChanged: (final value) => onChanged(value == 0.0 ? null : value),
+        title: fadeLengthTitle,
+        autofocus: autofocus,
+        min: 0.0,
+        modifier: 0.5,
+        subtitle:
+            fadeLength == null ? unsetMessage : '$fadeLength $secondsMessage',
+      ),
     );
   }
 }

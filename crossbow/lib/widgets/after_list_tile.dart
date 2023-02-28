@@ -1,3 +1,4 @@
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -29,15 +30,18 @@ class AfterListTile extends StatelessWidget {
   /// Build the widget.
   @override
   Widget build(final BuildContext context) {
-    final value = after;
-    return IntListTile(
-      value: value ?? 0,
-      onChanged: (final value) => onChanged(value == 0 ? null : value),
-      title: title,
-      autofocus: autofocus,
-      min: 0,
-      modifier: 200,
-      subtitle: value == null ? unsetMessage : '$value ms',
+    final value = after ?? 0;
+    return CallbackShortcuts(
+      bindings: {deleteShortcut: () => onChanged(null)},
+      child: IntListTile(
+        value: value,
+        onChanged: (final value) => onChanged(value == 0 ? null : value),
+        title: title,
+        autofocus: autofocus,
+        min: 0,
+        modifier: 200,
+        subtitle: value == 0 ? unsetMessage : '$value ms',
+      ),
     );
   }
 }
