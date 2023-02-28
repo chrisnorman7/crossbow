@@ -22,4 +22,22 @@ class StopGamesDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(id));
     return query.getSingle();
   }
+
+  /// Set the [after] value for the stop game with the given [stopGameId].
+  Future<StopGame> setAfter({
+    required final int stopGameId,
+    final int? after,
+  }) async {
+    final query = update(stopGames)
+      ..where((final table) => table.id.equals(stopGameId));
+    return (await query.writeReturning(StopGamesCompanion(after: Value(after))))
+        .single;
+  }
+
+  /// Delete the stop game with the given [stopGameId].
+  Future<int> deleteStopGame({required final int stopGameId}) async {
+    final query = delete(stopGames)
+      ..where((final table) => table.id.equals(stopGameId));
+    return query.go();
+  }
 }
