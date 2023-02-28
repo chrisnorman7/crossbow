@@ -8,16 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../constants.dart';
-import '../../messages.dart';
-import '../../src/contexts/call_commands_context.dart';
-import '../../src/contexts/menu_context.dart';
-import '../../src/providers.dart';
-import '../../util.dart';
-import '../../widgets/asset_reference_list_tile.dart';
-import '../../widgets/asset_reference_play_sound_semantics.dart';
-import '../../widgets/call_commands_list_tile.dart';
-import 'menus/edit_menu_item_screen.dart';
+import '../../../constants.dart';
+import '../../../messages.dart';
+import '../../../src/contexts/call_commands_context.dart';
+import '../../../src/contexts/menu_context.dart';
+import '../../../src/providers.dart';
+import '../../../util.dart';
+import '../../../widgets/asset_reference_list_tile.dart';
+import '../../../widgets/asset_reference_play_sound_semantics.dart';
+import '../../../widgets/call_commands_list_tile.dart';
+import 'edit_menu_item_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
 class EditMenuScreen extends ConsumerStatefulWidget {

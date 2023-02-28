@@ -16,7 +16,7 @@ import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
 import '../../widgets/play_sound_semantics.dart';
-import 'edit_menu_screen.dart';
+import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
 class ProjectContextScreen extends ConsumerStatefulWidget {
