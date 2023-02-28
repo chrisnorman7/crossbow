@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
-import '../../widgets/command_list_tile.dart';
+import 'edit_command_screen.dart';
 
 /// Show a table of call commands, retrieved from the given
 /// [callCommandsContext].
@@ -68,11 +69,18 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       return TableRow(
         children: [
           TableCell(
-            child: CommandListTile(
-              commandId: callCommand.commandId,
-              title: Intl.message('Command'),
-              nullable: false,
-              onChanged: (final value) => invalidateCallCommandsProvider(),
+            child: IconButton(
+              onPressed: () => pushWidget(
+                context: context,
+                builder: (final context) => EditCommandScreen(
+                  commandId: callCommand.commandId,
+                  onChanged: (final value) => invalidateCallCommandsProvider(),
+                ),
+              ),
+              icon: Icon(
+                Icons.edit,
+                semanticLabel: Intl.message('Edit Command'),
+              ),
             ),
           ),
           TableCell(
