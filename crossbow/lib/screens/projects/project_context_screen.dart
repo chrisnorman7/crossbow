@@ -1,5 +1,4 @@
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -15,6 +14,7 @@ import '../../util.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
+import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import 'menus/edit_menu_screen.dart';
 
@@ -128,8 +128,8 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get a list view of the menus in the project.
   Widget getMenusPage(final BuildContext context) {
     final value = ref.watch(menusProvider);
-    return CallbackShortcuts(
-      bindings: {newShortcut: newMenu},
+    return NewCallbackShortcuts(
+      newCallback: newMenu,
       child: value.when(
         data: (final data) {
           final projectContext = data.projectContext;

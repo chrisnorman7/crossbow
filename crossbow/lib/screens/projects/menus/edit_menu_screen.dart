@@ -9,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants.dart';
-import '../../../hotkeys.dart';
 import '../../../messages.dart';
 import '../../../src/contexts/call_commands_context.dart';
 import '../../../src/contexts/menu_context.dart';
@@ -18,6 +17,7 @@ import '../../../util.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
 import '../../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../../widgets/call_commands_list_tile.dart';
+import '../../../widgets/new_callback_shortcuts.dart';
 import 'edit_menu_item_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
@@ -153,8 +153,8 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     final menuItemsDao = menuContext.projectContext.db.menuItemsDao;
     final menu = menuContext.menu;
     final menuItems = menuContext.menuItems;
-    return CallbackShortcuts(
-      bindings: {newProjectHotkey: newMenuItem},
+    return NewCallbackShortcuts(
+      newCallback: newMenuItem,
       child: ReorderableList(
         itemBuilder: (final context, final index) {
           final menuItem = menuItems[index];

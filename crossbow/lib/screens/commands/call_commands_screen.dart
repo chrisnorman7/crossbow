@@ -13,6 +13,7 @@ import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
+import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/random_chance_slider.dart';
 import '../../widgets/seconds_slider.dart';
 import 'edit_command_screen.dart';
@@ -153,8 +154,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       );
     }
     return Cancel(
-      child: CallbackShortcuts(
-        bindings: {newProjectHotkey: newCallCommand},
+      child: NewCallbackShortcuts(
+        newCallback: newCallCommand,
         child: SimpleScaffold(
           title: callCommandsMessage,
           body: Table(children: [headerRow, ...callCommandRows]),
