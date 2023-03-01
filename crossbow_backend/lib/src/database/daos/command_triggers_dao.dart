@@ -73,4 +73,11 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
         CommandTriggersCompanion(keyboardKeyId: Value(keyboardKeyId)),
       ))
           .single;
+
+  /// Get all the command triggers in the database.
+  Future<List<CommandTrigger>> getCommandTriggers() {
+    final query = select(commandTriggers)
+      ..orderBy([(final table) => OrderingTerm.asc(table.description)]);
+    return query.get();
+  }
 }
