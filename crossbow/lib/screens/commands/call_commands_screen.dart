@@ -160,7 +160,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
           body: Table(children: [headerRow, ...callCommandRows]),
           floatingActionButton: FloatingActionButton(
             onPressed: newCallCommand,
-            autofocus: true,
+            autofocus: callCommands.isEmpty,
             tooltip: Intl.message('New Call Command'),
             child: intlNewIcon,
           ),
