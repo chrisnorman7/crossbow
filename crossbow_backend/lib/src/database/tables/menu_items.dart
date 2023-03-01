@@ -22,6 +22,4 @@ class MenuItems extends Table with WithPrimaryKey, WithName {
 
   /// The position of this item in the menu.
   IntColumn get position => integer().withDefault(const Constant(0))();
-
-  /// The ID of a call command.
 }

@@ -20,7 +20,6 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     required final int menuId,
     required final String name,
     final int? activateSoundId,
-    final int? callCommandId,
     final int position = 0,
     final int? selectSoundId,
   }) =>
