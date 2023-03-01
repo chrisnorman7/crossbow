@@ -117,3 +117,23 @@ final doneMessage = Intl.message('Done');
 
 /// Invalid input.
 final invalidInputMessage = Intl.message('Invalid input');
+
+/// Delete the given [row].
+String deleteRowMessage(final int row) => Intl.message(
+      'Delete row $row',
+      args: [row],
+      desc: 'The message for delete row buttons',
+      examples: {
+        'row': [1, 2, 3]
+      },
+    );
+
+/// Edit the command for the given [row].
+String editRowCommandMessage(final int row) => Intl.message(
+      'Edit row $row command',
+      args: [row],
+      desc: 'The message for edit command buttons in the call commands screen',
+      examples: {
+        'row': [1, 2, 3]
+      },
+    );
