@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../crossbow_backend.dart';
@@ -21,6 +24,10 @@ class Project {
   /// Create an instance from a JSON object.
   factory Project.fromJson(final Map<String, dynamic> json) =>
       _$ProjectFromJson(json);
+
+  /// Create an instance from the given [file].
+  factory Project.fromFile(final File file) =>
+      Project.fromJson(jsonDecode(file.readAsStringSync()));
 
   /// The name of this project.
   final String projectName;
