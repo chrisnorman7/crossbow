@@ -12,6 +12,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
 import 'contexts/call_commands_context.dart';
+import 'contexts/command_trigger_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
 import 'contexts/push_menu_context.dart';
@@ -294,5 +295,53 @@ final stopGameProvider = FutureProvider.family<ValueContext<StopGame>, int>(
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final stopGame = await projectContext.db.stopGamesDao.getStopGame(id: arg);
     return ValueContext(projectContext: projectContext, value: stopGame);
+  },
+);
+
+/// Provide a single command trigger.
+final commandTriggerProvider =
+    FutureProvider.family<CommandTriggerContext, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final commandTrigger = await db.commandTriggersDao.getCommandTrigger(
+      id: arg,
+    );
+    final keyboardKeyId = commandTrigger.keyboardKeyId;
+    final keyboardKey = keyboardKeyId == null
+        ? null
+        : (await ref.watch(
+            commandTriggerKeyboardKeyProvider.call(keyboardKeyId).future,
+          ))
+            .value;
+    return CommandTriggerContext(
+      projectContext: projectContext,
+      commandTrigger: commandTrigger,
+      commandTriggerKeyboardKey: keyboardKey,
+    );
+  },
+);
+
+/// Provide all command triggers.
+final commandTriggersProvider =
+    FutureProvider<ValueContext<List<CommandTrigger>>>(
+  (final ref) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final commandTriggers =
+        await projectContext.db.commandTriggersDao.getCommandTriggers();
+    return ValueContext(projectContext: projectContext, value: commandTriggers);
+  },
+);
+
+/// Provide a single command trigger keyboard key.
+final commandTriggerKeyboardKeyProvider =
+    FutureProvider.family<ValueContext<CommandTriggerKeyboardKey>, int>(
+  (final ref, final arg) async {
+    final project = ref.watch(projectContextNotifierProvider)!;
+    final key = await project.db.commandTriggerKeyboardKeysDao
+        .getCommandTriggerKeyboardKey(
+      id: arg,
+    );
+    return ValueContext(projectContext: project, value: key);
   },
 );

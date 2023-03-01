@@ -16,6 +16,7 @@ import '../../widgets/command_list_tile.dart';
 import '../../widgets/directory_list_tile.dart';
 import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
+import '../command_triggers/edit_command_trigger_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
@@ -53,6 +54,20 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               floatingActionButton: FloatingActionButton(
                 onPressed: newMenu,
                 tooltip: Intl.message('New Menu'),
+                child: intlNewIcon,
+              ),
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Command Triggers'),
+              icon: Text(
+                Intl.message(
+                  'Triggers which can be bound to actions in levels',
+                ),
+              ),
+              builder: getCommandTriggersPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: newCommandTrigger,
+                tooltip: Intl.message('New Command Trigger'),
                 child: intlNewIcon,
               ),
             )
@@ -134,6 +149,12 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
         data: (final data) {
           final projectContext = data.projectContext;
           final menus = data.value;
+          if (menus.isEmpty) {
+            return CenterText(
+              text: nothingToShowMessage,
+              autofocus: true,
+            );
+          }
           return BuiltSearchableListView(
             items: menus,
             builder: (final context, final index) {
@@ -205,6 +226,79 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     );
   }
 
+  /// Get the command triggers page.
+  Widget getCommandTriggersPage(final BuildContext context) {
+    final value = ref.watch(commandTriggersProvider);
+    return NewCallbackShortcuts(
+      newCallback: newCommandTrigger,
+      child: value.when(
+        data: (final data) {
+          final projectContext = data.projectContext;
+          final db = projectContext.db;
+          final commandTriggers = data.value;
+          if (commandTriggers.isEmpty) {
+            return CenterText(
+              text: nothingToShowMessage,
+              autofocus: true,
+            );
+          }
+          return BuiltSearchableListView(
+            items: commandTriggers,
+            builder: (final context, final index) {
+              final commandTrigger = commandTriggers[index];
+              final button = commandTrigger.gameControllerButton;
+              return SearchableListTile(
+                searchString: commandTrigger.description,
+                child: CallbackShortcuts(
+                  bindings: {
+                    deleteHotkey: () => intlConfirm(
+                          context: context,
+                          message: Intl.message(
+                            'Are you sure you want to delete this command '
+                            'trigger?',
+                          ),
+                          title: confirmDeleteTitle,
+                          yesCallback: () async {
+                            Navigator.pop(context);
+                            final keyboardKeyId = commandTrigger.keyboardKeyId;
+                            if (keyboardKeyId != null) {
+                              await db.commandTriggerKeyboardKeysDao
+                                  .deleteCommandTriggerKeyboardKey(
+                                commandTriggerKeyboardKeyId: keyboardKeyId,
+                              );
+                            }
+                            await db.commandTriggersDao.deleteCommandTrigger(
+                              commandTriggerId: commandTrigger.id,
+                            );
+                            ref.invalidate(commandTriggersProvider);
+                          },
+                        )
+                  },
+                  child: ListTile(
+                    autofocus: index == 0,
+                    title: Text(commandTrigger.description),
+                    subtitle: Text(button == null ? unsetMessage : button.name),
+                    onTap: () async {
+                      await pushWidget(
+                        context: context,
+                        builder: (final context) => EditCommandTriggerScreen(
+                          commandTriggerId: commandTrigger.id,
+                        ),
+                      );
+                      ref.invalidate(commandTriggersProvider);
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        error: ErrorListView.withPositional,
+        loading: LoadingWidget.new,
+      ),
+    );
+  }
+
   /// Create a new menu.
   Future<void> newMenu() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
@@ -218,6 +312,23 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
       );
     }
     ref.invalidate(menusProvider);
+  }
+
+  /// Create a new command trigger.
+  Future<void> newCommandTrigger() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final commandTrigger =
+        await projectContext.db.commandTriggersDao.createCommandTrigger(
+      description: 'An empty command trigger',
+    );
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) =>
+            EditCommandTriggerScreen(commandTriggerId: commandTrigger.id),
+      );
+    }
+    ref.invalidate(commandTriggersProvider);
   }
 
   /// Edit the project.

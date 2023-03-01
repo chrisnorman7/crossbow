@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:backstreets_widgets/util.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 
 import 'messages.dart';
@@ -50,3 +51,21 @@ Future<void> intlShowMessage({
   required final String title,
 }) =>
     showMessage(context: context, message: message, title: title);
+
+/// Convert the given [commandTriggerKeyboardKey] to a human-readable string.
+String commandTriggerKeyboardKeyToString(
+  final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
+) {
+  final keys = <String>[];
+  if (commandTriggerKeyboardKey.control) {
+    keys.add(controlKey);
+  }
+  if (commandTriggerKeyboardKey.alt) {
+    keys.add(altKey);
+  }
+  if (commandTriggerKeyboardKey.shift) {
+    keys.add(shiftKey);
+  }
+  keys.add(commandTriggerKeyboardKey.scanCode.name);
+  return keys.join('+');
+}

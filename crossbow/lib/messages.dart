@@ -140,3 +140,6 @@ String editRowCommandMessage(final int row) => Intl.message(
 
 /// URL.
 final urlMessage = Intl.message('URL');
+
+/// There is nothing to show.
+final nothingToShowMessage = Intl.message('There is nothing to show.');
