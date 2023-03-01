@@ -208,9 +208,8 @@ class ProjectRunner {
     }
   }
 
-  /// Push the given [pushMenu].
-  Future<void> handlePushMenu(final PushMenu pushMenu) async {
-    final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
+  /// Get a menu level from the given [menu].
+  Future<ziggurat_menus.Menu> getMenuLevel(final Menu menu) async {
     final menuItems = await db.menuItemsDao.getMenuItems(menuId: menu.id);
     final assetReferences = db.assetReferencesDao;
     final selectItemSoundId = menu.selectItemSoundId;
@@ -245,7 +244,7 @@ class ProjectRunner {
     final music = musicId == null
         ? null
         : await assetReferences.getAssetReference(id: musicId);
-    final menuLevel = ziggurat_menus.Menu(
+    return ziggurat_menus.Menu(
       game: game,
       title: ziggurat.Message(text: menu.name),
       items: menuItems.map<ziggurat_menus.MenuItem>(
@@ -284,6 +283,12 @@ class ProjectRunner {
         await handleCallCommands(callCommands);
       },
     );
+  }
+
+  /// Push the given [pushMenu].
+  Future<void> handlePushMenu(final PushMenu pushMenu) async {
+    final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
+    final menuLevel = await getMenuLevel(menu);
     game.pushLevel(
       menuLevel,
       after: pushMenu.after,
