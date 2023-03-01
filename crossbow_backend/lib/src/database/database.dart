@@ -34,6 +34,7 @@ part 'database.g.dart';
     AssetReferencesDao,
     CommandTriggersDao,
     CommandTriggerKeyboardKeysDao,
+    UtilsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {

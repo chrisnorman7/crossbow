@@ -88,18 +88,4 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (delete(commandTriggers)
             ..where((final table) => table.id.equals(commandTriggerId)))
           .go();
-
-  /// Delete the given [commandTrigger], as well as the connected
-  /// [CommandTriggerKeyboardKey] instance.
-  Future<void> deleteCommandTriggerFull(
-    final CommandTrigger commandTrigger,
-  ) async {
-    final keyboardKeyId = commandTrigger.keyboardKeyId;
-    if (keyboardKeyId != null) {
-      await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
-        commandTriggerKeyboardKeyId: keyboardKeyId,
-      );
-    }
-    await deleteCommandTrigger(commandTriggerId: commandTrigger.id);
-  }
 }

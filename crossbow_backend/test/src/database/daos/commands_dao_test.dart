@@ -227,55 +227,6 @@ void main() {
           }
         },
       );
-
-      test(
-        '.deleteCommandFull',
-        () async {
-          final assetReference =
-              await db.assetReferencesDao.createAssetReference(
-            folderName: 'folder',
-            name: 'file',
-          );
-          final popLevel = await db.popLevelsDao.createPopLevel();
-          final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          final stopGame = await db.stopGamesDao.createStopGame();
-          final command = await commands.createCommand(
-            messageSoundId: assetReference.id,
-            popLevelId: popLevel.id,
-            pushMenuId: pushMenu.id,
-            stopGameId: stopGame.id,
-          );
-          final command2 = await commands.createCommand();
-          final callCommand = await callCommandsDao.createCallCommand(
-            commandId: command2.id,
-            callingCommandId: command.id,
-          );
-          await commands.deleteCommandFull(command);
-          expect(commands.getCommand(id: command.id), throwsStateError);
-          expect(
-            db.assetReferencesDao.getAssetReference(id: assetReference.id),
-            throwsStateError,
-          );
-          expect(
-            db.popLevelsDao.getPopLevel(id: popLevel.id),
-            throwsStateError,
-          );
-          expect(pushMenus.getPushMenu(id: pushMenu.id), throwsStateError);
-          expect(
-            db.stopGamesDao.getStopGame(id: stopGame.id),
-            throwsStateError,
-          );
-          expect(
-            db.callCommandsDao.getCallCommand(id: callCommand.id),
-            throwsStateError,
-          );
-          expect(
-            await commands.getCommand(id: command2.id),
-            predicate<Command>((final value) => value.id == command2.id),
-          );
-        },
-      );
     },
   );
 }

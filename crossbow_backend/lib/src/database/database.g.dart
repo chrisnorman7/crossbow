@@ -3004,6 +3004,7 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       CommandTriggersDao(this as CrossbowBackendDatabase);
   late final CommandTriggerKeyboardKeysDao commandTriggerKeyboardKeysDao =
       CommandTriggerKeyboardKeysDao(this as CrossbowBackendDatabase);
+  late final UtilsDao utilsDao = UtilsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
