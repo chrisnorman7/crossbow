@@ -1,5 +1,8 @@
+import 'package:backstreets_widgets/util.dart';
+import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../hotkeys.dart';
 import '../messages.dart';
@@ -22,7 +25,7 @@ class RandomChanceSlider extends StatelessWidget {
   final ValueChanged<int?> onChanged;
 
   /// The message to show when [chance] is `null`.
-  final String? everyTimeMessage;
+  final String everyTimeMessage;
 
   /// The maximum chance.
   final int maxChance;
@@ -31,27 +34,53 @@ class RandomChanceSlider extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final randomChance = chance;
-    return Semantics(
-      container: true,
-      label: randomChance == null
-          ? everyTimeMessage
-          : randomChanceMessage(randomChance),
-      child: CallbackShortcuts(
-        bindings: {
-          deleteHotkey: () => onChanged(null),
-          const SingleActivator(LogicalKeyboardKey.home): () => onChanged(null),
-          const SingleActivator(LogicalKeyboardKey.end): () =>
-              onChanged(maxChance)
-        },
-        child: Slider(
-          value: randomChance?.toDouble() ?? 1.0,
-          onChanged: (final value) => onChanged(
-            value == 1 ? null : value.round(),
+    return CallbackShortcuts(
+      bindings: {
+        deleteHotkey: () => onChanged(null),
+        const SingleActivator(LogicalKeyboardKey.home): () => onChanged(null),
+        const SingleActivator(LogicalKeyboardKey.end): () =>
+            onChanged(maxChance)
+      },
+      child: Column(
+        children: [
+          TextButton(
+            onPressed: () => pushWidget(
+              context: context,
+              builder: (final context) => GetText(
+                onDone: (final value) {
+                  Navigator.pop(context);
+                  final n = int.parse(value);
+                  onChanged(n <= 1 ? null : n);
+                },
+                labelText: Intl.message('Random Chance'),
+                text: randomChance?.toString() ?? '1',
+                title: Intl.message('Edit Random Chance'),
+                tooltip: doneMessage,
+                validator: (final value) {
+                  final n = int.tryParse(value ?? '');
+                  if (n == null || n < 1) {
+                    return invalidInputMessage;
+                  }
+                  return null;
+                },
+              ),
+            ),
+            child: Text(
+              randomChance == null
+                  ? everyTimeMessage
+                  : randomChanceMessage(randomChance),
+            ),
           ),
-          divisions: 100,
-          min: 1.0,
-          max: maxChance.toDouble(),
-        ),
+          Slider(
+            value: randomChance?.toDouble() ?? 1.0,
+            onChanged: (final value) => onChanged(
+              value == 1 ? null : value.round(),
+            ),
+            divisions: 100,
+            min: 1.0,
+            max: maxChance.toDouble(),
+          )
+        ],
       ),
     );
   }
