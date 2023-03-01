@@ -137,3 +137,6 @@ String editRowCommandMessage(final int row) => Intl.message(
         'row': [1, 2, 3]
       },
     );
+
+/// URL.
+final urlMessage = Intl.message('URL');
