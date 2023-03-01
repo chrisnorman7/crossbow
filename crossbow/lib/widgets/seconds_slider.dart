@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:backstreets_widgets/util.dart';
+import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -46,18 +48,42 @@ class SecondsSlider extends StatelessWidget {
           onChanged(newValue < 0 ? null : newValue);
         },
       },
-      child: Semantics(
-        container: true,
-        label: seconds == null
-            ? (immediatelyMessage ?? unsetMessage)
-            : '${value.toStringAsFixed(1)} $secondsMessage',
-        child: Slider(
-          value: value,
-          onChanged: (final value) => onChanged(value == 0.0 ? null : value),
-          divisions: maxSeconds * 10,
-          label: secondsMessage,
-          max: maxSeconds.toDouble(),
-        ),
+      child: Column(
+        children: [
+          TextButton(
+            onPressed: () => pushWidget(
+              context: context,
+              builder: (final context) => GetText(
+                onDone: (final value) {
+                  Navigator.pop(context);
+                  onChanged(double.tryParse(value));
+                },
+                labelText: secondsMessage,
+                text: value.toStringAsFixed(1),
+                title: secondsMessage,
+                tooltip: doneMessage,
+                validator: (final value) {
+                  if (double.tryParse(value ?? '') == null) {
+                    return invalidInputMessage;
+                  }
+                  return null;
+                },
+              ),
+            ),
+            child: Text(
+              seconds == null
+                  ? (immediatelyMessage ?? unsetMessage)
+                  : '${value.toStringAsFixed(1)} $secondsMessage',
+            ),
+          ),
+          Slider(
+            value: value,
+            onChanged: (final value) => onChanged(value == 0.0 ? null : value),
+            divisions: maxSeconds * 10,
+            label: secondsMessage,
+            max: maxSeconds.toDouble(),
+          ),
+        ],
       ),
     );
   }

@@ -111,3 +111,9 @@ String randomChanceMessage(final int i) => Intl.message(
 
 /// The every time message.
 final everyTimeMessage = Intl.message('Every time');
+
+/// Done.
+final doneMessage = Intl.message('Done');
+
+/// Invalid input.
+final invalidInputMessage = Intl.message('Invalid input');
