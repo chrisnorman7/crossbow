@@ -75,7 +75,7 @@ class CommandListTile extends ConsumerWidget {
               yesCallback: () async {
                 Navigator.of(context).pop();
                 final command = await commands.getCommand(id: id);
-                await projectContext.db.utilsDao.deleteCommandFull(command);
+                await projectContext.db.utilsDao.deleteCommand(command);
                 onChanged(null);
               },
             );

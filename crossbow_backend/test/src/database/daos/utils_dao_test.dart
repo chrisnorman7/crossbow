@@ -17,7 +17,7 @@ void main() {
       final commandTriggersDao = db.commandTriggersDao;
 
       test(
-        '.deleteCommandFull',
+        '.deleteCommand',
         () async {
           final assetReference =
               await db.assetReferencesDao.createAssetReference(
@@ -39,7 +39,7 @@ void main() {
             commandId: command2.id,
             callingCommandId: command.id,
           );
-          await utilsDao.deleteCommandFull(command);
+          await utilsDao.deleteCommand(command);
           expect(commandsDao.getCommand(id: command.id), throwsStateError);
           expect(
             db.assetReferencesDao.getAssetReference(id: assetReference.id),
@@ -66,7 +66,7 @@ void main() {
       );
 
       test(
-        '.deleteCommandTriggerFull',
+        '.deleteCommandTrigger',
         () async {
           final keyboardKey = await db.commandTriggerKeyboardKeysDao
               .createCommandTriggerKeyboardKey(
@@ -76,7 +76,7 @@ void main() {
             description: 'Test trigger',
             keyboardKeyId: keyboardKey.id,
           );
-          await utilsDao.deleteCommandTriggerFull(trigger);
+          await utilsDao.deleteCommandTrigger(trigger);
           expect(
             db.commandTriggerKeyboardKeysDao
                 .getCommandTriggerKeyboardKey(id: keyboardKey.id),

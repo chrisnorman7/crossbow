@@ -1,19 +1,12 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
-import '../tables/command_trigger_keyboard_keys.dart';
-import '../tables/command_triggers.dart';
-import '../tables/commands.dart';
 
 part 'utils_dao.g.dart';
 
 /// A DAO that adds utility methods to the [db].
 @DriftAccessor(
-  tables: [
-    Commands,
-    CommandTriggers,
-    CommandTriggerKeyboardKeys,
-  ],
+  tables: [],
 )
 class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$UtilsDaoMixin {
@@ -21,7 +14,7 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   UtilsDao(super.db);
 
   /// Delete the given [command], as well as all supporting rows.
-  Future<void> deleteCommandFull(final Command command) async {
+  Future<void> deleteCommand(final Command command) async {
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
       await db.pushMenusDao.deletePushMenu(id: pushMenuId);
@@ -43,7 +36,7 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Delete the given [commandTrigger], as well as the connected
   /// [CommandTriggerKeyboardKey] instance.
-  Future<void> deleteCommandTriggerFull(
+  Future<void> deleteCommandTrigger(
     final CommandTrigger commandTrigger,
   ) async {
     final keyboardKeyId = commandTrigger.keyboardKeyId;
