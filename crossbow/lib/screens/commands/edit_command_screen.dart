@@ -15,6 +15,7 @@ import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
 import '../../widgets/push_menu_list_tile.dart';
 import '../../widgets/stop_game_list_tile.dart';
+import '../../widgets/url_list_tile.dart';
 
 /// A screen to edit the command with the given [commandId].
 class EditCommandScreen extends ConsumerWidget {
@@ -134,17 +135,15 @@ class EditCommandScreen extends ConsumerWidget {
                 invalidateCommandProvider(ref);
               }
             },
-            child: TextListTile(
-              value: command.url ?? '',
+            child: UrlListTile(
+              url: command.url,
               onChanged: (final value) async {
                 await commands.setUrl(
                   commandId: command.id,
-                  url: value.isEmpty ? null : value,
+                  url: value,
                 );
                 invalidateCommandProvider(ref);
               },
-              header: Intl.message('Open URL'),
-              labelText: Intl.message('URL'),
             ),
           ),
         ],
