@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants.dart';
+import '../../../hotkeys.dart';
 import '../../../messages.dart';
 import '../../../src/contexts/call_commands_context.dart';
 import '../../../src/contexts/menu_context.dart';
@@ -152,69 +153,73 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     final menuItemsDao = menuContext.projectContext.db.menuItemsDao;
     final menu = menuContext.menu;
     final menuItems = menuContext.menuItems;
-    return ReorderableList(
-      itemBuilder: (final context, final index) {
-        final menuItem = menuItems[index];
-        return CallbackShortcuts(
-          bindings: {
-            moveDownShortcut: () => reorderMenuItems(
-                  oldIndex: index,
-                  newIndex: index + 1,
-                ),
-            moveUpShortcut: () =>
-                reorderMenuItems(oldIndex: index, newIndex: index - 1),
-            deleteShortcut: () async {
-              final callCommands = await menuItemsDao.getCallCommands(
-                menuItemId: menuItem.id,
-              );
-              if (!mounted) {
-                return;
-              }
-              if (callCommands.isNotEmpty) {
-                await showMessage(
-                  context: context,
-                  message: Intl.message(
-                    'You cannot delete menu items that have commands.',
+    return CallbackShortcuts(
+      bindings: {newProjectHotkey: newMenuItem},
+      child: ReorderableList(
+        itemBuilder: (final context, final index) {
+          final menuItem = menuItems[index];
+          return CallbackShortcuts(
+            bindings: {
+              moveDownShortcut: () => reorderMenuItems(
+                    oldIndex: index,
+                    newIndex: index + 1,
                   ),
+              moveUpShortcut: () =>
+                  reorderMenuItems(oldIndex: index, newIndex: index - 1),
+              deleteShortcut: () async {
+                final callCommands = await menuItemsDao.getCallCommands(
+                  menuItemId: menuItem.id,
                 );
-              } else {
-                await intlConfirm(
-                  context: context,
-                  message: 'Are you sure you want to delete this menu item?',
-                  title: confirmDeleteTitle,
-                  yesCallback: () async {
-                    Navigator.of(context).pop();
-                    await menuContext.projectContext.db.menuItemsDao
-                        .deleteMenuItem(id: menuItem.id);
-                    invalidateMenuProvider();
-                  },
-                );
+                if (!mounted) {
+                  return;
+                }
+                if (callCommands.isNotEmpty) {
+                  await showMessage(
+                    context: context,
+                    message: Intl.message(
+                      'You cannot delete menu items that have commands.',
+                    ),
+                  );
+                } else {
+                  await intlConfirm(
+                    context: context,
+                    message: 'Are you sure you want to delete this menu item?',
+                    title: confirmDeleteTitle,
+                    yesCallback: () async {
+                      Navigator.of(context).pop();
+                      await menuContext.projectContext.db.menuItemsDao
+                          .deleteMenuItem(id: menuItem.id);
+                      invalidateMenuProvider();
+                    },
+                  );
+                }
               }
-            }
-          },
-          key: ValueKey(menuItem.id),
-          child: AssetReferencePlaySoundSemantics(
-            assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
-            child: ListTile(
-              autofocus: index == 0,
-              title: Text(menuItem.name),
-              onTap: () async {
-                await pushWidget(
-                  context: context,
-                  builder: (final context) => EditMenuItemScreen(
-                    menuId: menuItem.menuId,
-                    menuItemId: menuItem.id,
-                  ),
-                );
-              },
+            },
+            key: ValueKey(menuItem.id),
+            child: AssetReferencePlaySoundSemantics(
+              assetReferenceId:
+                  menuItem.selectSoundId ?? menu.selectItemSoundId,
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(menuItem.name),
+                onTap: () async {
+                  await pushWidget(
+                    context: context,
+                    builder: (final context) => EditMenuItemScreen(
+                      menuId: menuItem.menuId,
+                      menuItemId: menuItem.id,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
-      itemCount: menuItems.length,
-      onReorder: (final oldIndex, final newIndex) => reorderMenuItems(
-        oldIndex: oldIndex,
-        newIndex: newIndex,
+          );
+        },
+        itemCount: menuItems.length,
+        onReorder: (final oldIndex, final newIndex) => reorderMenuItems(
+          oldIndex: oldIndex,
+          newIndex: newIndex,
+        ),
       ),
     );
   }
