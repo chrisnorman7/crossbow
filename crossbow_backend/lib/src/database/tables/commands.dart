@@ -37,6 +37,4 @@ class Commands extends Table with WithPrimaryKey {
 
   /// A URL to open.
   TextColumn get url => text().nullable()();
-
-  /// The ID of a call command.
 }
