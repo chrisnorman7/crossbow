@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:crossbow_backend/crossbow_backend.dart';
 
 Future<void> main() async {
-  final projectContext =
-      await ProjectContext.blank(projectFile: File('project.json'));
+  final projectContext = await ProjectContext.blank(
+    projectFile: File('project.json'),
+  );
   final db = projectContext.db;
   final menusDao = db.menusDao;
   final menuItemsDao = db.menuItemsDao;
@@ -15,12 +16,13 @@ Future<void> main() async {
     messageText: 'Opening GitHub...',
     url: 'https://github.com/chrisnorman7/crossbow.git',
   );
-  final openGitHubCallCommand = await db.callCommandsDao
-      .createCallCommand(commandId: openGitHubCommand.id);
-  await menuItemsDao.createMenuItem(
+  final openGitHub = await menuItemsDao.createMenuItem(
     menuId: menu.id,
     name: 'Open GitHub',
-    callCommandId: openGitHubCallCommand.id,
+  );
+  await db.callCommandsDao.createCallCommand(
+    commandId: openGitHubCommand.id,
+    callingMenuItemId: openGitHub.id,
   );
   final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
   final popLevel = await db.popLevelsDao.createPopLevel(fadeLength: 3.0);
@@ -29,15 +31,18 @@ Future<void> main() async {
     popLevelId: popLevel.id,
     stopGameId: stopGame.id,
   );
-  final quitCallCommand =
-      await db.callCommandsDao.createCallCommand(commandId: quitCommand.id);
-  await menuItemsDao.createMenuItem(
+  final quit = await menuItemsDao.createMenuItem(
     menuId: menu.id,
     name: 'Quit Game',
-    callCommandId: quitCallCommand.id,
   );
-  final pushMenu =
-      await db.pushMenusDao.createPushMenu(menuId: menu.id, after: 2000);
+  await db.callCommandsDao.createCallCommand(
+    commandId: quitCommand.id,
+    callingMenuItemId: quit.id,
+  );
+  final pushMenu = await db.pushMenusDao.createPushMenu(
+    menuId: menu.id,
+    after: 2000,
+  );
   await commands.setMessageText(
     commandId: projectContext.project.initialCommandId,
     text: 'Welcome to the crossbow example.',
