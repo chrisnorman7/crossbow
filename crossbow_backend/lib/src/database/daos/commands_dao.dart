@@ -122,4 +122,25 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(callCommands)
             ..where((final table) => table.callingCommandId.equals(commandId)))
           .get();
+
+  /// Delete the given [command], as well as all supporting rows.
+  Future<void> deleteCommandFull(final Command command) async {
+    final pushMenuId = command.pushMenuId;
+    if (pushMenuId != null) {
+      await db.pushMenusDao.deletePushMenu(id: pushMenuId);
+    }
+    final popLevelId = command.popLevelId;
+    if (popLevelId != null) {
+      await db.popLevelsDao.deletePopLevel(id: popLevelId);
+    }
+    final stopGameId = command.stopGameId;
+    if (stopGameId != null) {
+      await db.stopGamesDao.deleteStopGame(stopGameId: stopGameId);
+    }
+    final messageSoundId = command.messageSoundId;
+    if (messageSoundId != null) {
+      await db.assetReferencesDao.deleteAssetReference(id: messageSoundId);
+    }
+    await deleteCommand(id: command.id);
+  }
 }
