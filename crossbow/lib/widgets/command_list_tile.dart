@@ -74,7 +74,8 @@ class CommandListTile extends ConsumerWidget {
               title: confirmDeleteTitle,
               yesCallback: () async {
                 Navigator.of(context).pop();
-                await commands.deleteCommand(id: id);
+                final command = await commands.getCommand(id: id);
+                await commands.deleteCommandFull(command);
                 onChanged(null);
               },
             );
