@@ -1,5 +1,7 @@
 export 'asset_references_dao.dart';
 export 'call_commands_dao.dart';
+export 'command_trigger_keyboard_keys_dao.dart';
+export 'command_triggers_dao.dart';
 export 'commands_dao.dart';
 export 'menu_items_dao.dart';
 export 'menus_dao.dart';

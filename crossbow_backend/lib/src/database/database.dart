@@ -32,6 +32,8 @@ part 'database.g.dart';
     StopGamesDao,
     PopLevelsDao,
     AssetReferencesDao,
+    CommandTriggersDao,
+    CommandTriggerKeyboardKeysDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
@@ -48,7 +50,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   /// Migrate the database.
   @override
@@ -74,6 +76,9 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           }
           if (from < 3) {
             await m.addColumn(callCommands, callCommands.randomNumberBase);
+          }
+          if (from < 5) {
+            await m.alterTable(TableMigration(commandTriggers));
           }
         },
       );

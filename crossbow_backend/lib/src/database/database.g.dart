@@ -595,11 +595,7 @@ class $CommandTriggersTable extends CommandTriggers
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _gameControllerButtonMeta =
       const VerificationMeta('gameControllerButton');
   @override
@@ -3004,6 +3000,10 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       PopLevelsDao(this as CrossbowBackendDatabase);
   late final AssetReferencesDao assetReferencesDao =
       AssetReferencesDao(this as CrossbowBackendDatabase);
+  late final CommandTriggersDao commandTriggersDao =
+      CommandTriggersDao(this as CrossbowBackendDatabase);
+  late final CommandTriggerKeyboardKeysDao commandTriggerKeyboardKeysDao =
+      CommandTriggerKeyboardKeysDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

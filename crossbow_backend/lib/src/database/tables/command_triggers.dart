@@ -7,7 +7,7 @@ import 'command_trigger_keyboard_keys.dart';
 /// The command triggers table.
 class CommandTriggers extends Table with WithPrimaryKey {
   /// The description of this command trigger.
-  TextColumn get description => text().withLength(min: 3, max: 100).unique()();
+  TextColumn get description => text()();
 
   /// The game controller button that will trigger this command.
   IntColumn get gameControllerButton =>
