@@ -146,6 +146,30 @@ void main() {
           );
         },
       );
+
+      test(
+        '.deleteCommandTriggerFull',
+        () async {
+          final keyboardKey = await db.commandTriggerKeyboardKeysDao
+              .createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.d,
+          );
+          final trigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Test trigger',
+            keyboardKeyId: keyboardKey.id,
+          );
+          await commandTriggersDao.deleteCommandTriggerFull(trigger);
+          expect(
+            db.commandTriggerKeyboardKeysDao
+                .getCommandTriggerKeyboardKey(id: keyboardKey.id),
+            throwsStateError,
+          );
+          expect(
+            commandTriggersDao.getCommandTrigger(id: trigger.id),
+            throwsStateError,
+          );
+        },
+      );
     },
   );
 }
