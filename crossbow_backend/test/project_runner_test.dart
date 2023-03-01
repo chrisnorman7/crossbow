@@ -7,6 +7,7 @@ import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:ziggurat/sound.dart' as ziggurat_sound;
+import 'package:ziggurat/ziggurat.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import 'custom_database.dart';
@@ -16,6 +17,8 @@ void main() async {
   final assetReferencesDao = db.assetReferencesDao;
   final commandsDao = db.commandsDao;
   final callCommandsDao = db.callCommandsDao;
+  final menusDao = db.menusDao;
+  final menuItemsDao = db.menuItemsDao;
   final clink = await assetReferencesDao.createAssetReference(
     folderName: 'interface',
     name: 'clink.wav',
@@ -126,6 +129,124 @@ void main() async {
           // Now the random number generator will always return `0`, so the
           // command should always run.
           expect(await projectRunner.callCommandShouldRun(callCommand), true);
+        },
+      );
+
+      test(
+        '.getMenuLevel',
+        () async {
+          // We need to use actual files and directories here, otherwise
+          // `getAssetReference` kicks off.
+          final music = await assetReferencesDao.createAssetReference(
+            folderName: 'music',
+            name: 'menu.mp3',
+          );
+          final selectItemSound = await assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'select.mp3',
+            gain: 1.0,
+          );
+          final activateItemSound =
+              await assetReferencesDao.createAssetReference(
+            folderName: 'menus',
+            name: 'activate.mp3',
+            gain: 0.5,
+          );
+          final playMessage = await assetReferencesDao.createAssetReference(
+            folderName: 'messages',
+            name: 'play.mp3',
+          );
+          final quitMessage = await assetReferencesDao.createAssetReference(
+            folderName: 'messages',
+            name: 'quit.mp3',
+          );
+          final menu = await menusDao.createMenu(
+            name: 'Test Menu',
+            activateItemSoundId: activateItemSound.id,
+            musicId: music.id,
+            selectItemSoundId: selectItemSound.id,
+          );
+          final quitCommand = await commandsDao.createCommand();
+          final playCommand = await commandsDao.createCommand();
+          final quit = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Quit',
+            position: 2,
+            selectSoundId: quitMessage.id,
+          );
+          await callCommandsDao.createCallCommand(
+            commandId: quitCommand.id,
+            callingMenuItemId: quit.id,
+          );
+          final play = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: 'Play',
+            selectSoundId: playMessage.id,
+          );
+          await callCommandsDao.createCallCommand(
+            commandId: playCommand.id,
+            callingMenuItemId: play.id,
+          );
+          final label = await menuItemsDao.createMenuItem(
+            menuId: menu.id,
+            name: '...',
+          );
+          final menuLevel = await projectRunner.getMenuLevel(menu);
+          final title = menuLevel.title;
+          expect(title.gain, 0.7);
+          expect(title.keepAlive, false);
+          expect(title.sound, null);
+          final menuItems = menuLevel.menuItems;
+          expect(menuItems.length, 3);
+          final playMenuItem = menuItems.first;
+          final playLabel = playMenuItem.label;
+          expect(playLabel.text, play.name);
+          expect(playLabel.gain, playMessage.gain);
+          expect(playLabel.keepAlive, true);
+          final playSound = playLabel.sound!;
+          expect(playSound.encryptionKey, null);
+          expect(playSound.gain, playMessage.gain);
+          expect(
+            playSound.name,
+            path.join(
+              projectContext.assetsDirectory.path,
+              playMessage.folderName,
+              playMessage.name,
+            ),
+          );
+          expect(playSound.type, AssetType.file);
+          final labelMenuItem = menuItems[1];
+          final labelLabel = labelMenuItem.label;
+          expect(labelLabel.text, label.name);
+          expect(labelLabel.gain, selectItemSound.gain);
+          expect(labelLabel.keepAlive, true);
+          final labelSound = labelLabel.sound!;
+          expect(labelSound.encryptionKey, null);
+          expect(labelSound.gain, selectItemSound.gain);
+          expect(
+            labelSound.name,
+            path.join(
+              projectContext.assetsDirectory.path,
+              selectItemSound.folderName,
+              selectItemSound.name,
+            ),
+          );
+          final quitMenuItem = menuItems.last;
+          final quitLabel = quitMenuItem.label;
+          expect(quitLabel.text, quit.name);
+          expect(quitLabel.gain, quitMessage.gain);
+          expect(quitLabel.keepAlive, true);
+          final quitSound = quitLabel.sound!;
+          expect(quitSound.encryptionKey, null);
+          expect(quitSound.gain, quitMessage.gain);
+          expect(
+            quitSound.name,
+            path.join(
+              projectContext.assetsDirectory.path,
+              quitMessage.folderName,
+              quitMessage.name,
+            ),
+          );
         },
       );
     },
