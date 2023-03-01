@@ -1,3 +1,4 @@
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:test/test.dart';
 
@@ -110,6 +111,39 @@ void main() {
             expect(retrievedTrigger.description, actualTrigger.description);
             expect(retrievedTrigger.id, actualTrigger.id);
           }
+        },
+      );
+
+      test(
+        '.deleteCommandTrigger',
+        () async {
+          final keyboardKey = await db.commandTriggerKeyboardKeysDao
+              .createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.t,
+          );
+          final trigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Test trigger',
+            keyboardKeyId: keyboardKey.id,
+          );
+          expect(
+            await commandTriggersDao.deleteCommandTrigger(
+              commandTriggerId: trigger.id,
+            ),
+            1,
+          );
+          expect(
+            await db.commandTriggerKeyboardKeysDao
+                .getCommandTriggerKeyboardKey(id: keyboardKey.id),
+            predicate<CommandTriggerKeyboardKey>(
+              (final value) =>
+                  value.id == keyboardKey.id &&
+                  value.scanCode == keyboardKey.scanCode,
+            ),
+          );
+          expect(
+            commandTriggersDao.getCommandTrigger(id: trigger.id),
+            throwsStateError,
+          );
         },
       );
     },

@@ -101,6 +101,26 @@ void main() {
           expect(updatedKey.shift, true);
         },
       );
+
+      test(
+        '.deleteCommandTriggerKeyboardKey',
+        () async {
+          final key = await keyboardKeysDao.createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.q,
+            shift: true,
+          );
+          expect(
+            await keyboardKeysDao.deleteCommandTriggerKeyboardKey(
+              commandTriggerKeyboardKeyId: key.id,
+            ),
+            1,
+          );
+          expect(
+            keyboardKeysDao.getCommandTriggerKeyboardKey(id: key.id),
+            throwsStateError,
+          );
+        },
+      );
     },
   );
 }

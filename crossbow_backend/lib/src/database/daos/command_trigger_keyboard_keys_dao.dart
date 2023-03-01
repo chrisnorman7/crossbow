@@ -76,4 +76,14 @@ class CommandTriggerKeyboardKeysDao
     );
     return rows.single;
   }
+
+  /// Delete the keyboard key with the given [commandTriggerKeyboardKeyId].
+  Future<int> deleteCommandTriggerKeyboardKey({
+    required final int commandTriggerKeyboardKeyId,
+  }) =>
+      (delete(commandTriggerKeyboardKeys)
+            ..where(
+              (final table) => table.id.equals(commandTriggerKeyboardKeyId),
+            ))
+          .go();
 }

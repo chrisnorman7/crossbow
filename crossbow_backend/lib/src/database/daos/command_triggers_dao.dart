@@ -80,4 +80,12 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..orderBy([(final table) => OrderingTerm.asc(table.description)]);
     return query.get();
   }
+
+  /// Delete the command trigger with the given [commandTriggerId].
+  Future<int> deleteCommandTrigger({
+    required final int commandTriggerId,
+  }) =>
+      (delete(commandTriggers)
+            ..where((final table) => table.id.equals(commandTriggerId)))
+          .go();
 }
