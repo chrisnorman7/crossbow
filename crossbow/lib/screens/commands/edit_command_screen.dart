@@ -1,14 +1,14 @@
 import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/shortcuts.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
-import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../messages.dart';
 import '../../src/contexts/call_commands_context.dart';
-import '../../src/contexts/value_context.dart';
+import '../../src/contexts/command_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
@@ -53,11 +53,54 @@ class EditCommandScreen extends ConsumerWidget {
   Widget getBody({
     required final BuildContext context,
     required final WidgetRef ref,
-    required final ValueContext<Command> commandContext,
+    required final CommandContext commandContext,
   }) {
+    final projectContext = commandContext.projectContext;
+    final pinnedCommandsDao = projectContext.db.pinnedCommandsDao;
+    final utilsDao = projectContext.db.utilsDao;
     final command = commandContext.value;
+    final pinnedCommand = commandContext.pinnedCommand;
     final commands = commandContext.projectContext.db.commandsDao;
     return SimpleScaffold(
+      actions: [
+        if (pinnedCommand != null)
+          TextButton(
+            onPressed: () => pushWidget(
+              context: context,
+              builder: (final context) => GetText(
+                onDone: (final value) async {
+                  Navigator.pop(context);
+                  await pinnedCommandsDao.setName(
+                    pinnedCommandId: pinnedCommand.id,
+                    name: value,
+                  );
+                  invalidateCommandProvider(ref);
+                },
+                labelText: Intl.message('Pinned Name'),
+                text: pinnedCommand.name,
+                title: Intl.message('Get Pinned Name'),
+                tooltip: doneMessage,
+              ),
+            ),
+            child: Text(pinnedCommand.name),
+          ),
+        TextButton(
+          onPressed: () async {
+            if (pinnedCommand == null) {
+              await pinnedCommandsDao.createPinnedCommand(
+                commandId: command.id,
+                name: Intl.message('Untitled Command'),
+              );
+            } else {
+              await utilsDao.deletePinnedCommand(pinnedCommand);
+            }
+            invalidateCommandProvider(ref);
+          },
+          child: Text(
+            pinnedCommand == null ? pinMessage : unpinMessage,
+          ),
+        )
+      ],
       title: editCommandTitle,
       body: ListView(
         children: [

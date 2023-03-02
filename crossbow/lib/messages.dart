@@ -143,3 +143,9 @@ final urlMessage = Intl.message('URL');
 
 /// There is nothing to show.
 final nothingToShowMessage = Intl.message('There is nothing to show.');
+
+/// Pin.
+final pinMessage = Intl.message('Pin');
+
+/// Unpin message.
+final unpinMessage = Intl.message('Unpin');
