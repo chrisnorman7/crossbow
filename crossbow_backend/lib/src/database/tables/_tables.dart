@@ -5,6 +5,7 @@ export 'command_triggers.dart';
 export 'commands.dart';
 export 'menu_items.dart';
 export 'menus.dart';
+export 'pinned_commands.dart';
 export 'pop_levels.dart';
 export 'push_menus.dart';
 export 'stop_games.dart';

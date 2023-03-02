@@ -22,6 +22,7 @@ part 'database.g.dart';
     PushMenus,
     CallCommands,
     StopGames,
+    PinnedCommands,
   ],
   daos: [
     MenusDao,
@@ -35,6 +36,7 @@ part 'database.g.dart';
     CommandTriggersDao,
     CommandTriggerKeyboardKeysDao,
     UtilsDao,
+    PinnedCommandsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {

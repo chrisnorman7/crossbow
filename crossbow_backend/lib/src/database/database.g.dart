@@ -2970,6 +2970,221 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
   }
 }
 
+class $PinnedCommandsTable extends PinnedCommands
+    with TableInfo<$PinnedCommandsTable, PinnedCommand> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PinnedCommandsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _commandIdMeta =
+      const VerificationMeta('commandId');
+  @override
+  late final GeneratedColumn<int> commandId = GeneratedColumn<int>(
+      'command_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES commands (id) ON DELETE RESTRICT'));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, commandId];
+  @override
+  String get aliasedName => _alias ?? 'pinned_commands';
+  @override
+  String get actualTableName => 'pinned_commands';
+  @override
+  VerificationContext validateIntegrity(Insertable<PinnedCommand> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('command_id')) {
+      context.handle(_commandIdMeta,
+          commandId.isAcceptableOrUnknown(data['command_id']!, _commandIdMeta));
+    } else if (isInserting) {
+      context.missing(_commandIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PinnedCommand map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PinnedCommand(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      commandId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}command_id'])!,
+    );
+  }
+
+  @override
+  $PinnedCommandsTable createAlias(String alias) {
+    return $PinnedCommandsTable(attachedDatabase, alias);
+  }
+}
+
+class PinnedCommand extends DataClass implements Insertable<PinnedCommand> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The ID of the command to pin.
+  final int commandId;
+  const PinnedCommand(
+      {required this.id, required this.name, required this.commandId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['command_id'] = Variable<int>(commandId);
+    return map;
+  }
+
+  PinnedCommandsCompanion toCompanion(bool nullToAbsent) {
+    return PinnedCommandsCompanion(
+      id: Value(id),
+      name: Value(name),
+      commandId: Value(commandId),
+    );
+  }
+
+  factory PinnedCommand.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PinnedCommand(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      commandId: serializer.fromJson<int>(json['commandId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'commandId': serializer.toJson<int>(commandId),
+    };
+  }
+
+  PinnedCommand copyWith({int? id, String? name, int? commandId}) =>
+      PinnedCommand(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        commandId: commandId ?? this.commandId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('PinnedCommand(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('commandId: $commandId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, commandId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PinnedCommand &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.commandId == this.commandId);
+}
+
+class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> commandId;
+  const PinnedCommandsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.commandId = const Value.absent(),
+  });
+  PinnedCommandsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    required int commandId,
+  }) : commandId = Value(commandId);
+  static Insertable<PinnedCommand> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? commandId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (commandId != null) 'command_id': commandId,
+    });
+  }
+
+  PinnedCommandsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<int>? commandId}) {
+    return PinnedCommandsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      commandId: commandId ?? this.commandId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (commandId.present) {
+      map['command_id'] = Variable<int>(commandId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PinnedCommandsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('commandId: $commandId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -2985,6 +3200,7 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final $StopGamesTable stopGames = $StopGamesTable(this);
   late final $CommandsTable commands = $CommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
+  late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -3005,6 +3221,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final CommandTriggerKeyboardKeysDao commandTriggerKeyboardKeysDao =
       CommandTriggerKeyboardKeysDao(this as CrossbowBackendDatabase);
   late final UtilsDao utilsDao = UtilsDao(this as CrossbowBackendDatabase);
+  late final PinnedCommandsDao pinnedCommandsDao =
+      PinnedCommandsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3019,7 +3237,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         popLevels,
         stopGames,
         commands,
-        callCommands
+        callCommands,
+        pinnedCommands
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
