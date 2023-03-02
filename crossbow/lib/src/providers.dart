@@ -12,6 +12,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
 import 'contexts/call_commands_context.dart';
+import 'contexts/command_context.dart';
 import 'contexts/command_trigger_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
@@ -104,14 +105,21 @@ final synthizerContextProvider = Provider((final ref) {
 });
 
 /// Provide a single command.
-final commandProvider = FutureProvider.family<ValueContext<Command>, int>(
+final commandProvider = FutureProvider.family<CommandContext, int>(
   (final ref, final id) async {
     final projectContext = ref.watch(projectContextNotifierProvider);
     if (projectContext == null) {
       throw StateError('Cannot get command with `null` project context.');
     }
-    final command = await projectContext.db.commandsDao.getCommand(id: id);
-    return ValueContext(projectContext: projectContext, value: command);
+    final commandsDao = projectContext.db.commandsDao;
+    final command = await commandsDao.getCommand(id: id);
+    final pinnedCommand =
+        await commandsDao.getPinnedCommand(commandId: command.id);
+    return CommandContext(
+      projectContext: projectContext,
+      value: command,
+      pinnedCommand: pinnedCommand,
+    );
   },
 );
 
