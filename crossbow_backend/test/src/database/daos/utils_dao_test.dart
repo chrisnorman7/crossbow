@@ -19,6 +19,7 @@ void main() {
       final commandTriggersDao = db.commandTriggersDao;
       final assetReferencesDao = db.assetReferencesDao;
       final popLevelsDao = db.popLevelsDao;
+      final pinnedCommandsDao = db.pinnedCommandsDao;
 
       test(
         '.deleteAssetReference',
@@ -335,6 +336,26 @@ void main() {
           expect(pushMenusDao.getPushMenu(id: pushMenu.id), throwsStateError);
           expect((await menusDao.getMenu(id: menu.id)).id, menu.id);
           expect((await commandsDao.getCommand(id: command.id)).id, command.id);
+        },
+      );
+
+      test(
+        '.deletePinnedCommand',
+        () async {
+          final command = await commandsDao.createCommand();
+          final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: 'Test',
+          );
+          await utilsDao.deletePinnedCommand(pinnedCommand);
+          expect(
+            pinnedCommandsDao.getPinnedCommand(id: pinnedCommand.id),
+            throwsStateError,
+          );
+          expect(
+            await commandsDao.getCommand(id: command.id),
+            predicate<Command>((final value) => value.id == command.id),
+          );
         },
       );
     },

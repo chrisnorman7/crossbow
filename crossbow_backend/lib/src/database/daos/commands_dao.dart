@@ -4,12 +4,13 @@ import 'package:meta/meta.dart';
 import '../database.dart';
 import '../tables/call_commands.dart';
 import '../tables/commands.dart';
+import '../tables/pinned_commands.dart';
 import '../tables/push_menus.dart';
 
 part 'commands_dao.g.dart';
 
 /// The DAO for commands.
-@DriftAccessor(tables: [Commands, CallCommands, PushMenus])
+@DriftAccessor(tables: [Commands, CallCommands, PushMenus, PinnedCommands])
 class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$CommandsDaoMixin {
   /// Create an instance.
@@ -124,4 +125,13 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(callCommands)
             ..where((final table) => table.callingCommandId.equals(commandId)))
           .get();
+
+  /// Get a pinned command which represents the command with the given
+  /// [commandId].
+  Future<PinnedCommand?> getPinnedCommand({
+    required final int commandId,
+  }) =>
+      (select(pinnedCommands)
+            ..where((final table) => table.commandId.equals(commandId)))
+          .getSingleOrNull();
 }

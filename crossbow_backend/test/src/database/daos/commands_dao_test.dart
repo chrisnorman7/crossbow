@@ -12,6 +12,7 @@ void main() {
       final menus = db.menusDao;
       final pushMenus = db.pushMenusDao;
       final callCommandsDao = db.callCommandsDao;
+      final pinnedCommandsDao = db.pinnedCommandsDao;
 
       test(
         '.createCommand',
@@ -225,6 +226,24 @@ void main() {
           for (var i = 0; i < createdCallCommands.length; i++) {
             expect(createdCallCommands[i].id, queryCallCommands[i].id);
           }
+        },
+      );
+
+      test(
+        '.getPinnedCommand',
+        () async {
+          final command = await commands.createCommand();
+          final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: 'Test',
+          );
+          final retrievedPinnedCommand =
+              (await commands.getPinnedCommand(commandId: command.id))!;
+          expect(retrievedPinnedCommand.commandId, command.id);
+          expect(retrievedPinnedCommand.id, pinnedCommand.id);
+          expect(retrievedPinnedCommand.name, pinnedCommand.name);
+          final command2 = await commands.createCommand();
+          expect(await commands.getPinnedCommand(commandId: command2.id), null);
         },
       );
     },

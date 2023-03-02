@@ -12,4 +12,5 @@ mixin _$CommandsDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $CommandsTable get commands => attachedDatabase.commands;
   $MenuItemsTable get menuItems => attachedDatabase.menuItems;
   $CallCommandsTable get callCommands => attachedDatabase.callCommands;
+  $PinnedCommandsTable get pinnedCommands => attachedDatabase.pinnedCommands;
 }

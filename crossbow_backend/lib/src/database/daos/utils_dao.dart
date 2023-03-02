@@ -122,4 +122,12 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<void> deleteStopGame(final StopGame stopGame) async {
     await db.stopGamesDao.deleteStopGame(stopGameId: stopGame.id);
   }
+
+  /// Delete the given [pinnedCommand].
+  ///
+  /// This method does not delete the referenced [Command] instance.
+  Future<void> deletePinnedCommand(final PinnedCommand pinnedCommand) async {
+    await db.pinnedCommandsDao
+        .deletePinnedCommand(pinnedCommandId: pinnedCommand.id);
+  }
 }
