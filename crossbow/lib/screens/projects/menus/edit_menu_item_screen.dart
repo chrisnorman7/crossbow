@@ -51,7 +51,7 @@ class EditMenuItemScreen extends ConsumerWidget {
     required final WidgetRef ref,
   }) {
     final menuItemsDao = menuItemContext.projectContext.db.menuItemsDao;
-    final menuItem = menuItemContext.menuItem;
+    final menuItem = menuItemContext.value;
     final menu = menuItemContext.menu;
     return SimpleScaffold(
       title: Intl.message('Edit Menu Item'),

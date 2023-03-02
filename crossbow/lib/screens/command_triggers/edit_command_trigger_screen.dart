@@ -55,7 +55,7 @@ class EditCommandTriggerScreenState
   Widget getBody(final CommandTriggerContext commandTriggerContext) {
     final projectContext = commandTriggerContext.projectContext;
     final dao = projectContext.db.commandTriggersDao;
-    final commandTrigger = commandTriggerContext.commandTrigger;
+    final commandTrigger = commandTriggerContext.value;
     final button = commandTrigger.gameControllerButton;
     final keyboardKey = commandTriggerContext.commandTriggerKeyboardKey;
     return ListView(

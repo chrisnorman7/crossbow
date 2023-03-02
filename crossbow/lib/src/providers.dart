@@ -220,7 +220,7 @@ final menuProvider = FutureProvider.family<MenuContext, int>(
     );
     return MenuContext(
       projectContext: projectContext,
-      menu: menu,
+      value: menu,
       menuItems: menuItems,
     );
   },
@@ -239,7 +239,7 @@ final menuItemProvider = FutureProvider.family<MenuItemContext, int>(
     return MenuItemContext(
       projectContext: projectContext,
       menu: menu,
-      menuItem: menuItem,
+      value: menuItem,
     );
   },
 );
@@ -283,7 +283,8 @@ final pushMenuProvider = FutureProvider.family<PushMenuContext, int>(
     final pushMenu = await db.pushMenusDao.getPushMenu(id: arg);
     final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
     return PushMenuContext(
-      pushMenu: pushMenu,
+      projectContext: projectContext,
+      value: pushMenu,
       menu: menu,
     );
   },
@@ -316,7 +317,7 @@ final commandTriggerProvider =
             .value;
     return CommandTriggerContext(
       projectContext: projectContext,
-      commandTrigger: commandTrigger,
+      value: commandTrigger,
       commandTriggerKeyboardKey: keyboardKey,
     );
   },
@@ -338,7 +339,7 @@ final commandTriggersProvider = FutureProvider<List<CommandTriggerContext>>(
         list.add(
           CommandTriggerContext(
             projectContext: projectContext,
-            commandTrigger: commandTrigger,
+            value: commandTrigger,
             commandTriggerKeyboardKey: keyboardKey.value,
           ),
         );

@@ -53,7 +53,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
 
   /// Get the body for this widget.
   Widget getBody(final MenuContext menuContext) {
-    final menu = menuContext.menu;
+    final menu = menuContext.value;
     return TabbedScaffold(
       tabs: [
         TabbedScaffoldTab(
@@ -153,7 +153,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     final db = menuContext.projectContext.db;
     final menuItemsDao = db.menuItemsDao;
     final menusDao = db.menusDao;
-    final menu = menuContext.menu;
+    final menu = menuContext.value;
     final menuItems = menuContext.menuItems;
     return NewCallbackShortcuts(
       newCallback: newMenuItem,

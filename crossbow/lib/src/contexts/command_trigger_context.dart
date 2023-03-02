@@ -1,21 +1,17 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
 
-/// A class which provides a [projectContext], [commandTrigger], and
-/// [commandTriggerKeyboardKey].
-class CommandTriggerContext {
+import 'value_context.dart';
+
+/// A value context which provides a [projectContext], a command trigger
+/// [value], and a [commandTriggerKeyboardKey].
+class CommandTriggerContext extends ValueContext<CommandTrigger> {
   /// Create an instance.
   const CommandTriggerContext({
-    required this.projectContext,
-    required this.commandTrigger,
+    required super.projectContext,
+    required super.value,
     required this.commandTriggerKeyboardKey,
   });
 
-  /// The project context to use.
-  final ProjectContext projectContext;
-
-  /// The command trigger to use.
-  final CommandTrigger commandTrigger;
-
-  /// The keyboard key which [commandTrigger] uses.
+  /// The keyboard key which [value] uses.
   final CommandTriggerKeyboardKey? commandTriggerKeyboardKey;
 }

@@ -46,7 +46,7 @@ class EditPushMenuScreen extends ConsumerWidget {
   }) {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final pushMenusDao = projectContext.db.pushMenusDao;
-    final pushMenu = pushMenuContext.pushMenu;
+    final pushMenu = pushMenuContext.value;
     final menu = pushMenuContext.menu;
     return SimpleScaffold(
       title: Intl.message('Edit Push Menu'),

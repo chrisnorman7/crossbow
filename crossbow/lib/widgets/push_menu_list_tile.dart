@@ -58,7 +58,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
   Widget getBody(final PushMenuContext? pushMenuContext) {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final pushMenusDao = projectContext.db.pushMenusDao;
-    final pushMenu = pushMenuContext?.pushMenu;
+    final pushMenu = pushMenuContext?.value;
     final menu = pushMenuContext?.menu;
     return AssetReferencePlaySoundSemantics(
       assetReferenceId: menu?.musicId,

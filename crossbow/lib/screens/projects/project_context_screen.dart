@@ -243,7 +243,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
             items: commandTriggers,
             builder: (final context, final index) {
               final valueContext = commandTriggers[index];
-              final commandTrigger = valueContext.commandTrigger;
+              final commandTrigger = valueContext.value;
               final button = commandTrigger.gameControllerButton;
               final buttonName = button?.name ?? unsetMessage;
               final keyboardKey = valueContext.commandTriggerKeyboardKey;

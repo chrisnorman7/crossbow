@@ -59,7 +59,7 @@ class MenuListTile extends ConsumerWidget {
     required final BuildContext context,
     final MenuContext? menuContext,
   }) {
-    final menu = menuContext?.menu;
+    final menu = menuContext?.value;
     return CallbackShortcuts(
       bindings: {
         deleteHotkey: () {

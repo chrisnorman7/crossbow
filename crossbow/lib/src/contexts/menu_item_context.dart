@@ -1,20 +1,16 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
 
-/// A context to hold a [menu], and a [menuItem].
-class MenuItemContext {
+import 'value_context.dart';
+
+/// A value context to hold a [menu], and a menu item [value].
+class MenuItemContext extends ValueContext<MenuItem> {
   /// Create and instance.
   const MenuItemContext({
-    required this.projectContext,
+    required super.projectContext,
     required this.menu,
-    required this.menuItem,
+    required super.value,
   });
 
-  /// The project context to use.
-  final ProjectContext projectContext;
-
-  /// The menu that [menuItem] belongs to.
+  /// The menu that [value] belongs to.
   final Menu menu;
-
-  /// The menu to use.
-  final MenuItem menuItem;
 }

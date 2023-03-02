@@ -1,16 +1,16 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
 
-/// A class to hold a [pushMenu] and its attached [menu].
-class PushMenuContext {
+import 'value_context.dart';
+
+/// A class to hold a push menu [value] and its attached [menu].
+class PushMenuContext extends ValueContext<PushMenu> {
   /// Create an instance.
   const PushMenuContext({
-    required this.pushMenu,
+    required super.projectContext,
+    required super.value,
     required this.menu,
   });
 
-  /// The push menu to use.
-  final PushMenu pushMenu;
-
-  /// The menu to use.
+  /// The menu that [value] references.
   final Menu menu;
 }
