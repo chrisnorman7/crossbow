@@ -17,6 +17,7 @@ import '../../widgets/directory_list_tile.dart';
 import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import '../command_triggers/edit_command_trigger_screen.dart';
+import '../commands/edit_command_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
@@ -70,6 +71,15 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                 tooltip: Intl.message('New Command Trigger'),
                 child: intlNewIcon,
               ),
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Pinned Commands'),
+              icon: Text(
+                Intl.message(
+                  'Commands which can be used in multiple places',
+                ),
+              ),
+              builder: getPinnedCommandsPage,
             )
           ],
         ),
@@ -292,6 +302,48 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
         error: ErrorListView.withPositional,
         loading: LoadingWidget.new,
       ),
+    );
+  }
+
+  /// Get the pinned commands page.
+  Widget getPinnedCommandsPage(final BuildContext context) {
+    final value = ref.watch(pinnedCommandsProvider);
+    return value.when(
+      data: (final data) {
+        final pinnedCommands = data.value;
+        if (pinnedCommands.isEmpty) {
+          return CenterText(
+            text: nothingToShowMessage,
+            autofocus: true,
+          );
+        }
+        return BuiltSearchableListView(
+          items: pinnedCommands,
+          builder: (final context, final index) {
+            final pinnedCommand = pinnedCommands[index];
+            return SearchableListTile(
+              searchString: pinnedCommand.name,
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(pinnedCommand.name),
+                subtitle: Text('#${pinnedCommand.commandId}'),
+                onTap: () async {
+                  await pushWidget(
+                    context: context,
+                    builder: (final context) => EditCommandScreen(
+                      commandId: pinnedCommand.commandId,
+                      onChanged: (final value) {},
+                    ),
+                  );
+                  ref.invalidate(pinnedCommandsProvider);
+                },
+              ),
+            );
+          },
+        );
+      },
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
     );
   }
 

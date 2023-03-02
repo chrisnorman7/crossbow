@@ -74,6 +74,7 @@ class EditCommandScreen extends ConsumerWidget {
                     pinnedCommandId: pinnedCommand.id,
                     name: value,
                   );
+                  invalidatePinnedCommandsProvider(ref);
                   invalidateCommandProvider(ref);
                 },
                 labelText: Intl.message('Pinned Name'),
@@ -94,6 +95,7 @@ class EditCommandScreen extends ConsumerWidget {
             } else {
               await utilsDao.deletePinnedCommand(pinnedCommand);
             }
+            invalidatePinnedCommandsProvider(ref);
             invalidateCommandProvider(ref);
           },
           child: Text(
@@ -197,4 +199,8 @@ class EditCommandScreen extends ConsumerWidget {
   /// Invalidate the command provider.
   void invalidateCommandProvider(final WidgetRef ref) =>
       ref.invalidate(commandProvider.call(commandId));
+
+  /// Invalidate the [pinnedCommandsProvider].
+  void invalidatePinnedCommandsProvider(final WidgetRef ref) =>
+      ref.invalidate(pinnedCommandsProvider);
 }

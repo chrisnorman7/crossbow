@@ -369,3 +369,14 @@ final commandTriggerKeyboardKeyProvider =
     return ValueContext(projectContext: project, value: key);
   },
 );
+
+/// Provide all pinned commands.
+final pinnedCommandsProvider =
+    FutureProvider<ValueContext<List<PinnedCommand>>>(
+  (final ref) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final pinnedCommands =
+        await projectContext.db.pinnedCommandsDao.getPinnedCommands();
+    return ValueContext(projectContext: projectContext, value: pinnedCommands);
+  },
+);
