@@ -15,8 +15,64 @@ void main() {
       final commandsDao = db.commandsDao;
       final callCommandsDao = db.callCommandsDao;
       final utilsDao = db.utilsDao;
+      final commandTriggerKeyboardKeysDao = db.commandTriggerKeyboardKeysDao;
       final commandTriggersDao = db.commandTriggersDao;
       final assetReferencesDao = db.assetReferencesDao;
+      final popLevelsDao = db.popLevelsDao;
+
+      test(
+        '.deleteAssetReference',
+        () async {
+          final assetReference = await assetReferencesDao.createAssetReference(
+            folderName: 'test',
+            name: 'test.mp3',
+          );
+          await utilsDao.deleteAssetReference(assetReference);
+          expect(
+            assetReferencesDao.getAssetReference(id: assetReference.id),
+            throwsStateError,
+          );
+        },
+      );
+
+      test(
+        '.deleteCommandTrigger',
+        () async {
+          final keyboardKey = await db.commandTriggerKeyboardKeysDao
+              .createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.d,
+          );
+          final trigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Test trigger',
+            keyboardKeyId: keyboardKey.id,
+          );
+          await utilsDao.deleteCommandTrigger(trigger);
+          expect(
+            db.commandTriggerKeyboardKeysDao
+                .getCommandTriggerKeyboardKey(id: keyboardKey.id),
+            throwsStateError,
+          );
+          expect(
+            commandTriggersDao.getCommandTrigger(id: trigger.id),
+            throwsStateError,
+          );
+        },
+      );
+
+      test(
+        '.deleteCommandTriggerKeyboardKey',
+        () async {
+          final key = await commandTriggerKeyboardKeysDao
+              .createCommandTriggerKeyboardKey(scanCode: ScanCode.delete);
+          await utilsDao.deleteCommandTriggerKeyboardKey(key);
+          expect(
+            commandTriggerKeyboardKeysDao.getCommandTriggerKeyboardKey(
+              id: key.id,
+            ),
+            throwsStateError,
+          );
+        },
+      );
 
       test(
         '.deleteCommand',
@@ -61,30 +117,6 @@ void main() {
           );
           expect(
             commandsDao.getCommand(id: command2.id),
-            throwsStateError,
-          );
-        },
-      );
-
-      test(
-        '.deleteCommandTrigger',
-        () async {
-          final keyboardKey = await db.commandTriggerKeyboardKeysDao
-              .createCommandTriggerKeyboardKey(
-            scanCode: ScanCode.d,
-          );
-          final trigger = await commandTriggersDao.createCommandTrigger(
-            description: 'Test trigger',
-            keyboardKeyId: keyboardKey.id,
-          );
-          await utilsDao.deleteCommandTrigger(trigger);
-          expect(
-            db.commandTriggerKeyboardKeysDao
-                .getCommandTriggerKeyboardKey(id: keyboardKey.id),
-            throwsStateError,
-          );
-          expect(
-            commandTriggersDao.getCommandTrigger(id: trigger.id),
             throwsStateError,
           );
         },
@@ -275,6 +307,34 @@ void main() {
           );
           expect(commandsDao.getCommand(id: command1.id), throwsStateError);
           expect(commandsDao.getCommand(id: command2.id), throwsStateError);
+        },
+      );
+
+      test(
+        '.deletePopLevel',
+        () async {
+          final popLevel = await popLevelsDao.createPopLevel();
+          final command =
+              await commandsDao.createCommand(popLevelId: popLevel.id);
+          await utilsDao.deletePopLevel(popLevel);
+          expect(popLevelsDao.getPopLevel(id: popLevel.id), throwsStateError);
+          final updatedCommand = await commandsDao.getCommand(id: command.id);
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.popLevelId, null);
+        },
+      );
+
+      test(
+        '.deletePushMenu',
+        () async {
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
+          final command =
+              await commandsDao.createCommand(pushMenuId: pushMenu.id);
+          await utilsDao.deletePushMenu(pushMenu);
+          expect(pushMenusDao.getPushMenu(id: pushMenu.id), throwsStateError);
+          expect((await menusDao.getMenu(id: menu.id)).id, menu.id);
+          expect((await commandsDao.getCommand(id: command.id)).id, command.id);
         },
       );
     },

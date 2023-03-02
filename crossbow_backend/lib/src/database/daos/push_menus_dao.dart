@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/push_menus.dart';
@@ -34,6 +35,7 @@ class PushMenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the push menu with the given [id].
+  @internal
   Future<int> deletePushMenu({required final int id}) async {
     final query = delete(pushMenus)
       ..where((final table) => table.id.equals(id));

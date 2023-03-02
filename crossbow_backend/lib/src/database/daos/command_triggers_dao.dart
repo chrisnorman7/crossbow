@@ -1,5 +1,6 @@
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../../../crossbow_backend.dart';
 
@@ -82,6 +83,7 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the command trigger with the given [commandTriggerId].
+  @internal
   Future<int> deleteCommandTrigger({
     required final int commandTriggerId,
   }) =>

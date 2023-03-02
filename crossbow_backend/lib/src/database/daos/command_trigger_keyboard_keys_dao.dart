@@ -1,5 +1,6 @@
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/command_trigger_keyboard_keys.dart';
@@ -78,6 +79,7 @@ class CommandTriggerKeyboardKeysDao
   }
 
   /// Delete the keyboard key with the given [commandTriggerKeyboardKeyId].
+  @internal
   Future<int> deleteCommandTriggerKeyboardKey({
     required final int commandTriggerKeyboardKeyId,
   }) =>

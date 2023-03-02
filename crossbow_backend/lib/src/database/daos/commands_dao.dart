@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/call_commands.dart';
@@ -53,6 +54,7 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the command with the given [id].
+  @internal
   Future<int> deleteCommand({required final int id}) async =>
       (delete(commands)..where((final table) => table.id.equals(id))).go();
 

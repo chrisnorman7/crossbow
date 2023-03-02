@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/call_commands.dart';
@@ -37,6 +38,7 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the menu with the given [id].
+  @internal
   Future<int> deleteMenu({required final int id}) {
     final query = delete(menus)..where((final table) => table.id.equals(id));
     return query.go();

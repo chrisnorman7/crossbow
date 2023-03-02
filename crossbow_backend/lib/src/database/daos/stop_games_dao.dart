@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/stop_games.dart';
@@ -35,6 +36,7 @@ class StopGamesDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the stop game with the given [stopGameId].
+  @internal
   Future<int> deleteStopGame({required final int stopGameId}) async {
     final query = delete(stopGames)
       ..where((final table) => table.id.equals(stopGameId));

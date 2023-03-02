@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/pop_levels.dart';
@@ -36,6 +37,7 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the pop level with the given [id].
+  @internal
   Future<int> deletePopLevel({required final int id}) async {
     final query = delete(popLevels)
       ..where((final table) => table.id.equals(id));

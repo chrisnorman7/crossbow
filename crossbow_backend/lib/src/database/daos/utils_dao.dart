@@ -13,6 +13,36 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create an instance.
   UtilsDao(super.db);
 
+  /// Delete the given [assetReference].
+  Future<void> deleteAssetReference(final AssetReference assetReference) async {
+    await db.assetReferencesDao.deleteAssetReference(id: assetReference.id);
+  }
+
+  /// Delete the given [commandTrigger], as well as the connected
+  /// [CommandTriggerKeyboardKey] instance.
+  Future<void> deleteCommandTrigger(
+    final CommandTrigger commandTrigger,
+  ) async {
+    final keyboardKeyId = commandTrigger.keyboardKeyId;
+    if (keyboardKeyId != null) {
+      await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
+        commandTriggerKeyboardKeyId: keyboardKeyId,
+      );
+    }
+    await db.commandTriggersDao.deleteCommandTrigger(
+      commandTriggerId: commandTrigger.id,
+    );
+  }
+
+  /// Delete the given [commandTriggerKeyboardKey].
+  Future<void> deleteCommandTriggerKeyboardKey(
+    final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
+  ) async {
+    await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
+      commandTriggerKeyboardKeyId: commandTriggerKeyboardKey.id,
+    );
+  }
+
   /// Delete the given [command], as well as all supporting rows.
   Future<void> deleteCommand(final Command command) async {
     final pushMenuId = command.pushMenuId;
@@ -34,21 +64,6 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     (await db.commandsDao.getCallCommands(commandId: command.id))
         .forEach(deleteCallCommand);
     await db.commandsDao.deleteCommand(id: command.id);
-  }
-
-  /// Delete the given [commandTrigger], as well as the connected
-  /// [CommandTriggerKeyboardKey] instance.
-  Future<void> deleteCommandTrigger(
-    final CommandTrigger commandTrigger,
-  ) async {
-    final keyboardKeyId = commandTrigger.keyboardKeyId;
-    if (keyboardKeyId != null) {
-      await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
-        commandTriggerKeyboardKeyId: keyboardKeyId,
-      );
-    }
-    await db.commandTriggersDao
-        .deleteCommandTrigger(commandTriggerId: commandTrigger.id);
   }
 
   /// Delete the given [callCommand].
@@ -89,5 +104,22 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     (await db.menusDao.getOnCancelCallCommands(menuId: menu.id))
         .forEach(deleteCallCommand);
     await db.menusDao.deleteMenu(id: menu.id);
+  }
+
+  /// Delete the given [popLevel].
+  Future<void> deletePopLevel(final PopLevel popLevel) async {
+    await db.popLevelsDao.deletePopLevel(id: popLevel.id);
+  }
+
+  /// Delete the given [pushMenu].
+  ///
+  /// This method *does not* delete the attached menu.
+  Future<void> deletePushMenu(final PushMenu pushMenu) async {
+    await db.pushMenusDao.deletePushMenu(id: pushMenu.id);
+  }
+
+  /// Delete the given [stopGame].
+  Future<void> deleteStopGame(final StopGame stopGame) async {
+    await db.stopGamesDao.deleteStopGame(stopGameId: stopGame.id);
   }
 }
