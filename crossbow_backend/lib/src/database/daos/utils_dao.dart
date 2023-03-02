@@ -31,6 +31,8 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     if (messageSoundId != null) {
       await db.assetReferencesDao.deleteAssetReference(id: messageSoundId);
     }
+    (await db.commandsDao.getCallCommands(commandId: command.id))
+        .forEach(deleteCallCommand);
     await db.commandsDao.deleteCommand(id: command.id);
   }
 
@@ -47,5 +49,45 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     }
     await db.commandTriggersDao
         .deleteCommandTrigger(commandTriggerId: commandTrigger.id);
+  }
+
+  /// Delete the given [callCommand].
+  ///
+  /// It is worth noting that actually all that happens is that [deleteCommand]
+  /// is called on the [callCommand]'s `CommandId`, and database cascades handle
+  /// the rest.
+  Future<void> deleteCallCommand(final CallCommand callCommand) async {
+    await db.commandsDao.deleteCommand(id: callCommand.commandId);
+  }
+
+  /// Delete the given [menuItem] and all associated rows.
+  Future<void> deleteMenuItem(final MenuItem menuItem) async {
+    for (final id in [menuItem.activateSoundId, menuItem.selectSoundId]) {
+      if (id != null) {
+        await db.assetReferencesDao.deleteAssetReference(id: id);
+      }
+    }
+    (await db.menuItemsDao.getCallCommands(menuItemId: menuItem.id))
+        .forEach(deleteCallCommand);
+    await db.menuItemsDao.deleteMenuItem(id: menuItem.id);
+    await db.menuItemsDao.deleteMenuItem(id: menuItem.id);
+  }
+
+  /// Delete the given [menu] and all related [MenuItem]s.
+  Future<void> deleteMenu(final Menu menu) async {
+    (await db.menuItemsDao.getMenuItems(menuId: menu.id))
+        .forEach(deleteMenuItem);
+    for (final id in [
+      menu.activateItemSoundId,
+      menu.musicId,
+      menu.selectItemSoundId
+    ]) {
+      if (id != null) {
+        await db.assetReferencesDao.deleteAssetReference(id: id);
+      }
+    }
+    (await db.menusDao.getOnCancelCallCommands(menuId: menu.id))
+        .forEach(deleteCallCommand);
+    await db.menusDao.deleteMenu(id: menu.id);
   }
 }
