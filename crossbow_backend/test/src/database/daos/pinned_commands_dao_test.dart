@@ -98,6 +98,40 @@ void main() {
           expect((await commandsDao.getCommand(id: command.id)).id, command.id);
         },
       );
+
+      test(
+        '.getPinnedCommands',
+        () async {
+          final deleteQuery = db.delete(db.pinnedCommands);
+          await deleteQuery.go();
+          final command = await commandsDao.createCommand();
+          final pc1 = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: '1',
+          );
+          final pc3 = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: '3',
+          );
+          final pc2 = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: '2',
+          );
+          final expected = [pc1, pc2, pc3];
+          final actual = await pinnedCommandsDao.getPinnedCommands();
+          expect(actual.length, expected.length);
+          for (var i = 0; i < actual.length; i++) {
+            final expectedPinnedCommand = expected[i];
+            final actualPinnedCommand = actual[i];
+            expect(
+              actualPinnedCommand.commandId,
+              expectedPinnedCommand.commandId,
+            );
+            expect(actualPinnedCommand.id, expectedPinnedCommand.id);
+            expect(actualPinnedCommand.name, expectedPinnedCommand.name);
+          }
+        },
+      );
     },
   );
 }

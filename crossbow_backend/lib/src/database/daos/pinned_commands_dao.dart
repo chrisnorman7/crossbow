@@ -56,4 +56,9 @@ class PinnedCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(pinnedCommandId));
     return query.go();
   }
+
+  /// Return a list of all pinned commands, sorted by name.
+  Future<List<PinnedCommand>> getPinnedCommands() => (select(pinnedCommands)
+        ..orderBy([(final table) => OrderingTerm.asc(table.name)]))
+      .get();
 }
