@@ -58,17 +58,15 @@ class UrlListTile extends StatelessWidget {
         ),
       ),
       isThreeLine: true,
-      trailing: IconButton(
-        icon: Icon(
-          Icons.open_in_browser,
-          semanticLabel: Intl.message('Test URL'),
-        ),
-        onPressed: () {
-          if (value != null) {
-            launchUrl(Uri.parse(value));
-          }
-        },
-      ),
+      trailing: value == null
+          ? null
+          : IconButton(
+              icon: Icon(
+                Icons.open_in_browser,
+                semanticLabel: Intl.message('Test URL'),
+              ),
+              onPressed: () => launchUrl(Uri.parse(value)),
+            ),
     );
   }
 }
