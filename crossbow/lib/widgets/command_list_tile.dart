@@ -1,3 +1,4 @@
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,9 +9,10 @@ import '../messages.dart';
 import '../screens/commands/edit_command_screen.dart';
 import '../src/providers.dart';
 import '../util.dart';
+import 'asset_reference_play_sound_semantics.dart';
 
 /// A list tile that allows editing a command.
-class CommandListTile extends ConsumerWidget {
+class CommandListTile extends ConsumerStatefulWidget {
   /// Create an instance.
   const CommandListTile({
     required this.commandId,
@@ -36,53 +38,83 @@ class CommandListTile extends ConsumerWidget {
   /// Whether or not the list tile should be autofocused.
   final bool autofocus;
 
-  /// Build the widget.
+  /// Create state for this widget.
   @override
-  Widget build(final BuildContext context, final WidgetRef ref) {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final commands = projectContext.db.commandsDao;
-    final id = commandId;
-    final Widget child;
-    if (id == null) {
-      child = ListTile(
-        autofocus: autofocus,
-        title: Text(title),
+  CommandListTileState createState() => CommandListTileState();
+}
+
+/// State for [CommandListTile].
+class CommandListTileState extends ConsumerState<CommandListTile> {
+  /// Build a widget.
+  @override
+  Widget build(final BuildContext context) {
+    final commandId = widget.commandId;
+    if (commandId == null) {
+      return ListTile(
+        autofocus: widget.autofocus,
+        title: Text(widget.title),
         subtitle: Text(unsetMessage),
         onTap: () async {
-          final command =
-              await commands.createCommand(messageText: 'Program me!');
-          onChanged(command.id);
-        },
-      );
-    } else {
-      child = PushWidgetListTile(
-        title: title,
-        builder: (final context) =>
-            EditCommandScreen(commandId: id, onChanged: onChanged),
-        autofocus: autofocus,
-        subtitle: setMessage,
-      );
-    }
-    return CallbackShortcuts(
-      bindings: {
-        deleteHotkey: () async {
-          if (id != null && nullable) {
-            await intlConfirm(
+          final projectContext = ref.watch(projectContextNotifierProvider)!;
+          final command = await projectContext.db.commandsDao.createCommand(
+            messageText: 'Program me!',
+          );
+          widget.onChanged(command.id);
+          if (mounted) {
+            await pushWidget(
               context: context,
-              message:
-                  Intl.message('Are you sure you want to delete this command?'),
-              title: confirmDeleteTitle,
-              yesCallback: () async {
-                Navigator.of(context).pop();
-                final command = await commands.getCommand(id: id);
-                await projectContext.db.utilsDao.deleteCommand(command);
-                onChanged(null);
-              },
+              builder: (final context) => EditCommandScreen(
+                commandId: command.id,
+                onChanged: widget.onChanged,
+              ),
             );
           }
-        }
+        },
+      );
+    }
+    final value = ref.watch(commandProvider.call(commandId));
+    return value.when(
+      data: (final valueContext) {
+        final projectContext = valueContext.projectContext;
+        final command = valueContext.value;
+        return CallbackShortcuts(
+          bindings: {
+            deleteHotkey: () async {
+              if (widget.nullable) {
+                await intlConfirm(
+                  context: context,
+                  message: Intl.message(
+                    'Are you sure you want to delete this command?',
+                  ),
+                  title: confirmDeleteTitle,
+                  yesCallback: () async {
+                    Navigator.of(context).pop();
+                    await projectContext.db.utilsDao.deleteCommand(command);
+                    widget.onChanged(null);
+                  },
+                );
+              }
+            }
+          },
+          child: AssetReferencePlaySoundSemantics(
+            assetReferenceId: command.messageSoundId,
+            child: ListTile(
+              autofocus: widget.autofocus,
+              title: Text(widget.title),
+              subtitle: Text(setMessage),
+              onTap: () => pushWidget(
+                context: context,
+                builder: (final context) => EditCommandScreen(
+                  commandId: command.id,
+                  onChanged: widget.onChanged,
+                ),
+              ),
+            ),
+          ),
+        );
       },
-      child: child,
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
     );
   }
 }

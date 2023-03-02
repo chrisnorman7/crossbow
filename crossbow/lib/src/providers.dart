@@ -323,13 +323,28 @@ final commandTriggerProvider =
 );
 
 /// Provide all command triggers.
-final commandTriggersProvider =
-    FutureProvider<ValueContext<List<CommandTrigger>>>(
+final commandTriggersProvider = FutureProvider<List<CommandTriggerContext>>(
   (final ref) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final commandTriggers =
         await projectContext.db.commandTriggersDao.getCommandTriggers();
-    return ValueContext(projectContext: projectContext, value: commandTriggers);
+    final list = <CommandTriggerContext>[];
+    for (final commandTrigger in commandTriggers) {
+      final keyboardKeyId = commandTrigger.keyboardKeyId;
+      if (keyboardKeyId != null) {
+        final keyboardKey = await ref.watch(
+          commandTriggerKeyboardKeyProvider.call(keyboardKeyId).future,
+        );
+        list.add(
+          CommandTriggerContext(
+            projectContext: projectContext,
+            commandTrigger: commandTrigger,
+            commandTriggerKeyboardKey: keyboardKey.value,
+          ),
+        );
+      }
+    }
+    return list;
   },
 );
 

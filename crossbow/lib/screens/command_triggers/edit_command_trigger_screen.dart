@@ -96,10 +96,8 @@ class EditCommandTriggerScreenState
           bindings: {
             deleteHotkey: () async {
               if (keyboardKey != null) {
-                await projectContext.db.commandTriggerKeyboardKeysDao
-                    .deleteCommandTriggerKeyboardKey(
-                  commandTriggerKeyboardKeyId: keyboardKey.id,
-                );
+                await projectContext.db.utilsDao
+                    .deleteCommandTriggerKeyboardKey(keyboardKey);
                 invalidateCommandTriggerProvider();
               }
             }

@@ -214,7 +214,6 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     required final CallCommand callCommand,
   }) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final commandsDao = projectContext.db.commandsDao;
     await intlConfirm(
       context: context,
       message: Intl.message(
@@ -222,7 +221,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       ),
       title: confirmDeleteTitle,
       yesCallback: () async {
-        await commandsDao.deleteCommand(id: callCommand.commandId);
+        await projectContext.db.utilsDao.deleteCallCommand(callCommand);
         invalidateCallCommandsProvider();
         if (mounted) {
           Navigator.pop(context);

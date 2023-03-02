@@ -150,7 +150,9 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     required final BuildContext context,
     required final MenuContext menuContext,
   }) {
-    final menuItemsDao = menuContext.projectContext.db.menuItemsDao;
+    final db = menuContext.projectContext.db;
+    final menuItemsDao = db.menuItemsDao;
+    final menusDao = db.menusDao;
     final menu = menuContext.menu;
     final menuItems = menuContext.menuItems;
     return NewCallbackShortcuts(
@@ -170,6 +172,8 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                 final callCommands = await menuItemsDao.getCallCommands(
                   menuItemId: menuItem.id,
                 );
+                final onCancelCallCommands =
+                    await menusDao.getOnCancelCallCommands(menuId: menu.id);
                 if (!mounted) {
                   return;
                 }
@@ -180,6 +184,13 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                       'You cannot delete menu items that have commands.',
                     ),
                   );
+                } else if (onCancelCallCommands.isNotEmpty) {
+                  await showMessage(
+                    context: context,
+                    message: Intl.message(
+                      'You cannot delete a menu with cancel commands.',
+                    ),
+                  );
                 } else {
                   await intlConfirm(
                     context: context,
@@ -187,8 +198,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                     title: confirmDeleteTitle,
                     yesCallback: () async {
                       Navigator.of(context).pop();
-                      await menuContext.projectContext.db.menuItemsDao
-                          .deleteMenuItem(id: menuItem.id);
+                      await db.utilsDao.deleteMenuItem(menuItem);
                       invalidateMenuProvider();
                     },
                   );

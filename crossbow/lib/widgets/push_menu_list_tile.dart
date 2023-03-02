@@ -66,9 +66,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
         bindings: {
           deleteHotkey: () async {
             if (pushMenu != null) {
-              await pushMenusDao.deletePushMenu(
-                id: pushMenu.id,
-              );
+              await projectContext.db.utilsDao.deletePushMenu(pushMenu);
               widget.onChanged(null);
             }
           }

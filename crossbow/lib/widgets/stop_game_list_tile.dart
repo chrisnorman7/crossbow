@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
+import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,7 @@ class StopGameListTile extends ConsumerStatefulWidget {
     required this.onChanged,
     this.title,
     this.autofocus = false,
+    this.nullable = true,
     super.key,
   });
 
@@ -31,6 +33,9 @@ class StopGameListTile extends ConsumerStatefulWidget {
   /// Whether the list tile should be autofocused.
   final bool autofocus;
 
+  /// Whether or not the stop game can be set to `null`.
+  final bool nullable;
+
   /// Create state for this widget.
   @override
   StopGameListTileState createState() => StopGameListTileState();
@@ -41,42 +46,57 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
   /// Build a widget.
   @override
   Widget build(final BuildContext context) {
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final stopGamesDao = projectContext.db.stopGamesDao;
-    final value = widget.stopGameId;
-    return CallbackShortcuts(
-      bindings: {
-        deleteShortcut: () async {
-          if (value != null) {
-            await stopGamesDao.deleteStopGame(stopGameId: value);
-            widget.onChanged(null);
-          }
-        }
-      },
-      child: ListTile(
+    final id = widget.stopGameId;
+    if (id == null) {
+      return ListTile(
         autofocus: widget.autofocus,
         title: Text(widget.title ?? Intl.message('Stop Game')),
-        subtitle: Text(value == null ? unsetMessage : setMessage),
+        subtitle: Text(unsetMessage),
         onTap: () async {
-          if (value == null) {
-            final stopGame =
-                await projectContext.db.stopGamesDao.createStopGame();
-            if (mounted) {
+          final projectContext = ref.watch(projectContextNotifierProvider)!;
+          final stopGame =
+              await projectContext.db.stopGamesDao.createStopGame();
+          widget.onChanged(stopGame.id);
+          if (mounted) {
+            await pushWidget(
+              context: context,
+              builder: (final context) =>
+                  EditStopGameScreen(stopGameId: stopGame.id),
+            );
+          }
+        },
+      );
+    }
+    final value = ref.watch(stopGameProvider.call(id));
+    return value.when(
+      data: (final valueContext) {
+        final projectContext = valueContext.projectContext;
+        final stopGame = valueContext.value;
+        return CallbackShortcuts(
+          bindings: {
+            deleteShortcut: () async {
+              if (widget.nullable) {
+                await projectContext.db.utilsDao.deleteStopGame(stopGame);
+                widget.onChanged(null);
+              }
+            }
+          },
+          child: ListTile(
+            autofocus: widget.autofocus,
+            title: Text(widget.title ?? Intl.message('Stop Game')),
+            subtitle: Text(setMessage),
+            onTap: () async {
               await pushWidget(
                 context: context,
                 builder: (final context) =>
                     EditStopGameScreen(stopGameId: stopGame.id),
               );
-            }
-            widget.onChanged(stopGame.id);
-          } else {
-            await pushWidget(
-              context: context,
-              builder: (final context) => EditStopGameScreen(stopGameId: value),
-            );
-          }
-        },
-      ),
+            },
+          ),
+        );
+      },
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
     );
   }
 }

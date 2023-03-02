@@ -183,8 +183,8 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                                 title: confirmDeleteTitle,
                                 yesCallback: () async {
                                   Navigator.of(context).pop();
-                                  await projectContext.db.menusDao
-                                      .deleteMenu(id: menu.id);
+                                  await projectContext.db.utilsDao
+                                      .deleteMenu(menu);
                                   ref.invalidate(menusProvider);
                                 },
                               );
@@ -232,10 +232,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     return NewCallbackShortcuts(
       newCallback: newCommandTrigger,
       child: value.when(
-        data: (final data) {
-          final projectContext = data.projectContext;
-          final db = projectContext.db;
-          final commandTriggers = data.value;
+        data: (final commandTriggers) {
           if (commandTriggers.isEmpty) {
             return CenterText(
               text: nothingToShowMessage,
@@ -245,8 +242,16 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
           return BuiltSearchableListView(
             items: commandTriggers,
             builder: (final context, final index) {
-              final commandTrigger = commandTriggers[index];
+              final valueContext = commandTriggers[index];
+              final commandTrigger = valueContext.commandTrigger;
               final button = commandTrigger.gameControllerButton;
+              final buttonName = button?.name ?? unsetMessage;
+              final keyboardKey = valueContext.commandTriggerKeyboardKey;
+              final keyboardKeyString = keyboardKey == null
+                  ? unsetMessage
+                  : commandTriggerKeyboardKeyToString(keyboardKey);
+              final db = valueContext.projectContext.db;
+              final utilsDao = db.utilsDao;
               return SearchableListTile(
                 searchString: commandTrigger.description,
                 child: CallbackShortcuts(
@@ -260,16 +265,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                           title: confirmDeleteTitle,
                           yesCallback: () async {
                             Navigator.pop(context);
-                            final keyboardKeyId = commandTrigger.keyboardKeyId;
-                            if (keyboardKeyId != null) {
-                              await db.commandTriggerKeyboardKeysDao
-                                  .deleteCommandTriggerKeyboardKey(
-                                commandTriggerKeyboardKeyId: keyboardKeyId,
-                              );
-                            }
-                            await db.commandTriggersDao.deleteCommandTrigger(
-                              commandTriggerId: commandTrigger.id,
-                            );
+                            await utilsDao.deleteCommandTrigger(commandTrigger);
                             ref.invalidate(commandTriggersProvider);
                           },
                         )
@@ -277,7 +273,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                   child: ListTile(
                     autofocus: index == 0,
                     title: Text(commandTrigger.description),
-                    subtitle: Text(button == null ? unsetMessage : button.name),
+                    subtitle: Text('$keyboardKeyString ($buttonName)'),
                     onTap: () async {
                       await pushWidget(
                         context: context,

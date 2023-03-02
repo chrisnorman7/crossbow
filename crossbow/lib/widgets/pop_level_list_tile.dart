@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/util.dart';
+import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,39 +46,58 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
   @override
   Widget build(final BuildContext context) {
     final popLevelId = widget.popLevelId;
-    final projectContext = ref.watch(projectContextNotifierProvider)!;
-    return CallbackShortcuts(
-      bindings: {
-        deleteHotkey: () async {
-          if (popLevelId != null) {
-            await projectContext.db.popLevelsDao.deletePopLevel(id: popLevelId);
-            widget.onChanged(null);
-          }
-        }
-      },
-      child: ListTile(
+    if (popLevelId == null) {
+      return ListTile(
         autofocus: widget.autofocus,
         title: Text(widget.title),
-        subtitle: Text(popLevelId == null ? unsetMessage : setMessage),
+        subtitle: Text(unsetMessage),
         onTap: () async {
-          final int id;
-          if (popLevelId == null) {
-            id = (await projectContext.db.popLevelsDao.createPopLevel()).id;
-            widget.onChanged(id);
-          } else {
-            id = popLevelId;
-          }
+          final projectContext = ref.watch(projectContextNotifierProvider)!;
+          final popLevel =
+              await projectContext.db.popLevelsDao.createPopLevel();
+          widget.onChanged(popLevel.id);
           if (mounted) {
             await pushWidget(
               context: context,
               builder: (final context) => EditPopLevelScreen(
-                popLevelId: id,
+                popLevelId: popLevel.id,
                 onChanged: widget.onChanged,
               ),
             );
           }
         },
-      ),
+      );
+    }
+    final value = ref.watch(popLevelProvider.call(popLevelId));
+    return value.when(
+      data: (final valueContext) {
+        final projectContext = valueContext.projectContext;
+        final popLevel = valueContext.value;
+        return CallbackShortcuts(
+          bindings: {
+            deleteHotkey: () async {
+              if (widget.nullable) {
+                await projectContext.db.utilsDao.deletePopLevel(popLevel);
+                widget.onChanged(null);
+              }
+            }
+          },
+          child: ListTile(
+            autofocus: widget.autofocus,
+            title: Text(widget.title),
+            subtitle: Text(setMessage),
+            onTap: () => pushWidget(
+              context: context,
+              builder: (final context) => EditPopLevelScreen(
+                popLevelId: popLevel.id,
+                onChanged: widget.onChanged,
+              ),
+            ),
+          ),
+        );
+      },
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
     );
   }
 }
