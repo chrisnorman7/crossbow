@@ -114,6 +114,31 @@ void main() {
           expect(updatedCallCommand.after, 2);
         },
       );
+
+      test(
+        '.setCommandId',
+        () async {
+          final callingCommand = await commands.createCommand();
+          final command1 = await commands.createCommand();
+          final command2 = await commands.createCommand();
+          final callCommand = await callCommands.createCallCommand(
+            commandId: command1.id,
+            callingCommandId: callingCommand.id,
+          );
+          var updatedCallCommand = await callCommands.setCommandId(
+            callCommandId: callCommand.id,
+            commandId: command2.id,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.commandId, command2.id);
+          updatedCallCommand = await callCommands.setCommandId(
+            callCommandId: updatedCallCommand.id,
+            commandId: command1.id,
+          );
+          expect(updatedCallCommand.id, callCommand.id);
+          expect(updatedCallCommand.commandId, command1.id);
+        },
+      );
     },
   );
 }
