@@ -40,8 +40,9 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
   /// Build a widget.
   @override
   Widget build(final BuildContext context) {
-    final value =
-        ref.watch(callCommandsProvider.call(widget.callCommandsContext));
+    final value = ref.watch(
+      callCommandsProvider.call(widget.callCommandsContext),
+    );
     return value.when(
       data: (final data) => getBody(context: context, valueContext: data),
       error: ErrorScreen.withPositional,
