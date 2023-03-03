@@ -149,3 +149,6 @@ final pinMessage = Intl.message('Pin');
 
 /// Unpin message.
 final unpinMessage = Intl.message('Unpin');
+
+/// Create Command.
+final createCommandMessage = Intl.message('Create Command');

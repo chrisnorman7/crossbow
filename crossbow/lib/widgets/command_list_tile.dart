@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_command_screen.dart';
+import '../screens/commands/select_pinned_command_screen.dart';
 import '../src/providers.dart';
 import '../util.dart';
 import 'asset_reference_play_sound_semantics.dart';
@@ -55,20 +56,37 @@ class CommandListTileState extends ConsumerState<CommandListTile> {
         title: Text(widget.title),
         subtitle: Text(unsetMessage),
         onTap: () async {
-          final projectContext = ref.watch(projectContextNotifierProvider)!;
-          final command = await projectContext.db.commandsDao.createCommand(
-            messageText: 'Program me!',
+          await pushWidget(
+            context: context,
+            builder: (final context) => SelectPinnedCommandScreen(
+              onChanged: (final value) async {
+                final int newCommandId;
+                if (value == null) {
+                  final projectContext = ref.watch(
+                    projectContextNotifierProvider,
+                  )!;
+                  final command =
+                      await projectContext.db.commandsDao.createCommand(
+                    messageText: 'Program me!',
+                  );
+                  newCommandId = command.id;
+                } else {
+                  newCommandId = value.commandId;
+                }
+                widget.onChanged(newCommandId);
+                if (mounted) {
+                  await pushWidget(
+                    context: context,
+                    builder: (final context) => EditCommandScreen(
+                      commandId: newCommandId,
+                      onChanged: widget.onChanged,
+                    ),
+                  );
+                }
+              },
+              clearPinnedCommandLabel: createCommandMessage,
+            ),
           );
-          widget.onChanged(command.id);
-          if (mounted) {
-            await pushWidget(
-              context: context,
-              builder: (final context) => EditCommandScreen(
-                commandId: command.id,
-                onChanged: widget.onChanged,
-              ),
-            );
-          }
         },
       );
     }
