@@ -246,6 +246,24 @@ void main() {
           expect(await commands.getPinnedCommand(commandId: command2.id), null);
         },
       );
+
+      test(
+        '.isPinned',
+        () async {
+          final command = await commands.createCommand();
+          final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: 'Test',
+          );
+          expect(await commands.isPinned(commandId: command.id), true);
+          final unpinnedCommand = await commands.createCommand();
+          expect(await commands.isPinned(commandId: unpinnedCommand.id), false);
+          await pinnedCommandsDao.deletePinnedCommand(
+            pinnedCommandId: pinnedCommand.id,
+          );
+          expect(await commands.isPinned(commandId: command.id), false);
+        },
+      );
     },
   );
 }

@@ -134,4 +134,14 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(pinnedCommands)
             ..where((final table) => table.commandId.equals(commandId)))
           .getSingleOrNull();
+
+  /// Returns `true` if the command with the given [commandId] has an associated
+  /// [PinnedCommand] row.
+  Future<bool> isPinned({required final int commandId}) async {
+    final column = countAll(filter: pinnedCommands.commandId.equals(commandId));
+    final query = select(pinnedCommands).addColumns([column]);
+    final row = await query.getSingle();
+    final result = row.read(column);
+    return result != null && result > 0;
+  }
 }
