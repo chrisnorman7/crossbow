@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -363,40 +364,79 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     final value = ref.watch(customLevelsProvider);
     return value.when(
       data: (final data) {
+        final projectContext = data.projectContext;
         final levels = data.value;
+        final Widget child;
         if (levels.isEmpty) {
-          return CenterText(
+          child = CenterText(
             text: nothingToShowMessage,
             autofocus: true,
           );
-        }
-        return BuiltSearchableListView(
-          items: levels,
-          builder: (final context, final index) {
-            final level = levels[index];
-            return SearchableListTile(
-              searchString: level.name,
-              child: AssetReferencePlaySoundSemantics(
-                assetReferenceId: level.musicId,
-                child: Builder(
-                  builder: (final context) => ListTile(
-                    autofocus: index == 0,
-                    title: Text(level.name),
-                    onTap: () async {
-                      PlaySoundSemantics.of(context)?.stop();
-                      await pushWidget(
-                        context: context,
-                        builder: (final context) =>
-                            EditCustomLevelScreen(customLevelId: level.id),
-                      );
-                      ref.invalidate(customLevelsProvider);
-                    },
+        } else {
+          child = BuiltSearchableListView(
+            items: levels,
+            builder: (final context, final index) {
+              final level = levels[index];
+              return SearchableListTile(
+                searchString: level.name,
+                child: CallbackShortcuts(
+                  bindings: {
+                    deleteShortcut: () async {
+                      final commands = await projectContext.db.customLevelsDao
+                          .getCustomLevelCommands(customLevelId: level.id);
+                      if (commands.isNotEmpty) {
+                        if (mounted) {
+                          await intlShowMessage(
+                            context: context,
+                            message: levelWithCommandsMessage,
+                            title: errorTitle,
+                          );
+                        }
+                        return;
+                      }
+                      if (mounted) {
+                        return intlConfirm(
+                          context: context,
+                          message: Intl.message(
+                            'Are you sure you want to delete this level?',
+                          ),
+                          title: confirmDeleteTitle,
+                          yesCallback: () async {
+                            await projectContext.db.utilsDao
+                                .deleteCustomLevel(level);
+                            ref.invalidate(customLevelsProvider);
+                            if (mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                        );
+                      }
+                    }
+                  },
+                  child: AssetReferencePlaySoundSemantics(
+                    assetReferenceId: level.musicId,
+                    child: Builder(
+                      builder: (final context) => ListTile(
+                        autofocus: index == 0,
+                        title: Text(level.name),
+                        onTap: () async {
+                          PlaySoundSemantics.of(context)?.stop();
+                          await pushWidget(
+                            context: context,
+                            builder: (final context) =>
+                                EditCustomLevelScreen(customLevelId: level.id),
+                          );
+                          ref.invalidate(customLevelsProvider);
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        }
+        return NewCallbackShortcuts(newCallback: newCustomLevel, child: child);
       },
       error: ErrorListView.withPositional,
       loading: LoadingWidget.new,
@@ -464,8 +504,16 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Create a new custom level.
   Future<void> newCustomLevel() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    await projectContext.db.customLevelsDao
-        .createCustomLevel(name: 'Untitled Level');
+    final level = await projectContext.db.customLevelsDao.createCustomLevel(
+      name: 'Untitled Level',
+    );
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) =>
+            EditCustomLevelScreen(customLevelId: level.id),
+      );
+    }
     ref.invalidate(customLevelsProvider);
   }
 }

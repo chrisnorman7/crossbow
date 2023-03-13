@@ -156,3 +156,7 @@ final createCommandMessage = Intl.message('Create Command');
 /// Can't unpin a called command.
 final cantDeleteCalledCommand =
     Intl.message('You cannot unpin this command because it is being used.');
+
+/// You cannot delete a level with commands.
+final levelWithCommandsMessage =
+    Intl.message('You cannot delete a message with commands.');
