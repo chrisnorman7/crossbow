@@ -119,9 +119,9 @@ void main() {
             db.callCommandsDao.getCallCommand(id: callCommand.id),
             throwsStateError,
           );
-          await expectLater(
-            commandsDao.getCommand(id: command2.id),
-            throwsStateError,
+          expect(
+            (await commandsDao.getCommand(id: command2.id)).id,
+            command2.id,
           );
         },
       );
@@ -137,10 +137,10 @@ void main() {
           );
           await utilsDao.deleteCallCommand(callCommand);
           expect(
-            commandsDao.getCommand(id: commandToCall.id),
-            throwsStateError,
+            (await commandsDao.getCommand(id: commandToCall.id)).id,
+            commandToCall.id,
           );
-          expect(
+          await expectLater(
             callCommandsDao.getCallCommand(id: callCommand.id),
             throwsStateError,
           );
@@ -254,13 +254,13 @@ void main() {
             callCommandsDao.getCallCommand(id: callCommand2.id),
             throwsStateError,
           );
-          await expectLater(
-            commandsDao.getCommand(id: command1.id),
-            throwsStateError,
+          expect(
+            (await commandsDao.getCommand(id: command1.id)).id,
+            command1.id,
           );
-          await expectLater(
-            commandsDao.getCommand(id: command2.id),
-            throwsStateError,
+          expect(
+            (await commandsDao.getCommand(id: command2.id)).id,
+            command2.id,
           );
           expect((await menuItemsDao.getMenuItem(id: play.id)).id, play.id);
           expect((await menusDao.getMenu(id: menu.id)).id, menu.id);
@@ -336,13 +336,13 @@ void main() {
             callCommandsDao.getCallCommand(id: callCommand2.id),
             throwsStateError,
           );
-          await expectLater(
-            commandsDao.getCommand(id: command1.id),
-            throwsStateError,
+          expect(
+            (await commandsDao.getCommand(id: command1.id)).id,
+            command1.id,
           );
-          await expectLater(
-            commandsDao.getCommand(id: command2.id),
-            throwsStateError,
+          expect(
+            (await commandsDao.getCommand(id: command2.id)).id,
+            command2.id,
           );
         },
       );

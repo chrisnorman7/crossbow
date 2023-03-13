@@ -45,6 +45,8 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the given [command], as well as all supporting rows.
+  ///
+  /// If the [command] is pinned, throw [StateError].
   Future<void> deleteCommand(final Command command) async {
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
@@ -69,18 +71,9 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Delete the given [callCommand].
   ///
-  /// This method will delete the command called by the given [callCommand],
-  /// which in turn may call this method to delete subsequent [CallCommand]
-  /// rows.
-  ///
-  /// This method *will not* delete the calling command.
+  /// This method *will not* delete the [Command] which will be called by
+  /// [callCommand].
   Future<void> deleteCallCommand(final CallCommand callCommand) async {
-    final commandsDao = db.commandsDao;
-    if ((await commandsDao.isPinned(commandId: callCommand.commandId)) ==
-        false) {
-      final command = await commandsDao.getCommand(id: callCommand.commandId);
-      await deleteCommand(command);
-    }
     await db.callCommandsDao.deleteCallCommand(callCommandId: callCommand.id);
   }
 
