@@ -9,14 +9,15 @@ import 'package:intl/intl.dart';
 import '../../constants.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
+import '../../src/contexts/call_command_context.dart';
 import '../../src/contexts/call_commands_context.dart';
-import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/random_chance_slider.dart';
 import '../../widgets/seconds_slider.dart';
 import 'edit_command_screen.dart';
+import 'select_pinned_command_screen.dart';
 
 /// Show a table of call commands, retrieved from the given
 /// [callCommandsContext].
@@ -44,7 +45,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       callCommandsProvider.call(widget.callCommandsContext),
     );
     return value.when(
-      data: (final data) => getBody(context: context, valueContext: data),
+      data: (final data) => getBody(context: context, callCommands: data),
       error: ErrorScreen.withPositional,
       loading: LoadingScreen.new,
     );
@@ -53,11 +54,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
   /// Get the body for this widget.
   Widget getBody({
     required final BuildContext context,
-    required final ValueContext<List<CallCommand>> valueContext,
+    required final List<CallCommandContext> callCommands,
   }) {
-    final db = valueContext.projectContext.db;
-    final callCommandsDao = db.callCommandsDao;
-    final callCommands = valueContext.value;
     final headerRow = TableRow(
       children: [
         TableCell(child: CenterText(text: Intl.message('Command'))),
@@ -68,89 +66,11 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     );
     final callCommandRows = <TableRow>[];
     for (var i = 0; i < callCommands.length; i++) {
-      final row = i + 1;
-      final callCommand = callCommands[i];
-      final callCommandId = callCommand.id;
-      final after = callCommand.after;
-      final randomNumberBase = callCommand.randomNumberBase;
       callCommandRows.add(
-        TableRow(
-          children: [
-            TableCell(
-              child: CallbackShortcuts(
-                bindings: {
-                  deleteHotkey: () => deleteCallCommand(
-                        context: context,
-                        ref: ref,
-                        callCommand: callCommand,
-                      )
-                },
-                child: IconButton(
-                  autofocus: i == 0,
-                  onPressed: () => pushWidget(
-                    context: context,
-                    builder: (final context) => EditCommandScreen(
-                      commandId: callCommand.commandId,
-                      onChanged: (final value) =>
-                          invalidateCallCommandsProvider(),
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.edit,
-                    semanticLabel: editRowCommandMessage(row),
-                  ),
-                ),
-              ),
-            ),
-            TableCell(
-              child: SecondsSlider(
-                seconds: after == null ? null : after / 1000.0,
-                onChanged: (final value) async {
-                  await callCommandsDao.setAfter(
-                    callCommandId: callCommandId,
-                    after: value == null ? null : (value * 1000).floor(),
-                  );
-                  invalidateCallCommandsProvider();
-                },
-                immediatelyMessage: Intl.message('Call immediately'),
-              ),
-            ),
-            TableCell(
-              child: RandomChanceSlider(
-                chance: randomNumberBase,
-                onChanged: (final value) async {
-                  await callCommandsDao.setRandomNumberBase(
-                    callCommandId: callCommandId,
-                    randomNumberBase: value,
-                  );
-                  invalidateCallCommandsProvider();
-                },
-                everyTimeMessage: everyTimeMessage,
-              ),
-            ),
-            TableCell(
-              child: CallbackShortcuts(
-                bindings: {
-                  deleteHotkey: () => deleteCallCommand(
-                        context: context,
-                        ref: ref,
-                        callCommand: callCommand,
-                      )
-                },
-                child: IconButton(
-                  onPressed: () => deleteCallCommand(
-                    context: context,
-                    ref: ref,
-                    callCommand: callCommand,
-                  ),
-                  icon: Icon(
-                    Icons.delete,
-                    semanticLabel: deleteRowMessage(row),
-                  ),
-                ),
-              ),
-            )
-          ],
+        getCallCommandTableRow(
+          context: context,
+          callCommandContext: callCommands[i],
+          index: i,
         ),
       );
     }
@@ -209,25 +129,166 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
   }
 
   /// Delete the given [callCommand].
-  Future<void> deleteCallCommand({
-    required final BuildContext context,
-    required final WidgetRef ref,
-    required final CallCommand callCommand,
-  }) async {
+  Future<void> deleteCallCommand(final CallCommand callCommand) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    await intlConfirm(
-      context: context,
-      message: Intl.message(
-        'Are you sure you want to delete this row?',
-      ),
-      title: confirmDeleteTitle,
-      yesCallback: () async {
-        await projectContext.db.utilsDao.deleteCallCommand(callCommand);
-        invalidateCallCommandsProvider();
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      },
+    if (callCommand.commandId == projectContext.project.initialCommandId) {
+      return intlShowMessage(
+        context: context,
+        message: cantDeleteInitialCommandMessage,
+        title: errorTitle,
+      );
+    }
+    final commandsDao = projectContext.db.commandsDao;
+    final command = await commandsDao.getCommand(id: callCommand.commandId);
+    final callCommands = await commandsDao.getCallCommands(
+      commandId: command.id,
+    );
+    if (callCommands.length != 1) {
+      if (mounted) {
+        return intlShowMessage(
+          context: context,
+          message: commandIsCalledMessage(callCommands.length),
+          title: errorTitle,
+        );
+      }
+    }
+    if (mounted) {
+      await intlConfirm(
+        context: context,
+        message: Intl.message(
+          'Are you sure you want to delete this row?',
+        ),
+        title: confirmDeleteTitle,
+        yesCallback: () async {
+          await projectContext.db.utilsDao.deleteCallCommand(callCommand);
+          invalidateCallCommandsProvider();
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        },
+      );
+    }
+  }
+
+  /// Get a table row to suit the given [callCommandContext].
+  TableRow getCallCommandTableRow({
+    required final BuildContext context,
+    required final CallCommandContext callCommandContext,
+    required final int index,
+  }) {
+    final row = index + 1;
+    final projectContext = callCommandContext.projectContext;
+    final db = projectContext.db;
+    final callCommandsDao = db.callCommandsDao;
+    final commandsDao = db.commandsDao;
+    final utilsDao = db.utilsDao;
+    final callCommand = callCommandContext.value;
+    final callCommandId = callCommand.id;
+    final pinnedCommand = callCommandContext.pinnedCommand;
+    final after = callCommand.after;
+    final randomNumberBase = callCommand.randomNumberBase;
+    return TableRow(
+      children: [
+        TableCell(
+          child: CallbackShortcuts(
+            bindings: {deleteHotkey: () => deleteCallCommand(callCommand)},
+            child: Column(
+              children: [
+                TextButton(
+                  onPressed: () => pushWidget(
+                    context: context,
+                    builder: (final context) => SelectPinnedCommandScreen(
+                      onChanged: (final value) async {
+                        if (value == null) {
+                          final command = await commandsDao.createCommand();
+                          await callCommandsDao.setCommandId(
+                            callCommandId: callCommand.id,
+                            commandId: command.id,
+                          );
+                        } else {
+                          await callCommandsDao.setCommandId(
+                            callCommandId: callCommand.id,
+                            commandId: value.commandId,
+                          );
+                        }
+                        if ((await commandsDao.isPinned(
+                              commandId: callCommand.commandId,
+                            )) ==
+                            false) {
+                          await utilsDao.deleteCommand(
+                            await commandsDao.getCommand(
+                              id: callCommand.commandId,
+                            ),
+                          );
+                        }
+                        if (pinnedCommand == null) {
+                          await projectContext.db.utilsDao
+                              .deleteCallCommand(callCommand);
+                        }
+                      },
+                    ),
+                  ),
+                  child: Text(
+                    Intl.message('Select Pinned Command'),
+                  ),
+                ),
+                TextButton(
+                  autofocus: index == 0,
+                  onPressed: () => pushWidget(
+                    context: context,
+                    builder: (final context) => EditCommandScreen(
+                      commandId: callCommand.commandId,
+                      onChanged: (final value) =>
+                          invalidateCallCommandsProvider(),
+                    ),
+                  ),
+                  child: Text(
+                    pinnedCommand?.name ?? editRowCommandMessage(row),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        TableCell(
+          child: SecondsSlider(
+            seconds: after == null ? null : after / 1000.0,
+            onChanged: (final value) async {
+              await callCommandsDao.setAfter(
+                callCommandId: callCommandId,
+                after: value == null ? null : (value * 1000).floor(),
+              );
+              invalidateCallCommandsProvider();
+            },
+            immediatelyMessage: Intl.message('Call immediately'),
+          ),
+        ),
+        TableCell(
+          child: RandomChanceSlider(
+            chance: randomNumberBase,
+            onChanged: (final value) async {
+              await callCommandsDao.setRandomNumberBase(
+                callCommandId: callCommandId,
+                randomNumberBase: value,
+              );
+              invalidateCallCommandsProvider();
+            },
+            everyTimeMessage: everyTimeMessage,
+          ),
+        ),
+        TableCell(
+          child: CallbackShortcuts(
+            bindings: {deleteHotkey: () => deleteCallCommand(callCommand)},
+            child: IconButton(
+              onPressed: () => deleteCallCommand(callCommand),
+              icon: Icon(
+                Icons.delete,
+                semanticLabel: deleteRowMessage(row),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

@@ -11,6 +11,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
+import 'contexts/call_command_context.dart';
 import 'contexts/call_commands_context.dart';
 import 'contexts/command_context.dart';
 import 'contexts/command_trigger_context.dart';
@@ -254,15 +255,16 @@ final menuItemProvider = FutureProvider.family<MenuItemContext, int>(
 
 /// Provide a list of call commands.
 final callCommandsProvider =
-    FutureProvider.family<ValueContext<List<CallCommand>>, CallCommandsContext>(
+    FutureProvider.family<List<CallCommandContext>, CallCommandsContext>(
   (final ref, final arg) async {
     final id = arg.id;
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final db = projectContext.db;
     final List<CallCommand> callCommands;
+    final commandsDao = db.commandsDao;
     switch (arg.target) {
       case CallCommandsTarget.command:
-        callCommands = await db.commandsDao.getCallCommands(commandId: id);
+        callCommands = await commandsDao.getCallCommands(commandId: id);
         break;
       case CallCommandsTarget.menuItem:
         callCommands = await db.menuItemsDao.getCallCommands(menuItemId: id);
@@ -271,7 +273,19 @@ final callCommandsProvider =
         callCommands = await db.menusDao.getOnCancelCallCommands(menuId: id);
         break;
     }
-    return ValueContext(projectContext: projectContext, value: callCommands);
+    final futures = callCommands.map<Future<CallCommandContext>>(
+      (final e) async {
+        final pinnedCommand = await commandsDao.getPinnedCommand(
+          commandId: e.commandId,
+        );
+        return CallCommandContext(
+          projectContext: projectContext,
+          value: e,
+          pinnedCommand: pinnedCommand,
+        );
+      },
+    );
+    return Future.wait(futures);
   },
 );
 

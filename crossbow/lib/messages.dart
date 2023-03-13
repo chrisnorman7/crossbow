@@ -152,3 +152,18 @@ final unpinMessage = Intl.message('Unpin');
 
 /// Create Command.
 final createCommandMessage = Intl.message('Create Command');
+
+/// Can't delete the initial command.
+final cantDeleteInitialCommandMessage =
+    Intl.message("Can't delete the initial command.");
+
+/// This command is called.
+String commandIsCalledMessage(final int n) => Intl.message(
+      'This command is called by $n other commands.',
+      args: [n],
+      desc: 'The message which is shown when attempting to delete a command '
+          'which is called multiple times',
+      examples: {
+        'n': [3, 4, 5]
+      },
+    );

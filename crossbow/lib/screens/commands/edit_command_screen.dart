@@ -201,6 +201,7 @@ class EditCommandScreen extends ConsumerWidget {
       ref.invalidate(commandProvider.call(commandId));
 
   /// Invalidate the [pinnedCommandsProvider].
-  void invalidatePinnedCommandsProvider(final WidgetRef ref) =>
-      ref.invalidate(pinnedCommandsProvider);
+  void invalidatePinnedCommandsProvider(final WidgetRef ref) => ref
+    ..invalidate(pinnedCommandsProvider)
+    ..invalidate(callCommandsProvider);
 }
