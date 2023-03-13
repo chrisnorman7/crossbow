@@ -48,6 +48,34 @@ void main() {
           expect(retrievedCommand.id, command.id);
         },
       );
+
+      test(
+        '.setMusicId',
+        () async {
+          final commandTrigger2 = await commandTriggersDao.createCommandTrigger(
+            description: 'Second Command Trigger',
+          );
+          final level = await customLevelsDao.createCustomLevel(name: 'Test');
+          final command = await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          var updatedCommand = await customLevelCommandsDao.setCommandTriggerId(
+            customLevelCommandId: command.id,
+            commandTriggerId: commandTrigger2.id,
+          );
+          expect(updatedCommand.commandTriggerId, commandTrigger2.id);
+          expect(updatedCommand.customLevelId, level.id);
+          expect(updatedCommand.id, command.id);
+          updatedCommand = await customLevelCommandsDao.setCommandTriggerId(
+            customLevelCommandId: command.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          expect(updatedCommand.commandTriggerId, commandTrigger.id);
+          expect(updatedCommand.customLevelId, level.id);
+          expect(updatedCommand.id, command.id);
+        },
+      );
     },
   );
 }

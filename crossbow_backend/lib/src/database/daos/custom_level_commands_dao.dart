@@ -28,4 +28,23 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<CustomLevelCommand> getCustomLevelCommand({required final int id}) =>
       (select(customLevelCommands)..where((final table) => table.id.equals(id)))
           .getSingle();
+
+  /// Get an [update] query which matches on the given [id].
+  UpdateStatement<$CustomLevelCommandsTable, CustomLevelCommand> getUpdateQuery(
+    final int id,
+  ) =>
+      update(customLevelCommands)..where((final table) => table.id.equals(id));
+
+  /// Set the [commandTriggerId] for the custom level command with the ID
+  /// [customLevelCommandId].
+  Future<CustomLevelCommand> setCommandTriggerId({
+    required final int customLevelCommandId,
+    required final int commandTriggerId,
+  }) async =>
+      (await getUpdateQuery(customLevelCommandId).writeReturning(
+        CustomLevelCommandsCompanion(
+          commandTriggerId: Value(commandTriggerId),
+        ),
+      ))
+          .single;
 }
