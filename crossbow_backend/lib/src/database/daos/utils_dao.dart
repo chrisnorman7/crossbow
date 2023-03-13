@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
+import '../tables/call_commands.dart';
 
 part 'utils_dao.g.dart';
 
 /// A DAO that adds utility methods to the [db].
 @DriftAccessor(
-  tables: [],
+  tables: [CallCommands],
 )
 class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$UtilsDaoMixin {
@@ -68,11 +69,15 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Delete the given [callCommand].
   ///
-  /// It is worth noting that actually all that happens is that [deleteCommand]
-  /// is called on the [callCommand]'s `CommandId`, and database cascades handle
-  /// the rest.
+  /// This method will delete the command called by the given [callCommand],
+  /// which in turn may call this method to delete subsequent [CallCommand]
+  /// rows.
+  ///
+  /// This method *will not* delete the calling command.
   Future<void> deleteCallCommand(final CallCommand callCommand) async {
-    await db.commandsDao.deleteCommand(id: callCommand.commandId);
+    final command = await db.commandsDao.getCommand(id: callCommand.commandId);
+    await deleteCommand(command);
+    await db.callCommandsDao.deleteCallCommand(callCommandId: callCommand.id);
   }
 
   /// Delete the given [menuItem] and all associated rows.

@@ -120,7 +120,8 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         .single;
   }
 
-  /// Get the commands to be called by the command with the given [commandId].
+  /// Get the call commands to be called by the command with the given
+  /// [commandId].
   Future<List<CallCommand>> getCallCommands({required final int commandId}) =>
       (select(callCommands)
             ..where((final table) => table.callingCommandId.equals(commandId)))
@@ -138,10 +139,23 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Returns `true` if the command with the given [commandId] has an associated
   /// [PinnedCommand] row.
   Future<bool> isPinned({required final int commandId}) async {
-    final column = countAll(filter: pinnedCommands.commandId.equals(commandId));
-    final query = select(pinnedCommands).addColumns([column]);
+    final countColumn = countAll(
+      filter: pinnedCommands.commandId.equals(commandId),
+    );
+    final query = select(pinnedCommands).addColumns([countColumn]);
     final row = await query.getSingle();
-    final result = row.read(column);
+    final result = row.read(countColumn);
+    return result != null && result > 0;
+  }
+
+  /// Returns `true` if this command is called by any [CallCommand] instances.
+  Future<bool> isCalled({required final int commandId}) async {
+    final countColumn = countAll(
+      filter: callCommands.commandId.equals(commandId),
+    );
+    final query = select(callCommands).addColumns([countColumn]);
+    final row = await query.getSingle();
+    final result = row.read(countColumn);
     return result != null && result > 0;
   }
 }

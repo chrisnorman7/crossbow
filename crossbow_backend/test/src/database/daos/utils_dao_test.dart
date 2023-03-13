@@ -99,24 +99,27 @@ void main() {
           );
           await utilsDao.deleteCommand(command);
           expect(commandsDao.getCommand(id: command.id), throwsStateError);
-          expect(
+          await expectLater(
             assetReferencesDao.getAssetReference(id: assetReference.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             db.popLevelsDao.getPopLevel(id: popLevel.id),
             throwsStateError,
           );
-          expect(pushMenusDao.getPushMenu(id: pushMenu.id), throwsStateError);
-          expect(
+          await expectLater(
+            pushMenusDao.getPushMenu(id: pushMenu.id),
+            throwsStateError,
+          );
+          await expectLater(
             db.stopGamesDao.getStopGame(id: stopGame.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             db.callCommandsDao.getCallCommand(id: callCommand.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             commandsDao.getCommand(id: command2.id),
             throwsStateError,
           );
@@ -200,38 +203,47 @@ void main() {
             callingMenuItemId: mistake.id,
           );
           await utilsDao.deleteMenuItem(mistake);
-          expect(
+          await expectLater(
             assetReferencesDao.getAssetReference(id: mistakeActivateSound.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             assetReferencesDao.getAssetReference(id: mistakeSelectSound.id),
             throwsStateError,
           );
-          expect(menuItemsDao.getMenuItem(id: mistake.id), throwsStateError);
-          expect(
+          await expectLater(
+            menuItemsDao.getMenuItem(id: mistake.id),
+            throwsStateError,
+          );
+          await expectLater(
             (await assetReferencesDao.getAssetReference(id: activateSound.id))
                 .id,
             activateSound.id,
           );
-          expect(
+          await expectLater(
             (await assetReferencesDao.getAssetReference(id: selectSound.id)).id,
             selectSound.id,
           );
-          expect(
+          await expectLater(
             (await assetReferencesDao.getAssetReference(id: music.id)).id,
             music.id,
           );
-          expect(
+          await expectLater(
             callCommandsDao.getCallCommand(id: callCommand1.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             callCommandsDao.getCallCommand(id: callCommand2.id),
             throwsStateError,
           );
-          expect(commandsDao.getCommand(id: command1.id), throwsStateError);
-          expect(commandsDao.getCommand(id: command2.id), throwsStateError);
+          await expectLater(
+            commandsDao.getCommand(id: command1.id),
+            throwsStateError,
+          );
+          await expectLater(
+            commandsDao.getCommand(id: command2.id),
+            throwsStateError,
+          );
           expect((await menuItemsDao.getMenuItem(id: play.id)).id, play.id);
           expect((await menusDao.getMenu(id: menu.id)).id, menu.id);
         },
@@ -277,37 +289,43 @@ void main() {
             name: 'Menu Item 2',
           );
           await utilsDao.deleteMenu(menu);
-          expect(
+          await expectLater(
             menuItemsDao.getMenuItem(id: menuItem1.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             menuItemsDao.getMenuItem(id: menuItem2.id),
             throwsStateError,
           );
-          expect(menusDao.getMenu(id: menu.id), throwsStateError);
-          expect(
+          await expectLater(menusDao.getMenu(id: menu.id), throwsStateError);
+          await expectLater(
             assetReferencesDao.getAssetReference(id: activateSound.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             assetReferencesDao.getAssetReference(id: selectSound.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             assetReferencesDao.getAssetReference(id: music.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             callCommandsDao.getCallCommand(id: callCommand1.id),
             throwsStateError,
           );
-          expect(
+          await expectLater(
             callCommandsDao.getCallCommand(id: callCommand2.id),
             throwsStateError,
           );
-          expect(commandsDao.getCommand(id: command1.id), throwsStateError);
-          expect(commandsDao.getCommand(id: command2.id), throwsStateError);
+          await expectLater(
+            commandsDao.getCommand(id: command1.id),
+            throwsStateError,
+          );
+          await expectLater(
+            commandsDao.getCommand(id: command2.id),
+            throwsStateError,
+          );
         },
       );
 

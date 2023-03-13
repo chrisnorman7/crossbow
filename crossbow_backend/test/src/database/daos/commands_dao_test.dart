@@ -264,6 +264,40 @@ void main() {
           expect(await commands.isPinned(commandId: command.id), false);
         },
       );
+
+      test(
+        '.isCalled',
+        () async {
+          final command = await commands.createCommand();
+          final callingCommand1 = await commands.createCommand();
+          final callingCommand2 = await commands.createCommand();
+          final callCommand1 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand1.id,
+          );
+          final callCommand2 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand2.id,
+          );
+          expect(await commands.isCalled(commandId: command.id), isTrue);
+          expect(
+            await commands.isCalled(commandId: callingCommand1.id),
+            isFalse,
+          );
+          expect(
+            await commands.isCalled(commandId: callingCommand2.id),
+            isFalse,
+          );
+          await callCommandsDao.deleteCallCommand(
+            callCommandId: callCommand1.id,
+          );
+          expect(await commands.isCalled(commandId: command.id), isTrue);
+          await callCommandsDao.deleteCallCommand(
+            callCommandId: callCommand2.id,
+          );
+          expect(await commands.isCalled(commandId: command.id), isFalse);
+        },
+      );
     },
   );
 }

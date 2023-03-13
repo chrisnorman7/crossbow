@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/call_commands.dart';
@@ -84,4 +85,13 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             .writeReturning(CallCommandsCompanion(commandId: Value(commandId))))
         .single;
   }
+
+  /// Delete the call command with the given [callCommandId].
+  @internal
+  Future<int> deleteCallCommand({
+    required final int callCommandId,
+  }) =>
+      (delete(callCommands)
+            ..where((final table) => table.id.equals(callCommandId)))
+          .go();
 }

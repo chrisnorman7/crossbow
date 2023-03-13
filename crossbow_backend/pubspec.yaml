@@ -9,7 +9,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   dart_sdl: ^0.10.1
-  dart_style: ^2.2.4
+  dart_style: ^2.2.5
   dart_synthizer: ^0.11.1
   drift: ^2.5.0
   jinja: ^0.4.2
@@ -19,7 +19,7 @@ dependencies:
   open_url: ^2.0.0
   path: ^1.8.3
   recase: ^4.1.0
-  sqlite3: ^1.9.1
+  sqlite3: ^1.9.3
   ziggurat: ^0.58.0
   # path: ^1.8.0
 

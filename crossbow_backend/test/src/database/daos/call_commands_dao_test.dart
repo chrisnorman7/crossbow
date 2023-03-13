@@ -139,6 +139,33 @@ void main() {
           expect(updatedCallCommand.commandId, command1.id);
         },
       );
+
+      test(
+        '.deleteCallCommand',
+        () async {
+          final callingCommand = await commands.createCommand();
+          final command = await commands.createCommand();
+          final callCommand = await callCommands.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand.id,
+          );
+          expect(
+            await callCommands.deleteCallCommand(
+              callCommandId: callCommand.id,
+            ),
+            1,
+          );
+          expect(
+            callCommands.getCallCommand(id: callCommand.id),
+            throwsStateError,
+          );
+          expect((await commands.getCommand(id: command.id)).id, command.id);
+          expect(
+            (await commands.getCommand(id: callingCommand.id)).id,
+            callingCommand.id,
+          );
+        },
+      );
     },
   );
 }
