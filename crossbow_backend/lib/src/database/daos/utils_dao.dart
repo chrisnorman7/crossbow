@@ -75,8 +75,12 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   ///
   /// This method *will not* delete the calling command.
   Future<void> deleteCallCommand(final CallCommand callCommand) async {
-    final command = await db.commandsDao.getCommand(id: callCommand.commandId);
-    await deleteCommand(command);
+    final commandsDao = db.commandsDao;
+    if ((await commandsDao.isPinned(commandId: callCommand.commandId)) ==
+        false) {
+      final command = await commandsDao.getCommand(id: callCommand.commandId);
+      await deleteCommand(command);
+    }
     await db.callCommandsDao.deleteCallCommand(callCommandId: callCommand.id);
   }
 

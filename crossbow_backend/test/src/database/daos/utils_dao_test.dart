@@ -131,7 +131,7 @@ void main() {
         () async {
           final commandToCall = await commandsDao.createCommand();
           final command = await commandsDao.createCommand();
-          final callCommand = await callCommandsDao.createCallCommand(
+          var callCommand = await callCommandsDao.createCallCommand(
             commandId: commandToCall.id,
             callingCommandId: command.id,
           );
@@ -145,8 +145,26 @@ void main() {
             throwsStateError,
           );
           expect(
-            await commandsDao.getCommand(id: command.id),
-            predicate<Command>((final value) => value.id == command.id),
+            (await commandsDao.getCommand(id: command.id)).id,
+            command.id,
+          );
+          final commandToPin = await commandsDao.createCommand();
+          await pinnedCommandsDao.createPinnedCommand(
+            commandId: commandToPin.id,
+            name: 'Test Pinned Command',
+          );
+          callCommand = await callCommandsDao.createCallCommand(
+            commandId: commandToPin.id,
+            callingCommandId: command.id,
+          );
+          await utilsDao.deleteCallCommand(callCommand);
+          await expectLater(
+            callCommandsDao.getCallCommand(id: callCommand.id),
+            throwsStateError,
+          );
+          expect(
+            (await commandsDao.getCommand(id: commandToPin.id)).id,
+            commandToPin.id,
           );
         },
       );
