@@ -47,4 +47,13 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       ))
           .single;
+
+  /// Get the commands associated with the level with the given [customLevelId].
+  Future<List<CustomLevelCommand>> getCustomLevelCommands({
+    required final int customLevelId,
+  }) {
+    final query = select(customLevelCommands)
+      ..where((final table) => table.customLevelId.equals(customLevelId));
+    return query.get();
+  }
 }
