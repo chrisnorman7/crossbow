@@ -15,12 +15,32 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create a custom level.
   Future<CustomLevel> createCustomLevel({
     required final String name,
+    final int? musicId,
   }) =>
-      into(customLevels)
-          .insertReturning(CustomLevelsCompanion(name: Value(name)));
+      into(customLevels).insertReturning(
+        CustomLevelsCompanion(
+          name: Value(name),
+          musicId: Value(musicId),
+        ),
+      );
+
+  /// Get an [update] query, which matches on the given [id].
+  UpdateStatement<$CustomLevelsTable, CustomLevel> getUpdateQuery(
+    final int id,
+  ) =>
+      update(customLevels)..where((final table) => table.id.equals(id));
 
   /// Get a custom level with the given [id].
   Future<CustomLevel> getCustomLevel({required final int id}) =>
       (select(customLevels)..where((final table) => table.id.equals(id)))
           .getSingle();
+
+  /// Set the [musicId] for the level with the given [customLevelId].
+  Future<CustomLevel> setMusicId({
+    required final int customLevelId,
+    final int? musicId,
+  }) async =>
+      (await getUpdateQuery(customLevelId)
+              .writeReturning(CustomLevelsCompanion(musicId: Value(musicId))))
+          .single;
 }

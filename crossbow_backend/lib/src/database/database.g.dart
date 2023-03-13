@@ -2582,8 +2582,17 @@ class $CustomLevelsTable extends CustomLevels
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _musicIdMeta =
+      const VerificationMeta('musicId');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<int> musicId = GeneratedColumn<int>(
+      'music_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, musicId];
   @override
   String get aliasedName => _alias ?? 'custom_levels';
   @override
@@ -2600,6 +2609,10 @@ class $CustomLevelsTable extends CustomLevels
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     }
+    if (data.containsKey('music_id')) {
+      context.handle(_musicIdMeta,
+          musicId.isAcceptableOrUnknown(data['music_id']!, _musicIdMeta));
+    }
     return context;
   }
 
@@ -2613,6 +2626,8 @@ class $CustomLevelsTable extends CustomLevels
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      musicId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}music_id']),
     );
   }
 
@@ -2628,12 +2643,18 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
 
   /// The name of this object.
   final String name;
-  const CustomLevel({required this.id, required this.name});
+
+  /// The ID of the music to play.
+  final int? musicId;
+  const CustomLevel({required this.id, required this.name, this.musicId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || musicId != null) {
+      map['music_id'] = Variable<int>(musicId);
+    }
     return map;
   }
 
@@ -2641,6 +2662,9 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return CustomLevelsCompanion(
       id: Value(id),
       name: Value(name),
+      musicId: musicId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(musicId),
     );
   }
 
@@ -2650,6 +2674,7 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return CustomLevel(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      musicId: serializer.fromJson<int?>(json['musicId']),
     );
   }
   @override
@@ -2658,55 +2683,72 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'musicId': serializer.toJson<int?>(musicId),
     };
   }
 
-  CustomLevel copyWith({int? id, String? name}) => CustomLevel(
+  CustomLevel copyWith(
+          {int? id,
+          String? name,
+          Value<int?> musicId = const Value.absent()}) =>
+      CustomLevel(
         id: id ?? this.id,
         name: name ?? this.name,
+        musicId: musicId.present ? musicId.value : this.musicId,
       );
   @override
   String toString() {
     return (StringBuffer('CustomLevel(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('musicId: $musicId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, musicId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CustomLevel && other.id == this.id && other.name == this.name);
+      (other is CustomLevel &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.musicId == this.musicId);
 }
 
 class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
   final Value<int> id;
   final Value<String> name;
+  final Value<int?> musicId;
   const CustomLevelsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.musicId = const Value.absent(),
   });
   CustomLevelsCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.musicId = const Value.absent(),
   });
   static Insertable<CustomLevel> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<int>? musicId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (musicId != null) 'music_id': musicId,
     });
   }
 
-  CustomLevelsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+  CustomLevelsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<int?>? musicId}) {
     return CustomLevelsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      musicId: musicId ?? this.musicId,
     );
   }
 
@@ -2719,6 +2761,9 @@ class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (musicId.present) {
+      map['music_id'] = Variable<int>(musicId.value);
+    }
     return map;
   }
 
@@ -2726,7 +2771,8 @@ class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
   String toString() {
     return (StringBuffer('CustomLevelsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('musicId: $musicId')
           ..write(')'))
         .toString();
   }
@@ -3791,6 +3837,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('commands', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('custom_levels', kind: UpdateKind.update),
             ],
           ),
           WritePropagation(
