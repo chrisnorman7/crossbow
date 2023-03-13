@@ -79,6 +79,20 @@ void main() {
           expect(updatedLevel.name, 'Level 3');
         },
       );
+
+      test(
+        '.deleteCustomLevel',
+        () async {
+          final level = await customLevelsDao.createCustomLevel(
+            name: 'Testing Delete',
+          );
+          expect(await customLevelsDao.deleteCustomLevel(id: level.id), 1);
+          await expectLater(
+            customLevelsDao.getCustomLevel(id: level.id),
+            throwsStateError,
+          );
+        },
+      );
     },
   );
 }

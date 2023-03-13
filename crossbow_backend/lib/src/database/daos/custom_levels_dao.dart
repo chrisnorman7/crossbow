@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/custom_levels.dart';
@@ -52,4 +53,11 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (await getUpdateQuery(customLevelId)
               .writeReturning(CustomLevelsCompanion(name: Value(name))))
           .single;
+
+  /// Delete the level with the given [id].
+  @internal
+  Future<int> deleteCustomLevel({
+    required final int id,
+  }) =>
+      (delete(customLevels)..where((final table) => table.id.equals(id))).go();
 }
