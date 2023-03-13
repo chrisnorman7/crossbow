@@ -70,4 +70,11 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.customLevelId.equals(customLevelId));
     return query.get();
   }
+
+  /// Get all the custom levels in the database.
+  Future<List<CustomLevel>> getCustomLevels() {
+    final query = select(customLevels)
+      ..orderBy([(final table) => OrderingTerm.asc(table.name)]);
+    return query.get();
+  }
 }

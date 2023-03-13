@@ -121,6 +121,21 @@ void main() {
           expect(commands.last.id, command2.id);
         },
       );
+
+      test(
+        '.getCustomLevels',
+        () async {
+          await db.delete(db.customLevels).go();
+          final level2 =
+              await customLevelsDao.createCustomLevel(name: 'Level 2');
+          final level1 =
+              await customLevelsDao.createCustomLevel(name: 'Level 1');
+          final levels = await customLevelsDao.getCustomLevels();
+          expect(levels.length, 2);
+          expect(levels.first.id, level1.id);
+          expect(levels.last.id, level2.id);
+        },
+      );
     },
   );
 }
