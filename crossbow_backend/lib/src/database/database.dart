@@ -23,6 +23,8 @@ part 'database.g.dart';
     CallCommands,
     StopGames,
     PinnedCommands,
+    CustomLevels,
+    CustomLevelCommands,
   ],
   daos: [
     MenusDao,
@@ -37,6 +39,7 @@ part 'database.g.dart';
     CommandTriggerKeyboardKeysDao,
     UtilsDao,
     PinnedCommandsDao,
+    CustomLevelsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
@@ -53,7 +56,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// Migrate the database.
   @override
@@ -85,6 +88,11 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           }
           if (from < 6) {
             await m.createTable(pinnedCommands);
+          }
+          if (from < 7) {
+            await m.createTable(customLevelCommands);
+            await m.createTable(customLevels);
+            await m.addColumn(callCommands, callCommands.customLevelCommandId);
           }
         },
       );

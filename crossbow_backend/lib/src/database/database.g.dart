@@ -2559,6 +2559,408 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   }
 }
 
+class $CustomLevelsTable extends CustomLevels
+    with TableInfo<$CustomLevelsTable, CustomLevel> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomLevelsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? 'custom_levels';
+  @override
+  String get actualTableName => 'custom_levels';
+  @override
+  VerificationContext validateIntegrity(Insertable<CustomLevel> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CustomLevel map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CustomLevel(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  @override
+  $CustomLevelsTable createAlias(String alias) {
+    return $CustomLevelsTable(attachedDatabase, alias);
+  }
+}
+
+class CustomLevel extends DataClass implements Insertable<CustomLevel> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+  const CustomLevel({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  CustomLevelsCompanion toCompanion(bool nullToAbsent) {
+    return CustomLevelsCompanion(
+      id: Value(id),
+      name: Value(name),
+    );
+  }
+
+  factory CustomLevel.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomLevel(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  CustomLevel copyWith({int? id, String? name}) => CustomLevel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CustomLevel(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomLevel && other.id == this.id && other.name == this.name);
+}
+
+class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
+  final Value<int> id;
+  final Value<String> name;
+  const CustomLevelsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  CustomLevelsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  static Insertable<CustomLevel> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  CustomLevelsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+    return CustomLevelsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomLevelsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CustomLevelCommandsTable extends CustomLevelCommands
+    with TableInfo<$CustomLevelCommandsTable, CustomLevelCommand> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomLevelCommandsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _customLevelIdMeta =
+      const VerificationMeta('customLevelId');
+  @override
+  late final GeneratedColumn<int> customLevelId = GeneratedColumn<int>(
+      'custom_level_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES custom_levels (id) ON DELETE CASCADE'));
+  static const VerificationMeta _commandTriggerIdMeta =
+      const VerificationMeta('commandTriggerId');
+  @override
+  late final GeneratedColumn<int> commandTriggerId = GeneratedColumn<int>(
+      'command_trigger_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES command_triggers (id) ON DELETE CASCADE'));
+  @override
+  List<GeneratedColumn> get $columns => [id, customLevelId, commandTriggerId];
+  @override
+  String get aliasedName => _alias ?? 'custom_level_commands';
+  @override
+  String get actualTableName => 'custom_level_commands';
+  @override
+  VerificationContext validateIntegrity(Insertable<CustomLevelCommand> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('custom_level_id')) {
+      context.handle(
+          _customLevelIdMeta,
+          customLevelId.isAcceptableOrUnknown(
+              data['custom_level_id']!, _customLevelIdMeta));
+    } else if (isInserting) {
+      context.missing(_customLevelIdMeta);
+    }
+    if (data.containsKey('command_trigger_id')) {
+      context.handle(
+          _commandTriggerIdMeta,
+          commandTriggerId.isAcceptableOrUnknown(
+              data['command_trigger_id']!, _commandTriggerIdMeta));
+    } else if (isInserting) {
+      context.missing(_commandTriggerIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CustomLevelCommand map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CustomLevelCommand(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      customLevelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
+      commandTriggerId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}command_trigger_id'])!,
+    );
+  }
+
+  @override
+  $CustomLevelCommandsTable createAlias(String alias) {
+    return $CustomLevelCommandsTable(attachedDatabase, alias);
+  }
+}
+
+class CustomLevelCommand extends DataClass
+    implements Insertable<CustomLevelCommand> {
+  /// The primary key.
+  final int id;
+
+  /// The ID of the custom level to attach to.
+  final int customLevelId;
+
+  /// The ID of the trigger to use.
+  final int commandTriggerId;
+  const CustomLevelCommand(
+      {required this.id,
+      required this.customLevelId,
+      required this.commandTriggerId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['custom_level_id'] = Variable<int>(customLevelId);
+    map['command_trigger_id'] = Variable<int>(commandTriggerId);
+    return map;
+  }
+
+  CustomLevelCommandsCompanion toCompanion(bool nullToAbsent) {
+    return CustomLevelCommandsCompanion(
+      id: Value(id),
+      customLevelId: Value(customLevelId),
+      commandTriggerId: Value(commandTriggerId),
+    );
+  }
+
+  factory CustomLevelCommand.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomLevelCommand(
+      id: serializer.fromJson<int>(json['id']),
+      customLevelId: serializer.fromJson<int>(json['customLevelId']),
+      commandTriggerId: serializer.fromJson<int>(json['commandTriggerId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'customLevelId': serializer.toJson<int>(customLevelId),
+      'commandTriggerId': serializer.toJson<int>(commandTriggerId),
+    };
+  }
+
+  CustomLevelCommand copyWith(
+          {int? id, int? customLevelId, int? commandTriggerId}) =>
+      CustomLevelCommand(
+        id: id ?? this.id,
+        customLevelId: customLevelId ?? this.customLevelId,
+        commandTriggerId: commandTriggerId ?? this.commandTriggerId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CustomLevelCommand(')
+          ..write('id: $id, ')
+          ..write('customLevelId: $customLevelId, ')
+          ..write('commandTriggerId: $commandTriggerId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, customLevelId, commandTriggerId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomLevelCommand &&
+          other.id == this.id &&
+          other.customLevelId == this.customLevelId &&
+          other.commandTriggerId == this.commandTriggerId);
+}
+
+class CustomLevelCommandsCompanion extends UpdateCompanion<CustomLevelCommand> {
+  final Value<int> id;
+  final Value<int> customLevelId;
+  final Value<int> commandTriggerId;
+  const CustomLevelCommandsCompanion({
+    this.id = const Value.absent(),
+    this.customLevelId = const Value.absent(),
+    this.commandTriggerId = const Value.absent(),
+  });
+  CustomLevelCommandsCompanion.insert({
+    this.id = const Value.absent(),
+    required int customLevelId,
+    required int commandTriggerId,
+  })  : customLevelId = Value(customLevelId),
+        commandTriggerId = Value(commandTriggerId);
+  static Insertable<CustomLevelCommand> custom({
+    Expression<int>? id,
+    Expression<int>? customLevelId,
+    Expression<int>? commandTriggerId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (customLevelId != null) 'custom_level_id': customLevelId,
+      if (commandTriggerId != null) 'command_trigger_id': commandTriggerId,
+    });
+  }
+
+  CustomLevelCommandsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? customLevelId,
+      Value<int>? commandTriggerId}) {
+    return CustomLevelCommandsCompanion(
+      id: id ?? this.id,
+      customLevelId: customLevelId ?? this.customLevelId,
+      commandTriggerId: commandTriggerId ?? this.commandTriggerId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (customLevelId.present) {
+      map['custom_level_id'] = Variable<int>(customLevelId.value);
+    }
+    if (commandTriggerId.present) {
+      map['command_trigger_id'] = Variable<int>(commandTriggerId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomLevelCommandsCompanion(')
+          ..write('id: $id, ')
+          ..write('customLevelId: $customLevelId, ')
+          ..write('commandTriggerId: $commandTriggerId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CallCommandsTable extends CallCommands
     with TableInfo<$CallCommandsTable, CallCommand> {
   @override
@@ -2606,6 +3008,15 @@ class $CallCommandsTable extends CallCommands
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES menus (id) ON DELETE CASCADE'));
+  static const VerificationMeta _customLevelCommandIdMeta =
+      const VerificationMeta('customLevelCommandId');
+  @override
+  late final GeneratedColumn<int> customLevelCommandId = GeneratedColumn<int>(
+      'custom_level_command_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES custom_level_commands (id) ON DELETE CASCADE'));
   static const VerificationMeta _commandIdMeta =
       const VerificationMeta('commandId');
   @override
@@ -2628,6 +3039,7 @@ class $CallCommandsTable extends CallCommands
         callingCommandId,
         callingMenuItemId,
         onCancelMenuId,
+        customLevelCommandId,
         commandId,
         randomNumberBase
       ];
@@ -2665,6 +3077,12 @@ class $CallCommandsTable extends CallCommands
           onCancelMenuId.isAcceptableOrUnknown(
               data['on_cancel_menu_id']!, _onCancelMenuIdMeta));
     }
+    if (data.containsKey('custom_level_command_id')) {
+      context.handle(
+          _customLevelCommandIdMeta,
+          customLevelCommandId.isAcceptableOrUnknown(
+              data['custom_level_command_id']!, _customLevelCommandIdMeta));
+    }
     if (data.containsKey('command_id')) {
       context.handle(_commandIdMeta,
           commandId.isAcceptableOrUnknown(data['command_id']!, _commandIdMeta));
@@ -2696,6 +3114,8 @@ class $CallCommandsTable extends CallCommands
           DriftSqlType.int, data['${effectivePrefix}calling_menu_item_id']),
       onCancelMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}on_cancel_menu_id']),
+      customLevelCommandId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}custom_level_command_id']),
       commandId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}command_id'])!,
       randomNumberBase: attachedDatabase.typeMapping
@@ -2725,6 +3145,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   /// The ID of the menu whose on cancel action will call this command.
   final int? onCancelMenuId;
 
+  /// The ID of the custom level command which will call this command.
+  final int? customLevelCommandId;
+
   /// The ID of the command to call.
   final int commandId;
 
@@ -2736,6 +3159,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       this.callingCommandId,
       this.callingMenuItemId,
       this.onCancelMenuId,
+      this.customLevelCommandId,
       required this.commandId,
       this.randomNumberBase});
   @override
@@ -2753,6 +3177,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     }
     if (!nullToAbsent || onCancelMenuId != null) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId);
+    }
+    if (!nullToAbsent || customLevelCommandId != null) {
+      map['custom_level_command_id'] = Variable<int>(customLevelCommandId);
     }
     map['command_id'] = Variable<int>(commandId);
     if (!nullToAbsent || randomNumberBase != null) {
@@ -2775,6 +3202,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       onCancelMenuId: onCancelMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(onCancelMenuId),
+      customLevelCommandId: customLevelCommandId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customLevelCommandId),
       commandId: Value(commandId),
       randomNumberBase: randomNumberBase == null && nullToAbsent
           ? const Value.absent()
@@ -2791,6 +3221,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       callingCommandId: serializer.fromJson<int?>(json['callingCommandId']),
       callingMenuItemId: serializer.fromJson<int?>(json['callingMenuItemId']),
       onCancelMenuId: serializer.fromJson<int?>(json['onCancelMenuId']),
+      customLevelCommandId:
+          serializer.fromJson<int?>(json['customLevelCommandId']),
       commandId: serializer.fromJson<int>(json['commandId']),
       randomNumberBase: serializer.fromJson<int?>(json['randomNumberBase']),
     );
@@ -2804,6 +3236,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       'callingCommandId': serializer.toJson<int?>(callingCommandId),
       'callingMenuItemId': serializer.toJson<int?>(callingMenuItemId),
       'onCancelMenuId': serializer.toJson<int?>(onCancelMenuId),
+      'customLevelCommandId': serializer.toJson<int?>(customLevelCommandId),
       'commandId': serializer.toJson<int>(commandId),
       'randomNumberBase': serializer.toJson<int?>(randomNumberBase),
     };
@@ -2815,6 +3248,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           Value<int?> callingCommandId = const Value.absent(),
           Value<int?> callingMenuItemId = const Value.absent(),
           Value<int?> onCancelMenuId = const Value.absent(),
+          Value<int?> customLevelCommandId = const Value.absent(),
           int? commandId,
           Value<int?> randomNumberBase = const Value.absent()}) =>
       CallCommand(
@@ -2828,6 +3262,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
             : this.callingMenuItemId,
         onCancelMenuId:
             onCancelMenuId.present ? onCancelMenuId.value : this.onCancelMenuId,
+        customLevelCommandId: customLevelCommandId.present
+            ? customLevelCommandId.value
+            : this.customLevelCommandId,
         commandId: commandId ?? this.commandId,
         randomNumberBase: randomNumberBase.present
             ? randomNumberBase.value
@@ -2841,6 +3278,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           ..write('callingCommandId: $callingCommandId, ')
           ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
+          ..write('customLevelCommandId: $customLevelCommandId, ')
           ..write('commandId: $commandId, ')
           ..write('randomNumberBase: $randomNumberBase')
           ..write(')'))
@@ -2848,8 +3286,15 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   }
 
   @override
-  int get hashCode => Object.hash(id, after, callingCommandId,
-      callingMenuItemId, onCancelMenuId, commandId, randomNumberBase);
+  int get hashCode => Object.hash(
+      id,
+      after,
+      callingCommandId,
+      callingMenuItemId,
+      onCancelMenuId,
+      customLevelCommandId,
+      commandId,
+      randomNumberBase);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2859,6 +3304,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           other.callingCommandId == this.callingCommandId &&
           other.callingMenuItemId == this.callingMenuItemId &&
           other.onCancelMenuId == this.onCancelMenuId &&
+          other.customLevelCommandId == this.customLevelCommandId &&
           other.commandId == this.commandId &&
           other.randomNumberBase == this.randomNumberBase);
 }
@@ -2869,6 +3315,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
   final Value<int?> callingCommandId;
   final Value<int?> callingMenuItemId;
   final Value<int?> onCancelMenuId;
+  final Value<int?> customLevelCommandId;
   final Value<int> commandId;
   final Value<int?> randomNumberBase;
   const CallCommandsCompanion({
@@ -2877,6 +3324,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     this.callingCommandId = const Value.absent(),
     this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
+    this.customLevelCommandId = const Value.absent(),
     this.commandId = const Value.absent(),
     this.randomNumberBase = const Value.absent(),
   });
@@ -2886,6 +3334,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     this.callingCommandId = const Value.absent(),
     this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
+    this.customLevelCommandId = const Value.absent(),
     required int commandId,
     this.randomNumberBase = const Value.absent(),
   }) : commandId = Value(commandId);
@@ -2895,6 +3344,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     Expression<int>? callingCommandId,
     Expression<int>? callingMenuItemId,
     Expression<int>? onCancelMenuId,
+    Expression<int>? customLevelCommandId,
     Expression<int>? commandId,
     Expression<int>? randomNumberBase,
   }) {
@@ -2904,6 +3354,8 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       if (callingCommandId != null) 'calling_command_id': callingCommandId,
       if (callingMenuItemId != null) 'calling_menu_item_id': callingMenuItemId,
       if (onCancelMenuId != null) 'on_cancel_menu_id': onCancelMenuId,
+      if (customLevelCommandId != null)
+        'custom_level_command_id': customLevelCommandId,
       if (commandId != null) 'command_id': commandId,
       if (randomNumberBase != null) 'random_number_base': randomNumberBase,
     });
@@ -2915,6 +3367,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       Value<int?>? callingCommandId,
       Value<int?>? callingMenuItemId,
       Value<int?>? onCancelMenuId,
+      Value<int?>? customLevelCommandId,
       Value<int>? commandId,
       Value<int?>? randomNumberBase}) {
     return CallCommandsCompanion(
@@ -2923,6 +3376,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       callingCommandId: callingCommandId ?? this.callingCommandId,
       callingMenuItemId: callingMenuItemId ?? this.callingMenuItemId,
       onCancelMenuId: onCancelMenuId ?? this.onCancelMenuId,
+      customLevelCommandId: customLevelCommandId ?? this.customLevelCommandId,
       commandId: commandId ?? this.commandId,
       randomNumberBase: randomNumberBase ?? this.randomNumberBase,
     );
@@ -2946,6 +3400,10 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     if (onCancelMenuId.present) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId.value);
     }
+    if (customLevelCommandId.present) {
+      map['custom_level_command_id'] =
+          Variable<int>(customLevelCommandId.value);
+    }
     if (commandId.present) {
       map['command_id'] = Variable<int>(commandId.value);
     }
@@ -2963,6 +3421,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
           ..write('callingCommandId: $callingCommandId, ')
           ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
+          ..write('customLevelCommandId: $customLevelCommandId, ')
           ..write('commandId: $commandId, ')
           ..write('randomNumberBase: $randomNumberBase')
           ..write(')'))
@@ -3199,6 +3658,9 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final $PopLevelsTable popLevels = $PopLevelsTable(this);
   late final $StopGamesTable stopGames = $StopGamesTable(this);
   late final $CommandsTable commands = $CommandsTable(this);
+  late final $CustomLevelsTable customLevels = $CustomLevelsTable(this);
+  late final $CustomLevelCommandsTable customLevelCommands =
+      $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
@@ -3223,6 +3685,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final UtilsDao utilsDao = UtilsDao(this as CrossbowBackendDatabase);
   late final PinnedCommandsDao pinnedCommandsDao =
       PinnedCommandsDao(this as CrossbowBackendDatabase);
+  late final CustomLevelsDao customLevelsDao =
+      CustomLevelsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3237,6 +3701,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         popLevels,
         stopGames,
         commands,
+        customLevels,
+        customLevelCommands,
         callCommands,
         pinnedCommands
       ];
@@ -3328,6 +3794,20 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
             ],
           ),
           WritePropagation(
+            on: TableUpdateQuery.onTableName('custom_levels',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('custom_level_commands', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('command_triggers',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('custom_level_commands', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
             on: TableUpdateQuery.onTableName('commands',
                 limitUpdateKind: UpdateKind.delete),
             result: [
@@ -3343,6 +3823,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
           ),
           WritePropagation(
             on: TableUpdateQuery.onTableName('menus',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('call_commands', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('custom_level_commands',
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('call_commands', kind: UpdateKind.delete),

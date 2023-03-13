@@ -3,6 +3,7 @@ export 'call_commands_dao.dart';
 export 'command_trigger_keyboard_keys_dao.dart';
 export 'command_triggers_dao.dart';
 export 'commands_dao.dart';
+export 'custom_levels_dao.dart';
 export 'menu_items_dao.dart';
 export 'menus_dao.dart';
 export 'pinned_commands_dao.dart';

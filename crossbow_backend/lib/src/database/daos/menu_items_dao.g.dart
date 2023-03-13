@@ -11,5 +11,11 @@ mixin _$MenuItemsDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $PopLevelsTable get popLevels => attachedDatabase.popLevels;
   $StopGamesTable get stopGames => attachedDatabase.stopGames;
   $CommandsTable get commands => attachedDatabase.commands;
+  $CustomLevelsTable get customLevels => attachedDatabase.customLevels;
+  $CommandTriggerKeyboardKeysTable get commandTriggerKeyboardKeys =>
+      attachedDatabase.commandTriggerKeyboardKeys;
+  $CommandTriggersTable get commandTriggers => attachedDatabase.commandTriggers;
+  $CustomLevelCommandsTable get customLevelCommands =>
+      attachedDatabase.customLevelCommands;
   $CallCommandsTable get callCommands => attachedDatabase.callCommands;
 }
