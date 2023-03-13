@@ -1,13 +1,19 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
+import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../constants.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
+import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
+import '../../widgets/new_callback_shortcuts.dart';
 
 /// A widget for editing the custom level with the given [customLevelId].
 class EditCustomLevelScreen extends ConsumerStatefulWidget {
@@ -45,6 +51,11 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
                 ),
               ),
               builder: getCustomLevelCommandsPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: newCommand,
+                tooltip: Intl.message('New Command'),
+                child: intlNewIcon,
+              ),
             )
           ],
         ),
@@ -98,34 +109,103 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
 
   /// Get the custom level commands page.
   Widget getCustomLevelCommandsPage(final BuildContext context) {
-    final value =
-        ref.watch(customLevelCommandsProvider.call(widget.customLevelId));
+    final value = ref.watch(
+      customLevelCommandsProvider.call(widget.customLevelId),
+    );
     return value.when(
       data: (final commands) {
+        final Widget child;
         if (commands.isEmpty) {
-          return CenterText(
+          child = CenterText(
             text: nothingToShowMessage,
             autofocus: true,
           );
+        } else {
+          child = BuiltSearchableListView(
+            items: commands,
+            builder: (final context, final index) {
+              final commandContext = commands[index];
+              final projectContext = commandContext.projectContext;
+              final commandTrigger = commandContext.commandTrigger;
+              return SearchableListTile(
+                searchString: commandTrigger.description,
+                child: CallbackShortcuts(
+                  bindings: {
+                    deleteShortcut: () {
+                      final customLevelCommandsDao =
+                          projectContext.db.customLevelCommandsDao;
+                      intlConfirm(
+                        context: context,
+                        message: Intl.message(
+                          'Are you sure you want to delete this command?',
+                        ),
+                        title: confirmDeleteTitle,
+                        yesCallback: () async {
+                          await customLevelCommandsDao.deleteCustomLevelCommand(
+                            id: commandContext.value.id,
+                          );
+                          ref.invalidate(
+                            customLevelCommandsProvider
+                                .call(widget.customLevelId),
+                          );
+                          if (mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                      );
+                    }
+                  },
+                  child: ListTile(
+                    autofocus: index == 0,
+                    title: Text(commandTrigger.description),
+                    onTap: () async {},
+                  ),
+                ),
+              );
+            },
+          );
         }
-        return BuiltSearchableListView(
-          items: commands,
-          builder: (final context, final index) {
-            final commandContext = commands[index];
-            final commandTrigger = commandContext.commandTrigger;
-            return SearchableListTile(
-              searchString: commandTrigger.description,
-              child: ListTile(
-                autofocus: index == 0,
-                title: Text(commandTrigger.description),
-                onTap: () async {},
-              ),
-            );
-          },
-        );
+        return NewCallbackShortcuts(newCallback: newCommand, child: child);
       },
       error: ErrorListView.withPositional,
       loading: LoadingWidget.new,
     );
+  }
+
+  /// Create a new command.
+  Future<void> newCommand() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final triggers = await db.commandTriggersDao.getCommandTriggers();
+    if (triggers.isEmpty) {
+      if (mounted) {
+        await intlShowMessage(
+          context: context,
+          message: Intl.message('You must create some command triggers first.'),
+          title: errorTitle,
+        );
+      }
+      return;
+    }
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) => SelectItem<CommandTrigger>(
+          values: triggers,
+          onDone: (final value) async {
+            await db.customLevelCommandsDao.createCustomLevelCommand(
+              customLevelId: widget.customLevelId,
+              commandTriggerId: value.id,
+            );
+            ref.invalidate(
+              customLevelCommandsProvider.call(widget.customLevelId),
+            );
+          },
+          getSearchString: (final value) => value.description,
+          getWidget: (final value) => Text(value.description),
+          title: selectCommandTriggerMessage,
+        ),
+      );
+    }
   }
 }

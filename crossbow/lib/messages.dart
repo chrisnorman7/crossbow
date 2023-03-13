@@ -160,3 +160,6 @@ final cantDeleteCalledCommand =
 /// You cannot delete a level with commands.
 final levelWithCommandsMessage =
     Intl.message('You cannot delete a message with commands.');
+
+/// Select command trigger.
+final selectCommandTriggerMessage = Intl.message('Select Command Trigger');
