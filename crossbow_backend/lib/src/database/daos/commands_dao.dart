@@ -127,6 +127,14 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
             ..where((final table) => table.callingCommandId.equals(commandId)))
           .get();
 
+  /// Get the call commands which call the command with the given [commandId].
+  Future<List<CallCommand>> getCallingCallCommands({
+    required final int commandId,
+  }) =>
+      (select(callCommands)
+            ..where((final table) => table.commandId.equals(commandId)))
+          .get();
+
   /// Get a pinned command which represents the command with the given
   /// [commandId].
   Future<PinnedCommand?> getPinnedCommand({

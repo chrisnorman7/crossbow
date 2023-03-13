@@ -298,6 +298,49 @@ void main() {
           expect(await commands.isCalled(commandId: command.id), isFalse);
         },
       );
+
+      test(
+        '.getCallingCallCommands',
+        () async {
+          final command = await commands.createCommand();
+          final callingCommand = await commands.createCommand();
+          final callCommand1 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand.id,
+          );
+          var callingCallCommands =
+              await commands.getCallingCallCommands(commandId: command.id);
+          expect(callingCallCommands.length, 1);
+          expect(
+            callingCallCommands.single,
+            predicate<CallCommand>(
+              (final value) =>
+                  value.id == callCommand1.id &&
+                  value.callingCommandId == callingCommand.id &&
+                  value.commandId == command.id,
+            ),
+          );
+          final callingCommand2 = await commands.createCommand();
+          final callCommand2 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCommandId: callingCommand2.id,
+          );
+          callingCallCommands = await commands.getCallingCallCommands(
+            commandId: command.id,
+          );
+          expect(callingCallCommands.length, 2);
+          expect(callingCallCommands.first.id, callCommand1.id);
+          expect(
+            callingCallCommands.last,
+            predicate<CallCommand>(
+              (final value) =>
+                  value.id == callCommand2.id &&
+                  value.callingCommandId == callingCommand2.id &&
+                  value.commandId == command.id,
+            ),
+          );
+        },
+      );
     },
   );
 }
