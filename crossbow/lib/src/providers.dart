@@ -16,6 +16,7 @@ import 'contexts/call_commands_context.dart';
 import 'contexts/call_commands_target.dart';
 import 'contexts/command_context.dart';
 import 'contexts/command_trigger_context.dart';
+import 'contexts/custom_level_command_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
 import 'contexts/push_menu_context.dart';
@@ -397,5 +398,49 @@ final pinnedCommandsProvider =
     final pinnedCommands =
         await projectContext.db.pinnedCommandsDao.getPinnedCommands();
     return ValueContext(projectContext: projectContext, value: pinnedCommands);
+  },
+);
+
+/// Provide all custom levels.
+final customLevelsProvider = FutureProvider<ValueContext<List<CustomLevel>>>(
+  (final ref) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final levels = await projectContext.db.customLevelsDao.getCustomLevels();
+    return ValueContext(projectContext: projectContext, value: levels);
+  },
+);
+
+/// Provide a single custom level.
+final customLevelProvider =
+    FutureProvider.family<ValueContext<CustomLevel>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final level =
+        await projectContext.db.customLevelsDao.getCustomLevel(id: arg);
+    return ValueContext(projectContext: projectContext, value: level);
+  },
+);
+
+/// Get the custom level commands for a particular level.
+final customLevelCommandsProvider =
+    FutureProvider.family<List<CustomLevelCommandContext>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final commands =
+        await projectContext.db.customLevelsDao.getCustomLevelCommands(
+      customLevelId: arg,
+    );
+    final futures = commands.map<Future<CustomLevelCommandContext>>(
+      (final e) async {
+        final commandTrigger = await projectContext.db.commandTriggersDao
+            .getCommandTrigger(id: e.commandTriggerId);
+        return CustomLevelCommandContext(
+          projectContext: projectContext,
+          value: e,
+          commandTrigger: commandTrigger,
+        );
+      },
+    );
+    return Future.wait(futures);
   },
 );

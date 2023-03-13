@@ -18,6 +18,7 @@ import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
+import '../commands/edit_custom_level_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
@@ -47,6 +48,16 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               title: Intl.message('Project Settings'),
               icon: const Icon(Icons.settings),
               builder: getSettingsPage,
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Custom Levels'),
+              icon: Text(Intl.message('Blank levels which can be programmed')),
+              builder: getCustomLevelsPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: newCustomLevel,
+                tooltip: Intl.message('New Custom Level'),
+                child: intlNewIcon,
+              ),
             ),
             TabbedScaffoldTab(
               title: Intl.message('Menus'),
@@ -347,6 +358,51 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     );
   }
 
+  /// Get the custom levels page.
+  Widget getCustomLevelsPage(final BuildContext context) {
+    final value = ref.watch(customLevelsProvider);
+    return value.when(
+      data: (final data) {
+        final levels = data.value;
+        if (levels.isEmpty) {
+          return CenterText(
+            text: nothingToShowMessage,
+            autofocus: true,
+          );
+        }
+        return BuiltSearchableListView(
+          items: levels,
+          builder: (final context, final index) {
+            final level = levels[index];
+            return SearchableListTile(
+              searchString: level.name,
+              child: AssetReferencePlaySoundSemantics(
+                assetReferenceId: level.musicId,
+                child: Builder(
+                  builder: (final context) => ListTile(
+                    autofocus: index == 0,
+                    title: Text(level.name),
+                    onTap: () async {
+                      PlaySoundSemantics.of(context)?.stop();
+                      await pushWidget(
+                        context: context,
+                        builder: (final context) =>
+                            EditCustomLevelScreen(customLevelId: level.id),
+                      );
+                      ref.invalidate(customLevelsProvider);
+                    },
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
+    );
+  }
+
   /// Create a new menu.
   Future<void> newMenu() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
@@ -403,5 +459,13 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
         .watch(projectContextNotifierProvider.notifier)
         .replaceProjectContext(project);
     setState(() {});
+  }
+
+  /// Create a new custom level.
+  Future<void> newCustomLevel() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    await projectContext.db.customLevelsDao
+        .createCustomLevel(name: 'Untitled Level');
+    ref.invalidate(customLevelsProvider);
   }
 }
