@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'commands.dart';
+import 'mixins.dart';
 
 /// The pinned commands table.
 class PinnedCommands extends Table with WithPrimaryKey, WithName {

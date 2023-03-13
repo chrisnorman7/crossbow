@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
+import 'mixins.dart';
 
 /// The asset references table.
 class AssetReferences extends Table with WithPrimaryKey, WithName {

@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'commands.dart';
 import 'custom_level_commands.dart';
 import 'menu_items.dart';
 import 'menus.dart';
+import 'mixins.dart';
 
 /// The call commands table.
 class CallCommands extends Table with WithPrimaryKey, WithAfter {

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'asset_references.dart';
+import 'mixins.dart';
 
 /// The menus table.
 class Menus extends Table with WithPrimaryKey, WithName {

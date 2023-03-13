@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'menus.dart';
+import 'mixins.dart';
 
 /// The push menus table.
 class PushMenus extends Table with WithPrimaryKey, WithAfter, WithFadeTime {

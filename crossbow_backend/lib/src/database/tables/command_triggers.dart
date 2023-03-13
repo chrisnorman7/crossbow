@@ -1,8 +1,8 @@
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'command_trigger_keyboard_keys.dart';
+import 'mixins.dart';
 
 /// The command triggers table.
 class CommandTriggers extends Table with WithPrimaryKey {

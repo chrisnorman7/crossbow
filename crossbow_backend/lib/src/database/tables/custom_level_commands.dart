@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 
-import '../mixins.dart';
 import 'command_triggers.dart';
 import 'custom_levels.dart';
+import 'mixins.dart';
 
 /// A table to link [CustomLevels] to [CommandTriggers].
 class CustomLevelCommands extends Table with WithPrimaryKey {
