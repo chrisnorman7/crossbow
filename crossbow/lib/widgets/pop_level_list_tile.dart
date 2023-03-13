@@ -77,7 +77,8 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
           bindings: {
             deleteHotkey: () async {
               if (widget.nullable) {
-                await projectContext.db.utilsDao.deletePopLevel(popLevel);
+                await projectContext.db.popLevelsDao
+                    .deletePopLevel(id: popLevel.id);
                 widget.onChanged(null);
               }
             }

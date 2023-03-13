@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/asset_references.dart';
@@ -64,7 +63,6 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }
 
   /// Delete the asset reference with the given [id].
-  @internal
   Future<int> deleteAssetReference({required final int id}) async {
     final query = delete(assetReferences)
       ..where((final table) => table.id.equals(id));

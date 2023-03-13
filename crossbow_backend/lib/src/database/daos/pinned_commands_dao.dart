@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:meta/meta.dart';
 
 import '../database.dart';
 import '../tables/pinned_commands.dart';
@@ -50,7 +49,6 @@ class PinnedCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Delete the pinned command with the given [pinnedCommandId].
   ///
   /// This method will not delete the associated row from the [commands] table.
-  @internal
   Future<int> deletePinnedCommand({required final int pinnedCommandId}) {
     final query = delete(pinnedCommands)
       ..where((final table) => table.id.equals(pinnedCommandId));

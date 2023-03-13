@@ -1,4 +1,3 @@
-import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:test/test.dart';
 
@@ -15,26 +14,8 @@ void main() {
       final commandsDao = db.commandsDao;
       final callCommandsDao = db.callCommandsDao;
       final utilsDao = db.utilsDao;
-      final commandTriggerKeyboardKeysDao = db.commandTriggerKeyboardKeysDao;
       final commandTriggersDao = db.commandTriggersDao;
       final assetReferencesDao = db.assetReferencesDao;
-      final popLevelsDao = db.popLevelsDao;
-      final pinnedCommandsDao = db.pinnedCommandsDao;
-
-      test(
-        '.deleteAssetReference',
-        () async {
-          final assetReference = await assetReferencesDao.createAssetReference(
-            folderName: 'test',
-            name: 'test.mp3',
-          );
-          await utilsDao.deleteAssetReference(assetReference);
-          expect(
-            assetReferencesDao.getAssetReference(id: assetReference.id),
-            throwsStateError,
-          );
-        },
-      );
 
       test(
         '.deleteCommandTrigger',
@@ -55,21 +36,6 @@ void main() {
           );
           expect(
             commandTriggersDao.getCommandTrigger(id: trigger.id),
-            throwsStateError,
-          );
-        },
-      );
-
-      test(
-        '.deleteCommandTriggerKeyboardKey',
-        () async {
-          final key = await commandTriggerKeyboardKeysDao
-              .createCommandTriggerKeyboardKey(scanCode: ScanCode.delete);
-          await utilsDao.deleteCommandTriggerKeyboardKey(key);
-          expect(
-            commandTriggerKeyboardKeysDao.getCommandTriggerKeyboardKey(
-              id: key.id,
-            ),
             throwsStateError,
           );
         },
@@ -122,49 +88,6 @@ void main() {
           expect(
             (await commandsDao.getCommand(id: command2.id)).id,
             command2.id,
-          );
-        },
-      );
-
-      test(
-        '.deleteCallCommand',
-        () async {
-          final commandToCall = await commandsDao.createCommand();
-          final command = await commandsDao.createCommand();
-          var callCommand = await callCommandsDao.createCallCommand(
-            commandId: commandToCall.id,
-            callingCommandId: command.id,
-          );
-          await utilsDao.deleteCallCommand(callCommand);
-          expect(
-            (await commandsDao.getCommand(id: commandToCall.id)).id,
-            commandToCall.id,
-          );
-          await expectLater(
-            callCommandsDao.getCallCommand(id: callCommand.id),
-            throwsStateError,
-          );
-          expect(
-            (await commandsDao.getCommand(id: command.id)).id,
-            command.id,
-          );
-          final commandToPin = await commandsDao.createCommand();
-          await pinnedCommandsDao.createPinnedCommand(
-            commandId: commandToPin.id,
-            name: 'Test Pinned Command',
-          );
-          callCommand = await callCommandsDao.createCallCommand(
-            commandId: commandToPin.id,
-            callingCommandId: command.id,
-          );
-          await utilsDao.deleteCallCommand(callCommand);
-          await expectLater(
-            callCommandsDao.getCallCommand(id: callCommand.id),
-            throwsStateError,
-          );
-          expect(
-            (await commandsDao.getCommand(id: commandToPin.id)).id,
-            commandToPin.id,
           );
         },
       );
@@ -343,54 +266,6 @@ void main() {
           expect(
             (await commandsDao.getCommand(id: command2.id)).id,
             command2.id,
-          );
-        },
-      );
-
-      test(
-        '.deletePopLevel',
-        () async {
-          final popLevel = await popLevelsDao.createPopLevel();
-          final command =
-              await commandsDao.createCommand(popLevelId: popLevel.id);
-          await utilsDao.deletePopLevel(popLevel);
-          expect(popLevelsDao.getPopLevel(id: popLevel.id), throwsStateError);
-          final updatedCommand = await commandsDao.getCommand(id: command.id);
-          expect(updatedCommand.id, command.id);
-          expect(updatedCommand.popLevelId, null);
-        },
-      );
-
-      test(
-        '.deletePushMenu',
-        () async {
-          final menu = await menusDao.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
-          final command =
-              await commandsDao.createCommand(pushMenuId: pushMenu.id);
-          await utilsDao.deletePushMenu(pushMenu);
-          expect(pushMenusDao.getPushMenu(id: pushMenu.id), throwsStateError);
-          expect((await menusDao.getMenu(id: menu.id)).id, menu.id);
-          expect((await commandsDao.getCommand(id: command.id)).id, command.id);
-        },
-      );
-
-      test(
-        '.deletePinnedCommand',
-        () async {
-          final command = await commandsDao.createCommand();
-          final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
-            name: 'Test',
-          );
-          await utilsDao.deletePinnedCommand(pinnedCommand);
-          expect(
-            pinnedCommandsDao.getPinnedCommand(id: pinnedCommand.id),
-            throwsStateError,
-          );
-          expect(
-            await commandsDao.getCommand(id: command.id),
-            predicate<Command>((final value) => value.id == command.id),
           );
         },
       );

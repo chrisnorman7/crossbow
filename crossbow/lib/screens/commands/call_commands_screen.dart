@@ -139,7 +139,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       ),
       title: confirmDeleteTitle,
       yesCallback: () async {
-        await projectContext.db.utilsDao.deleteCallCommand(callCommand);
+        await projectContext.db.callCommandsDao
+            .deleteCallCommand(callCommandId: callCommand.id);
         invalidateCallCommandsProvider();
         if (mounted) {
           Navigator.pop(context);
@@ -200,8 +201,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                           );
                         }
                         if (pinnedCommand == null) {
-                          await projectContext.db.utilsDao
-                              .deleteCallCommand(callCommand);
+                          await projectContext.db.callCommandsDao
+                              .deleteCallCommand(callCommandId: callCommand.id);
                         }
                       },
                     ),

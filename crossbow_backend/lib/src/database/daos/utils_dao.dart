@@ -14,11 +14,6 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create an instance.
   UtilsDao(super.db);
 
-  /// Delete the given [assetReference].
-  Future<void> deleteAssetReference(final AssetReference assetReference) async {
-    await db.assetReferencesDao.deleteAssetReference(id: assetReference.id);
-  }
-
   /// Delete the given [commandTrigger], as well as the connected
   /// [CommandTriggerKeyboardKey] instance.
   Future<void> deleteCommandTrigger(
@@ -35,19 +30,14 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     );
   }
 
-  /// Delete the given [commandTriggerKeyboardKey].
-  Future<void> deleteCommandTriggerKeyboardKey(
-    final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
-  ) async {
-    await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
-      commandTriggerKeyboardKeyId: commandTriggerKeyboardKey.id,
-    );
-  }
-
   /// Delete the given [command], as well as all supporting rows.
   ///
   /// If the [command] is pinned, throw [StateError].
   Future<void> deleteCommand(final Command command) async {
+    final commandsDao = db.commandsDao;
+    if (await commandsDao.isPinned(commandId: command.id)) {
+      throw StateError('$command cannot be deleted because it is pinned.');
+    }
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
       await db.pushMenusDao.deletePushMenu(id: pushMenuId);
@@ -64,17 +54,7 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     if (messageSoundId != null) {
       await db.assetReferencesDao.deleteAssetReference(id: messageSoundId);
     }
-    (await db.commandsDao.getCallCommands(commandId: command.id))
-        .forEach(deleteCallCommand);
-    await db.commandsDao.deleteCommand(id: command.id);
-  }
-
-  /// Delete the given [callCommand].
-  ///
-  /// This method *will not* delete the [Command] which will be called by
-  /// [callCommand].
-  Future<void> deleteCallCommand(final CallCommand callCommand) async {
-    await db.callCommandsDao.deleteCallCommand(callCommandId: callCommand.id);
+    await commandsDao.deleteCommand(id: command.id);
   }
 
   /// Delete the given [menuItem] and all associated rows.
@@ -84,9 +64,6 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         await db.assetReferencesDao.deleteAssetReference(id: id);
       }
     }
-    (await db.menuItemsDao.getCallCommands(menuItemId: menuItem.id))
-        .forEach(deleteCallCommand);
-    await db.menuItemsDao.deleteMenuItem(id: menuItem.id);
     await db.menuItemsDao.deleteMenuItem(id: menuItem.id);
   }
 
@@ -103,33 +80,6 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         await db.assetReferencesDao.deleteAssetReference(id: id);
       }
     }
-    (await db.menusDao.getOnCancelCallCommands(menuId: menu.id))
-        .forEach(deleteCallCommand);
     await db.menusDao.deleteMenu(id: menu.id);
-  }
-
-  /// Delete the given [popLevel].
-  Future<void> deletePopLevel(final PopLevel popLevel) async {
-    await db.popLevelsDao.deletePopLevel(id: popLevel.id);
-  }
-
-  /// Delete the given [pushMenu].
-  ///
-  /// This method *does not* delete the attached menu.
-  Future<void> deletePushMenu(final PushMenu pushMenu) async {
-    await db.pushMenusDao.deletePushMenu(id: pushMenu.id);
-  }
-
-  /// Delete the given [stopGame].
-  Future<void> deleteStopGame(final StopGame stopGame) async {
-    await db.stopGamesDao.deleteStopGame(stopGameId: stopGame.id);
-  }
-
-  /// Delete the given [pinnedCommand].
-  ///
-  /// This method does not delete the referenced [Command] instance.
-  Future<void> deletePinnedCommand(final PinnedCommand pinnedCommand) async {
-    await db.pinnedCommandsDao
-        .deletePinnedCommand(pinnedCommandId: pinnedCommand.id);
   }
 }

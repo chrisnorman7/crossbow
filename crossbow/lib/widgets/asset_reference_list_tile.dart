@@ -94,9 +94,8 @@ class AssetReferenceListTile extends ConsumerWidget {
             bindings: {
               deleteHotkey: () async {
                 if (nullable && assetReference != null) {
-                  await projectContext.db.utilsDao.deleteAssetReference(
-                    assetReference,
-                  );
+                  await projectContext.db.assetReferencesDao
+                      .deleteAssetReference(id: assetReference.id);
                   onChanged(null);
                 }
               }
@@ -119,8 +118,8 @@ class AssetReferenceListTile extends ConsumerWidget {
                           projectContext.db.assetReferencesDao;
                       if (value == null) {
                         if (assetReference != null) {
-                          await projectContext.db.utilsDao
-                              .deleteAssetReference(assetReference);
+                          await projectContext.db.assetReferencesDao
+                              .deleteAssetReference(id: assetReference.id);
                         }
                         onChanged(null);
                       } else {

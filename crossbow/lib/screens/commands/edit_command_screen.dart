@@ -58,7 +58,6 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
   Widget getBody(final CommandContext commandContext) {
     final projectContext = commandContext.projectContext;
     final pinnedCommandsDao = projectContext.db.pinnedCommandsDao;
-    final utilsDao = projectContext.db.utilsDao;
     final command = commandContext.value;
     final pinnedCommand = commandContext.pinnedCommand;
     final commands = commandContext.projectContext.db.commandsDao;
@@ -103,7 +102,9 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               }
               return;
             } else {
-              await utilsDao.deletePinnedCommand(pinnedCommand);
+              await pinnedCommandsDao.deletePinnedCommand(
+                pinnedCommandId: pinnedCommand.id,
+              );
             }
             invalidatePinnedCommandsProvider();
             invalidateCommandProvider();

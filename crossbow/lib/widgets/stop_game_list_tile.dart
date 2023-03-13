@@ -76,7 +76,8 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
           bindings: {
             deleteShortcut: () async {
               if (widget.nullable) {
-                await projectContext.db.utilsDao.deleteStopGame(stopGame);
+                await projectContext.db.stopGamesDao
+                    .deleteStopGame(stopGameId: stopGame.id);
                 widget.onChanged(null);
               }
             }
