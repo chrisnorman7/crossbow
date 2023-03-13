@@ -17,6 +17,8 @@ void main() {
       final commandTriggersDao = db.commandTriggersDao;
       final assetReferencesDao = db.assetReferencesDao;
       final pinnedCommandsDao = db.pinnedCommandsDao;
+      final customLevelsDao = db.customLevelsDao;
+      final customLevelCommandsDao = db.customLevelCommandsDao;
 
       test(
         '.deleteCommandTrigger',
@@ -275,6 +277,57 @@ void main() {
           expect(
             (await commandsDao.getCommand(id: command2.id)).id,
             command2.id,
+          );
+        },
+      );
+
+      test(
+        '.deleteCustomLevel',
+        () async {
+          final trigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Test',
+          );
+          final music = await assetReferencesDao.createAssetReference(
+            folderName: 'music',
+            name: 'custom_level.mp3',
+          );
+          final level = await customLevelsDao.createCustomLevel(
+            name: 'Test Level',
+            musicId: music.id,
+          );
+          final customLevelCommand =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: trigger.id,
+          );
+          final command = await commandsDao.createCommand();
+          final callCommand = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCustomLevelCommandId: customLevelCommand.id,
+          );
+          await utilsDao.deleteCustomLevel(level);
+          await expectLater(
+            callCommandsDao.getCallCommand(id: callCommand.id),
+            throwsStateError,
+          );
+          await expectLater(
+            assetReferencesDao.getAssetReference(id: music.id),
+            throwsStateError,
+          );
+          await expectLater(
+            customLevelCommandsDao.getCustomLevelCommand(
+              id: customLevelCommand.id,
+            ),
+            throwsStateError,
+          );
+          await expectLater(
+            customLevelsDao.getCustomLevel(id: level.id),
+            throwsStateError,
+          );
+          expect((await commandsDao.getCommand(id: command.id)).id, command.id);
+          expect(
+            (await commandTriggersDao.getCommandTrigger(id: trigger.id)).id,
+            trigger.id,
           );
         },
       );

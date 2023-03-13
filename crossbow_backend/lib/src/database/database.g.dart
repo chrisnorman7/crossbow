@@ -3054,15 +3054,15 @@ class $CallCommandsTable extends CallCommands
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES menus (id) ON DELETE CASCADE'));
-  static const VerificationMeta _customLevelCommandIdMeta =
-      const VerificationMeta('customLevelCommandId');
+  static const VerificationMeta _callingCustomLevelCommandIdMeta =
+      const VerificationMeta('callingCustomLevelCommandId');
   @override
-  late final GeneratedColumn<int> customLevelCommandId = GeneratedColumn<int>(
-      'custom_level_command_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES custom_level_commands (id) ON DELETE CASCADE'));
+  late final GeneratedColumn<int> callingCustomLevelCommandId =
+      GeneratedColumn<int>('calling_custom_level_command_id', aliasedName, true,
+          type: DriftSqlType.int,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'REFERENCES custom_level_commands (id) ON DELETE CASCADE'));
   static const VerificationMeta _commandIdMeta =
       const VerificationMeta('commandId');
   @override
@@ -3085,7 +3085,7 @@ class $CallCommandsTable extends CallCommands
         callingCommandId,
         callingMenuItemId,
         onCancelMenuId,
-        customLevelCommandId,
+        callingCustomLevelCommandId,
         commandId,
         randomNumberBase
       ];
@@ -3123,11 +3123,12 @@ class $CallCommandsTable extends CallCommands
           onCancelMenuId.isAcceptableOrUnknown(
               data['on_cancel_menu_id']!, _onCancelMenuIdMeta));
     }
-    if (data.containsKey('custom_level_command_id')) {
+    if (data.containsKey('calling_custom_level_command_id')) {
       context.handle(
-          _customLevelCommandIdMeta,
-          customLevelCommandId.isAcceptableOrUnknown(
-              data['custom_level_command_id']!, _customLevelCommandIdMeta));
+          _callingCustomLevelCommandIdMeta,
+          callingCustomLevelCommandId.isAcceptableOrUnknown(
+              data['calling_custom_level_command_id']!,
+              _callingCustomLevelCommandIdMeta));
     }
     if (data.containsKey('command_id')) {
       context.handle(_commandIdMeta,
@@ -3160,8 +3161,9 @@ class $CallCommandsTable extends CallCommands
           DriftSqlType.int, data['${effectivePrefix}calling_menu_item_id']),
       onCancelMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}on_cancel_menu_id']),
-      customLevelCommandId: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}custom_level_command_id']),
+      callingCustomLevelCommandId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}calling_custom_level_command_id']),
       commandId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}command_id'])!,
       randomNumberBase: attachedDatabase.typeMapping
@@ -3192,7 +3194,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
   final int? onCancelMenuId;
 
   /// The ID of the custom level command which will call this command.
-  final int? customLevelCommandId;
+  final int? callingCustomLevelCommandId;
 
   /// The ID of the command to call.
   final int commandId;
@@ -3205,7 +3207,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       this.callingCommandId,
       this.callingMenuItemId,
       this.onCancelMenuId,
-      this.customLevelCommandId,
+      this.callingCustomLevelCommandId,
       required this.commandId,
       this.randomNumberBase});
   @override
@@ -3224,8 +3226,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
     if (!nullToAbsent || onCancelMenuId != null) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId);
     }
-    if (!nullToAbsent || customLevelCommandId != null) {
-      map['custom_level_command_id'] = Variable<int>(customLevelCommandId);
+    if (!nullToAbsent || callingCustomLevelCommandId != null) {
+      map['calling_custom_level_command_id'] =
+          Variable<int>(callingCustomLevelCommandId);
     }
     map['command_id'] = Variable<int>(commandId);
     if (!nullToAbsent || randomNumberBase != null) {
@@ -3248,9 +3251,10 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       onCancelMenuId: onCancelMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(onCancelMenuId),
-      customLevelCommandId: customLevelCommandId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(customLevelCommandId),
+      callingCustomLevelCommandId:
+          callingCustomLevelCommandId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(callingCustomLevelCommandId),
       commandId: Value(commandId),
       randomNumberBase: randomNumberBase == null && nullToAbsent
           ? const Value.absent()
@@ -3267,8 +3271,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       callingCommandId: serializer.fromJson<int?>(json['callingCommandId']),
       callingMenuItemId: serializer.fromJson<int?>(json['callingMenuItemId']),
       onCancelMenuId: serializer.fromJson<int?>(json['onCancelMenuId']),
-      customLevelCommandId:
-          serializer.fromJson<int?>(json['customLevelCommandId']),
+      callingCustomLevelCommandId:
+          serializer.fromJson<int?>(json['callingCustomLevelCommandId']),
       commandId: serializer.fromJson<int>(json['commandId']),
       randomNumberBase: serializer.fromJson<int?>(json['randomNumberBase']),
     );
@@ -3282,7 +3286,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       'callingCommandId': serializer.toJson<int?>(callingCommandId),
       'callingMenuItemId': serializer.toJson<int?>(callingMenuItemId),
       'onCancelMenuId': serializer.toJson<int?>(onCancelMenuId),
-      'customLevelCommandId': serializer.toJson<int?>(customLevelCommandId),
+      'callingCustomLevelCommandId':
+          serializer.toJson<int?>(callingCustomLevelCommandId),
       'commandId': serializer.toJson<int>(commandId),
       'randomNumberBase': serializer.toJson<int?>(randomNumberBase),
     };
@@ -3294,7 +3299,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           Value<int?> callingCommandId = const Value.absent(),
           Value<int?> callingMenuItemId = const Value.absent(),
           Value<int?> onCancelMenuId = const Value.absent(),
-          Value<int?> customLevelCommandId = const Value.absent(),
+          Value<int?> callingCustomLevelCommandId = const Value.absent(),
           int? commandId,
           Value<int?> randomNumberBase = const Value.absent()}) =>
       CallCommand(
@@ -3308,9 +3313,9 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
             : this.callingMenuItemId,
         onCancelMenuId:
             onCancelMenuId.present ? onCancelMenuId.value : this.onCancelMenuId,
-        customLevelCommandId: customLevelCommandId.present
-            ? customLevelCommandId.value
-            : this.customLevelCommandId,
+        callingCustomLevelCommandId: callingCustomLevelCommandId.present
+            ? callingCustomLevelCommandId.value
+            : this.callingCustomLevelCommandId,
         commandId: commandId ?? this.commandId,
         randomNumberBase: randomNumberBase.present
             ? randomNumberBase.value
@@ -3324,7 +3329,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           ..write('callingCommandId: $callingCommandId, ')
           ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
-          ..write('customLevelCommandId: $customLevelCommandId, ')
+          ..write('callingCustomLevelCommandId: $callingCustomLevelCommandId, ')
           ..write('commandId: $commandId, ')
           ..write('randomNumberBase: $randomNumberBase')
           ..write(')'))
@@ -3338,7 +3343,7 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
       callingCommandId,
       callingMenuItemId,
       onCancelMenuId,
-      customLevelCommandId,
+      callingCustomLevelCommandId,
       commandId,
       randomNumberBase);
   @override
@@ -3350,7 +3355,8 @@ class CallCommand extends DataClass implements Insertable<CallCommand> {
           other.callingCommandId == this.callingCommandId &&
           other.callingMenuItemId == this.callingMenuItemId &&
           other.onCancelMenuId == this.onCancelMenuId &&
-          other.customLevelCommandId == this.customLevelCommandId &&
+          other.callingCustomLevelCommandId ==
+              this.callingCustomLevelCommandId &&
           other.commandId == this.commandId &&
           other.randomNumberBase == this.randomNumberBase);
 }
@@ -3361,7 +3367,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
   final Value<int?> callingCommandId;
   final Value<int?> callingMenuItemId;
   final Value<int?> onCancelMenuId;
-  final Value<int?> customLevelCommandId;
+  final Value<int?> callingCustomLevelCommandId;
   final Value<int> commandId;
   final Value<int?> randomNumberBase;
   const CallCommandsCompanion({
@@ -3370,7 +3376,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     this.callingCommandId = const Value.absent(),
     this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
-    this.customLevelCommandId = const Value.absent(),
+    this.callingCustomLevelCommandId = const Value.absent(),
     this.commandId = const Value.absent(),
     this.randomNumberBase = const Value.absent(),
   });
@@ -3380,7 +3386,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     this.callingCommandId = const Value.absent(),
     this.callingMenuItemId = const Value.absent(),
     this.onCancelMenuId = const Value.absent(),
-    this.customLevelCommandId = const Value.absent(),
+    this.callingCustomLevelCommandId = const Value.absent(),
     required int commandId,
     this.randomNumberBase = const Value.absent(),
   }) : commandId = Value(commandId);
@@ -3390,7 +3396,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     Expression<int>? callingCommandId,
     Expression<int>? callingMenuItemId,
     Expression<int>? onCancelMenuId,
-    Expression<int>? customLevelCommandId,
+    Expression<int>? callingCustomLevelCommandId,
     Expression<int>? commandId,
     Expression<int>? randomNumberBase,
   }) {
@@ -3400,8 +3406,8 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       if (callingCommandId != null) 'calling_command_id': callingCommandId,
       if (callingMenuItemId != null) 'calling_menu_item_id': callingMenuItemId,
       if (onCancelMenuId != null) 'on_cancel_menu_id': onCancelMenuId,
-      if (customLevelCommandId != null)
-        'custom_level_command_id': customLevelCommandId,
+      if (callingCustomLevelCommandId != null)
+        'calling_custom_level_command_id': callingCustomLevelCommandId,
       if (commandId != null) 'command_id': commandId,
       if (randomNumberBase != null) 'random_number_base': randomNumberBase,
     });
@@ -3413,7 +3419,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       Value<int?>? callingCommandId,
       Value<int?>? callingMenuItemId,
       Value<int?>? onCancelMenuId,
-      Value<int?>? customLevelCommandId,
+      Value<int?>? callingCustomLevelCommandId,
       Value<int>? commandId,
       Value<int?>? randomNumberBase}) {
     return CallCommandsCompanion(
@@ -3422,7 +3428,8 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
       callingCommandId: callingCommandId ?? this.callingCommandId,
       callingMenuItemId: callingMenuItemId ?? this.callingMenuItemId,
       onCancelMenuId: onCancelMenuId ?? this.onCancelMenuId,
-      customLevelCommandId: customLevelCommandId ?? this.customLevelCommandId,
+      callingCustomLevelCommandId:
+          callingCustomLevelCommandId ?? this.callingCustomLevelCommandId,
       commandId: commandId ?? this.commandId,
       randomNumberBase: randomNumberBase ?? this.randomNumberBase,
     );
@@ -3446,9 +3453,9 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
     if (onCancelMenuId.present) {
       map['on_cancel_menu_id'] = Variable<int>(onCancelMenuId.value);
     }
-    if (customLevelCommandId.present) {
-      map['custom_level_command_id'] =
-          Variable<int>(customLevelCommandId.value);
+    if (callingCustomLevelCommandId.present) {
+      map['calling_custom_level_command_id'] =
+          Variable<int>(callingCustomLevelCommandId.value);
     }
     if (commandId.present) {
       map['command_id'] = Variable<int>(commandId.value);
@@ -3467,7 +3474,7 @@ class CallCommandsCompanion extends UpdateCompanion<CallCommand> {
           ..write('callingCommandId: $callingCommandId, ')
           ..write('callingMenuItemId: $callingMenuItemId, ')
           ..write('onCancelMenuId: $onCancelMenuId, ')
-          ..write('customLevelCommandId: $customLevelCommandId, ')
+          ..write('callingCustomLevelCommandId: $callingCustomLevelCommandId, ')
           ..write('commandId: $commandId, ')
           ..write('randomNumberBase: $randomNumberBase')
           ..write(')'))

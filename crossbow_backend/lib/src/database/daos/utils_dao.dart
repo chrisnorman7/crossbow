@@ -82,4 +82,14 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     }
     await db.menusDao.deleteMenu(id: menu.id);
   }
+
+  /// Delete the given [customLevel], and all associated rows.
+  Future<void> deleteCustomLevel(final CustomLevel customLevel) async {
+    for (final id in [customLevel.musicId]) {
+      if (id != null) {
+        await db.assetReferencesDao.deleteAssetReference(id: id);
+      }
+    }
+    await db.customLevelsDao.deleteCustomLevel(id: customLevel.id);
+  }
 }

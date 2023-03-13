@@ -18,12 +18,14 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? callingCommandId,
     final int? callingMenuItemId,
     final int? onCancelMenuId,
+    final int? callingCustomLevelCommandId,
     final int? after,
     final int? randomNumberBase,
   }) {
     if (callingCommandId == null &&
         callingMenuItemId == null &&
-        onCancelMenuId == null) {
+        onCancelMenuId == null &&
+        callingCustomLevelCommandId == null) {
       throw StateError('This call command will not be attached to any object.');
     }
     return into(callCommands).insertReturning(
@@ -32,6 +34,7 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         callingCommandId: Value(callingCommandId),
         callingMenuItemId: Value(callingMenuItemId),
         onCancelMenuId: Value(onCancelMenuId),
+        callingCustomLevelCommandId: Value(callingCustomLevelCommandId),
         after: Value(after),
         randomNumberBase: Value(randomNumberBase),
       ),

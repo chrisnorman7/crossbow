@@ -93,7 +93,10 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           if (from < 7) {
             await m.createTable(customLevelCommands);
             await m.createTable(customLevels);
-            await m.addColumn(callCommands, callCommands.customLevelCommandId);
+            await m.addColumn(
+              callCommands,
+              callCommands.callingCustomLevelCommandId,
+            );
           }
         },
       );

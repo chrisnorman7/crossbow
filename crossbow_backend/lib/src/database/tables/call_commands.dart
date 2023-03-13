@@ -24,7 +24,7 @@ class CallCommands extends Table with WithPrimaryKey, WithAfter {
       .nullable()();
 
   /// The ID of the custom level command which will call this command.
-  IntColumn get customLevelCommandId => integer()
+  IntColumn get callingCustomLevelCommandId => integer()
       .references(CustomLevelCommands, #id, onDelete: KeyAction.cascade)
       .nullable()();
 
