@@ -59,6 +59,26 @@ void main() {
           expect(updatedLevel.musicId, music.id);
         },
       );
+
+      test(
+        '.setName',
+        () async {
+          final level =
+              await customLevelsDao.createCustomLevel(name: 'Level 1');
+          var updatedLevel = await customLevelsDao.setName(
+            customLevelId: level.id,
+            name: 'Level 2',
+          );
+          expect(updatedLevel.id, level.id);
+          expect(updatedLevel.name, 'Level 2');
+          updatedLevel = await customLevelsDao.setName(
+            customLevelId: level.id,
+            name: 'Level 3',
+          );
+          expect(updatedLevel.id, level.id);
+          expect(updatedLevel.name, 'Level 3');
+        },
+      );
     },
   );
 }

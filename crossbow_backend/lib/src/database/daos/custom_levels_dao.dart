@@ -43,4 +43,13 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (await getUpdateQuery(customLevelId)
               .writeReturning(CustomLevelsCompanion(musicId: Value(musicId))))
           .single;
+
+  /// Set the [name] for the level with the given [customLevelId].
+  Future<CustomLevel> setName({
+    required final int customLevelId,
+    required final String name,
+  }) async =>
+      (await getUpdateQuery(customLevelId)
+              .writeReturning(CustomLevelsCompanion(name: Value(name))))
+          .single;
 }
