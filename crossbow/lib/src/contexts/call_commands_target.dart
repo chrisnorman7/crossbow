@@ -14,5 +14,5 @@ enum CallCommandsTarget {
   menuOnCancel,
 
   /// Commands called by a [CustomLevelCommand].
-  // customLevelCommand,
+  customLevelCommand,
 }

@@ -273,6 +273,10 @@ final callCommandsProvider =
       case CallCommandsTarget.menuOnCancel:
         callCommands = await db.menusDao.getOnCancelCallCommands(menuId: id);
         break;
+      case CallCommandsTarget.customLevelCommand:
+        callCommands = await db.customLevelCommandsDao
+            .getCallCommands(customLevelCommandId: id);
+        break;
     }
     final futures = callCommands.map<Future<CallCommandContext>>(
       (final e) async {

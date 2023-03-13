@@ -123,6 +123,12 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
           onCancelMenuId: callingId,
         );
         break;
+      case CallCommandsTarget.customLevelCommand:
+        await callCommandsDao.createCallCommand(
+          commandId: commandId,
+          callingCustomLevelCommandId: callingId,
+        );
+        break;
     }
     if (mounted) {
       invalidateCallCommandsProvider();
