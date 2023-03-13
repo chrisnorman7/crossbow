@@ -10,6 +10,7 @@ import '../../messages.dart';
 import '../../src/contexts/call_commands_context.dart';
 import '../../src/contexts/command_context.dart';
 import '../../src/providers.dart';
+import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
@@ -17,8 +18,8 @@ import '../../widgets/push_menu_list_tile.dart';
 import '../../widgets/stop_game_list_tile.dart';
 import '../../widgets/url_list_tile.dart';
 
-/// A screen to edit the command with the given [commandId].
-class EditCommandScreen extends ConsumerWidget {
+/// A widget for editing a command.
+class EditCommandScreen extends ConsumerStatefulWidget {
   /// Create an instance.
   const EditCommandScreen({
     required this.commandId,
@@ -32,17 +33,20 @@ class EditCommandScreen extends ConsumerWidget {
   /// The function to call when the command is changed.
   final ValueChanged<int> onChanged;
 
-  /// Build the widget.
+  /// Create state for this widget.
   @override
-  Widget build(final BuildContext context, final WidgetRef ref) {
-    final value = ref.watch(commandProvider.call(commandId));
+  EditCommandScreenState createState() => EditCommandScreenState();
+}
+
+/// State for [EditCommandScreen].
+class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
+  /// Build a widget.
+  @override
+  Widget build(final BuildContext context) {
+    final value = ref.watch(commandProvider.call(widget.commandId));
     return Cancel(
       child: value.when(
-        data: (final data) => getBody(
-          context: context,
-          ref: ref,
-          commandContext: data,
-        ),
+        data: getBody,
         error: ErrorScreen.withPositional,
         loading: LoadingScreen.new,
       ),
@@ -50,11 +54,7 @@ class EditCommandScreen extends ConsumerWidget {
   }
 
   /// Get the body for this widget.
-  Widget getBody({
-    required final BuildContext context,
-    required final WidgetRef ref,
-    required final CommandContext commandContext,
-  }) {
+  Widget getBody(final CommandContext commandContext) {
     final projectContext = commandContext.projectContext;
     final pinnedCommandsDao = projectContext.db.pinnedCommandsDao;
     final utilsDao = projectContext.db.utilsDao;
@@ -74,8 +74,8 @@ class EditCommandScreen extends ConsumerWidget {
                     pinnedCommandId: pinnedCommand.id,
                     name: value,
                   );
-                  invalidatePinnedCommandsProvider(ref);
-                  invalidateCommandProvider(ref);
+                  invalidatePinnedCommandsProvider();
+                  invalidateCommandProvider();
                 },
                 labelText: Intl.message('Pinned Name'),
                 text: pinnedCommand.name,
@@ -92,11 +92,20 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: command.id,
                 name: Intl.message('Untitled Command'),
               );
+            } else if (await commands.isCalled(commandId: command.id)) {
+              if (mounted) {
+                await intlShowMessage(
+                  context: context,
+                  message: cantDeleteCalledCommand,
+                  title: errorTitle,
+                );
+              }
+              return;
             } else {
               await utilsDao.deletePinnedCommand(pinnedCommand);
             }
-            invalidatePinnedCommandsProvider(ref);
-            invalidateCommandProvider(ref);
+            invalidatePinnedCommandsProvider();
+            invalidateCommandProvider();
           },
           child: Text(
             pinnedCommand == null ? pinMessage : unpinMessage,
@@ -110,10 +119,10 @@ class EditCommandScreen extends ConsumerWidget {
             value: command.messageText ?? '',
             onChanged: (final value) async {
               await commands.setMessageText(
-                commandId: commandId,
+                commandId: command.id,
                 text: value.isEmpty ? null : value,
               );
-              invalidateCommandProvider(ref);
+              invalidateCommandProvider();
             },
             header: outputText,
             autofocus: true,
@@ -130,7 +139,7 @@ class EditCommandScreen extends ConsumerWidget {
               if (value != null) {
                 ref.invalidate(assetReferenceProvider.call(value));
               }
-              invalidateCommandProvider(ref);
+              invalidateCommandProvider();
             },
             nullable: true,
             title: outputSound,
@@ -149,7 +158,7 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: command.id,
                 pushMenuId: value,
               );
-              invalidateCommandProvider(ref);
+              invalidateCommandProvider();
             },
           ),
           PopLevelListTile(
@@ -159,7 +168,7 @@ class EditCommandScreen extends ConsumerWidget {
                 commandID: command.id,
                 popLevelId: value,
               );
-              invalidateCommandProvider(ref);
+              invalidateCommandProvider();
             },
             title: Intl.message('Pop Level'),
           ),
@@ -170,14 +179,14 @@ class EditCommandScreen extends ConsumerWidget {
                 commandId: command.id,
                 stopGameId: value,
               );
-              invalidateCommandProvider(ref);
+              invalidateCommandProvider();
             },
           ),
           CallbackShortcuts(
             bindings: {
               deleteShortcut: () async {
                 await commands.setUrl(commandId: command.id);
-                invalidateCommandProvider(ref);
+                invalidateCommandProvider();
               }
             },
             child: UrlListTile(
@@ -187,7 +196,7 @@ class EditCommandScreen extends ConsumerWidget {
                   commandId: command.id,
                   url: value,
                 );
-                invalidateCommandProvider(ref);
+                invalidateCommandProvider();
               },
             ),
           ),
@@ -197,11 +206,11 @@ class EditCommandScreen extends ConsumerWidget {
   }
 
   /// Invalidate the command provider.
-  void invalidateCommandProvider(final WidgetRef ref) =>
-      ref.invalidate(commandProvider.call(commandId));
+  void invalidateCommandProvider() =>
+      ref.invalidate(commandProvider.call(widget.commandId));
 
   /// Invalidate the [pinnedCommandsProvider].
-  void invalidatePinnedCommandsProvider(final WidgetRef ref) => ref
+  void invalidatePinnedCommandsProvider() => ref
     ..invalidate(pinnedCommandsProvider)
     ..invalidate(callCommandsProvider);
 }

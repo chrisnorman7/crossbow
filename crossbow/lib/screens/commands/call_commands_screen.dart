@@ -131,43 +131,20 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
   /// Delete the given [callCommand].
   Future<void> deleteCallCommand(final CallCommand callCommand) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    if (callCommand.commandId == projectContext.project.initialCommandId) {
-      return intlShowMessage(
-        context: context,
-        message: cantDeleteInitialCommandMessage,
-        title: errorTitle,
-      );
-    }
-    final commandsDao = projectContext.db.commandsDao;
-    final command = await commandsDao.getCommand(id: callCommand.commandId);
-    final callCommands = await commandsDao.getCallCommands(
-      commandId: command.id,
+    await intlConfirm(
+      context: context,
+      message: Intl.message(
+        'Are you sure you want to delete this row?',
+      ),
+      title: confirmDeleteTitle,
+      yesCallback: () async {
+        await projectContext.db.utilsDao.deleteCallCommand(callCommand);
+        invalidateCallCommandsProvider();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      },
     );
-    if (callCommands.length != 1) {
-      if (mounted) {
-        return intlShowMessage(
-          context: context,
-          message: commandIsCalledMessage(callCommands.length),
-          title: errorTitle,
-        );
-      }
-    }
-    if (mounted) {
-      await intlConfirm(
-        context: context,
-        message: Intl.message(
-          'Are you sure you want to delete this row?',
-        ),
-        title: confirmDeleteTitle,
-        yesCallback: () async {
-          await projectContext.db.utilsDao.deleteCallCommand(callCommand);
-          invalidateCallCommandsProvider();
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        },
-      );
-    }
   }
 
   /// Get a table row to suit the given [callCommandContext].
