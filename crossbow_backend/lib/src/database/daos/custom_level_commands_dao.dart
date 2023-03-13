@@ -56,4 +56,11 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.customLevelId.equals(customLevelId));
     return query.get();
   }
+
+  /// Delete the command with the given [id].
+  Future<int> deleteCustomLevelCommand({
+    required final int id,
+  }) =>
+      (delete(customLevelCommands)..where((final table) => table.id.equals(id)))
+          .go();
 }

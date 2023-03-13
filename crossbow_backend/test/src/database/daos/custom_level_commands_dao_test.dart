@@ -99,6 +99,40 @@ void main() {
           expect(commands.last.id, command2.id);
         },
       );
+
+      test(
+        '.deleteCustomLevelCommand',
+        () async {
+          final level = await customLevelsDao.createCustomLevel(name: 'Test');
+          final command1 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          final command2 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          expect(
+            await customLevelCommandsDao.deleteCustomLevelCommand(
+              id: command1.id,
+            ),
+            1,
+          );
+          await expectLater(
+            customLevelCommandsDao.getCustomLevelCommand(id: command1.id),
+            throwsStateError,
+          );
+          expect(
+            (await customLevelCommandsDao.getCustomLevelCommand(
+              id: command2.id,
+            ))
+                .id,
+            command2.id,
+          );
+        },
+      );
     },
   );
 }
