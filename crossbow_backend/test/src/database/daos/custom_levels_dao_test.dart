@@ -8,7 +8,9 @@ void main() {
     () {
       final db = getDatabase();
       final customLevelsDao = db.customLevelsDao;
+      final customLevelCommandsDao = db.customLevelCommandsDao;
       final assetReferencesDao = db.assetReferencesDao;
+      final commandTriggersDao = db.commandTriggersDao;
 
       test(
         '.createCustomLevel',
@@ -91,6 +93,32 @@ void main() {
             customLevelsDao.getCustomLevel(id: level.id),
             throwsStateError,
           );
+        },
+      );
+
+      test(
+        '.getCustomLevelCommands',
+        () async {
+          final commandTrigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Test',
+          );
+          final level = await customLevelsDao.createCustomLevel(name: 'Test');
+          final command1 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          final command2 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          final commands = await customLevelsDao.getCustomLevelCommands(
+            customLevelId: level.id,
+          );
+          expect(commands.length, 2);
+          expect(commands.first.id, command1.id);
+          expect(commands.last.id, command2.id);
         },
       );
     },

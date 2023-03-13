@@ -2,12 +2,13 @@ import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 
 import '../database.dart';
+import '../tables/custom_level_commands.dart';
 import '../tables/custom_levels.dart';
 
 part 'custom_levels_dao.g.dart';
 
 /// The custom levels DAO.
-@DriftAccessor(tables: [CustomLevels])
+@DriftAccessor(tables: [CustomLevels, CustomLevelCommands])
 class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$CustomLevelsDaoMixin {
   /// Create an instance.
@@ -60,4 +61,13 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     required final int id,
   }) =>
       (delete(customLevels)..where((final table) => table.id.equals(id))).go();
+
+  /// Get the commands associated with the level with the given [customLevelId].
+  Future<List<CustomLevelCommand>> getCustomLevelCommands({
+    required final int customLevelId,
+  }) {
+    final query = select(customLevelCommands)
+      ..where((final table) => table.customLevelId.equals(customLevelId));
+    return query.get();
+  }
 }

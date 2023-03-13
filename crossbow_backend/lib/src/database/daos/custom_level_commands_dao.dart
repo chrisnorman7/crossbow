@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../database.dart';
+import '../tables/call_commands.dart';
 import '../tables/custom_level_commands.dart';
 
 part 'custom_level_commands_dao.g.dart';
 
 /// The custom level commands DAO.
-@DriftAccessor(tables: [CustomLevelCommands])
+@DriftAccessor(tables: [CustomLevelCommands, CallCommands])
 class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     with _$CustomLevelCommandsDaoMixin {
   /// Create an instance.
@@ -48,19 +49,22 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ))
           .single;
 
-  /// Get the commands associated with the level with the given [customLevelId].
-  Future<List<CustomLevelCommand>> getCustomLevelCommands({
-    required final int customLevelId,
-  }) {
-    final query = select(customLevelCommands)
-      ..where((final table) => table.customLevelId.equals(customLevelId));
-    return query.get();
-  }
-
   /// Delete the command with the given [id].
   Future<int> deleteCustomLevelCommand({
     required final int id,
   }) =>
       (delete(customLevelCommands)..where((final table) => table.id.equals(id)))
           .go();
+
+  /// Get the call commands associated with the custom level command with the
+  /// given [customLevelCommandId].
+  Future<List<CallCommand>> getCallCommands({
+    required final int customLevelCommandId,
+  }) =>
+      (select(callCommands)
+            ..where(
+              (final table) => table.callingCustomLevelCommandId
+                  .equals(customLevelCommandId),
+            ))
+          .get();
 }
