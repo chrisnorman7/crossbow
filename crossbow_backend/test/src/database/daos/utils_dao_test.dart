@@ -16,6 +16,7 @@ void main() {
       final utilsDao = db.utilsDao;
       final commandTriggersDao = db.commandTriggersDao;
       final assetReferencesDao = db.assetReferencesDao;
+      final pinnedCommandsDao = db.pinnedCommandsDao;
 
       test(
         '.deleteCommandTrigger',
@@ -62,6 +63,14 @@ void main() {
           final callCommand = await callCommandsDao.createCallCommand(
             commandId: command2.id,
             callingCommandId: command.id,
+          );
+          final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
+            commandId: command.id,
+            name: 'Cannot delete me',
+          );
+          await expectLater(utilsDao.deleteCommand(command), throwsStateError);
+          await pinnedCommandsDao.deletePinnedCommand(
+            pinnedCommandId: pinnedCommand.id,
           );
           await utilsDao.deleteCommand(command);
           expect(commandsDao.getCommand(id: command.id), throwsStateError);
