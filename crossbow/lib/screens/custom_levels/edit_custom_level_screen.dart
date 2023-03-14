@@ -3,7 +3,6 @@ import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
-import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +13,8 @@ import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/new_callback_shortcuts.dart';
+import '../command_triggers/select_command_trigger_screen.dart';
+import 'edit_custom_level_command_screen.dart';
 
 /// A widget for editing the custom level with the given [customLevelId].
 class EditCustomLevelScreen extends ConsumerStatefulWidget {
@@ -127,6 +128,7 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               final commandContext = commands[index];
               final projectContext = commandContext.projectContext;
               final commandTrigger = commandContext.commandTrigger;
+              final command = commandContext.value;
               return SearchableListTile(
                 searchString: commandTrigger.description,
                 child: CallbackShortcuts(
@@ -158,7 +160,15 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
                   child: ListTile(
                     autofocus: index == 0,
                     title: Text(commandTrigger.description),
-                    onTap: () async {},
+                    onTap: () async {
+                      await pushWidget(
+                        context: context,
+                        builder: (final context) =>
+                            EditCustomLevelCommandScreen(
+                          customLevelCommandId: command.id,
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
@@ -176,36 +186,28 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
   Future<void> newCommand() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final db = projectContext.db;
-    final triggers = await db.commandTriggersDao.getCommandTriggers();
-    if (triggers.isEmpty) {
-      if (mounted) {
-        await intlShowMessage(
-          context: context,
-          message: Intl.message('You must create some command triggers first.'),
-          title: errorTitle,
-        );
-      }
-      return;
-    }
-    if (mounted) {
-      await pushWidget(
-        context: context,
-        builder: (final context) => SelectItem<CommandTrigger>(
-          values: triggers,
-          onDone: (final value) async {
-            await db.customLevelCommandsDao.createCustomLevelCommand(
-              customLevelId: widget.customLevelId,
-              commandTriggerId: value.id,
+    await pushWidget(
+      context: context,
+      builder: (final context) => SelectCommandTriggerScreen(
+        onChanged: (final value) async {
+          final command =
+              await db.customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: widget.customLevelId,
+            commandTriggerId: value,
+          );
+          if (mounted) {
+            await pushWidget(
+              context: context,
+              builder: (final context) => EditCustomLevelCommandScreen(
+                customLevelCommandId: command.id,
+              ),
             );
-            ref.invalidate(
-              customLevelCommandsProvider.call(widget.customLevelId),
-            );
-          },
-          getSearchString: (final value) => value.description,
-          getWidget: (final value) => Text(value.description),
-          title: selectCommandTriggerMessage,
-        ),
-      );
-    }
+          }
+          ref.invalidate(
+            customLevelCommandsProvider.call(widget.customLevelId),
+          );
+        },
+      ),
+    );
   }
 }

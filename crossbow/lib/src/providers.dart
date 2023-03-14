@@ -444,3 +444,21 @@ final customLevelCommandsProvider =
     return Future.wait(futures);
   },
 );
+
+/// Provide a single custom level command.
+final customLevelCommandProvider =
+    FutureProvider.family<CustomLevelCommandContext, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final command =
+        await db.customLevelCommandsDao.getCustomLevelCommand(id: arg);
+    final commandTrigger = await db.commandTriggersDao
+        .getCommandTrigger(id: command.commandTriggerId);
+    return CustomLevelCommandContext(
+      projectContext: projectContext,
+      value: command,
+      commandTrigger: commandTrigger,
+    );
+  },
+);

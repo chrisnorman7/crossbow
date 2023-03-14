@@ -163,3 +163,6 @@ final levelWithCommandsMessage =
 
 /// Select command trigger.
 final selectCommandTriggerMessage = Intl.message('Select Command Trigger');
+
+/// Command trigger.
+final commandTriggerMessage = Intl.message('Command Trigger');
