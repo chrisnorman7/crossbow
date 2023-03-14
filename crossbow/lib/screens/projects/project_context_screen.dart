@@ -19,7 +19,7 @@ import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
-import '../commands/edit_custom_level_screen.dart';
+import '../custom_levels/edit_custom_level_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
