@@ -26,14 +26,7 @@ class ProjectRunner {
     required this.synthizerContext,
     required this.random,
     required this.soundBackend,
-  }) : game = ziggurat.Game(
-          title: projectContext.project.projectName,
-          sdl: sdl,
-          soundBackend: soundBackend,
-          appName: projectContext.project.appName,
-          orgName: projectContext.project.orgName,
-          random: random,
-        );
+  });
 
   /// The project context to use.
   final ProjectContext projectContext;
@@ -63,10 +56,54 @@ class ProjectRunner {
   BufferCache get bufferCache => soundBackend.bufferCache;
 
   /// The game to use.
-  final ziggurat.Game game;
+  late final ziggurat.Game game;
+
+  /// Get a suitable trigger map.
+  Future<ziggurat.TriggerMap> getTriggerMap() async {
+    final triggers = (await db.commandTriggersDao.getCommandTriggers())
+        .map<Future<ziggurat.CommandTrigger>>((final e) async {
+      final keyboardKeyId = e.keyboardKeyId;
+      final keyboardKey = keyboardKeyId == null
+          ? null
+          : await db.commandTriggerKeyboardKeysDao
+              .getCommandTriggerKeyboardKey(id: keyboardKeyId);
+      return ziggurat.CommandTrigger(
+        description: e.description,
+        name: e.id.toString(),
+        button: e.gameControllerButton,
+        keyboardKey: keyboardKey == null
+            ? null
+            : ziggurat.CommandKeyboardKey(
+                keyboardKey.scanCode,
+                altKey: keyboardKey.alt,
+                controlKey: keyboardKey.control,
+                shiftKey: keyboardKey.shift,
+              ),
+      );
+    });
+    return ziggurat.TriggerMap(await Future.wait(triggers));
+  }
+
+  /// Setup the [game].
+  ///
+  /// This method is used by the [run] method to prepare the [game] getter for
+  /// use.
+  Future<void> setupGame() async {
+    final triggerMap = await getTriggerMap();
+    game = ziggurat.Game(
+      title: projectContext.project.projectName,
+      sdl: sdl,
+      soundBackend: soundBackend,
+      appName: projectContext.project.appName,
+      orgName: projectContext.project.orgName,
+      random: random,
+      triggerMap: triggerMap,
+    );
+  }
 
   /// Run this game.
   Future<void> run() async {
+    await setupGame();
     try {
       await game.run(
         framesPerSecond: project.framesPerSecond,

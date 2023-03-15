@@ -43,6 +43,7 @@ void main() async {
       boots.id: 'asdf123',
     },
   );
+
   group(
     'ProjectRunner',
     () {
@@ -67,11 +68,71 @@ void main() async {
         soundBackend: soundBackend,
       );
 
+      setUpAll(projectRunner.setupGame);
+
       tearDownAll(() {
         bufferCache.destroy();
         context.destroy();
         synthizer.shutdown();
       });
+
+      test(
+        '.getTriggerMap',
+        () async {
+          final commandTriggersDao = db.commandTriggersDao;
+          await db.delete(db.commandTriggers).go();
+          final keyboardKeysDao = db.commandTriggerKeyboardKeysDao;
+          final forwardsKey = await keyboardKeysDao
+              .createCommandTriggerKeyboardKey(scanCode: ScanCode.w);
+          final forwardsTrigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Forward',
+            gameControllerButton: GameControllerButton.dpadUp,
+            keyboardKeyId: forwardsKey.id,
+          );
+          var triggerMap = await projectRunner.getTriggerMap();
+          var triggers = triggerMap.triggers;
+          expect(triggers.length, 1);
+          var trigger = triggers.single;
+          expect(trigger.button, GameControllerButton.dpadUp);
+          expect(trigger.description, forwardsTrigger.description);
+          var keyboardKey = trigger.keyboardKey!;
+          expect(keyboardKey.altKey, false);
+          expect(keyboardKey.controlKey, false);
+          expect(keyboardKey.scanCode, ScanCode.w);
+          expect(keyboardKey.shiftKey, false);
+          final saveKeyboardKey =
+              await keyboardKeysDao.createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.s,
+            alt: true,
+            control: true,
+            shift: true,
+          );
+          final saveTrigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Save the game',
+            gameControllerButton: GameControllerButton.leftshoulder,
+            keyboardKeyId: saveKeyboardKey.id,
+          );
+          triggerMap = await projectRunner.getTriggerMap();
+          triggers = triggerMap.triggers;
+          expect(triggers.length, 2);
+          trigger = triggers.first;
+          expect(trigger.button, GameControllerButton.dpadUp);
+          expect(trigger.description, forwardsTrigger.description);
+          keyboardKey = trigger.keyboardKey!;
+          expect(keyboardKey.altKey, false);
+          expect(keyboardKey.controlKey, false);
+          expect(keyboardKey.scanCode, ScanCode.w);
+          expect(keyboardKey.shiftKey, false);
+          trigger = triggers.last;
+          expect(trigger.button, GameControllerButton.leftshoulder);
+          expect(trigger.description, saveTrigger.description);
+          keyboardKey = trigger.keyboardKey!;
+          expect(keyboardKey.altKey, true);
+          expect(keyboardKey.controlKey, true);
+          expect(keyboardKey.scanCode, ScanCode.s);
+          expect(keyboardKey.shiftKey, true);
+        },
+      );
 
       test(
         '.getAssetReference',
