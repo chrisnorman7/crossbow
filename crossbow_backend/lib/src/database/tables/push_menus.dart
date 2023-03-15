@@ -4,7 +4,7 @@ import 'menus.dart';
 import 'mixins.dart';
 
 /// The push menus table.
-class PushMenus extends Table with WithPrimaryKey, WithAfter, WithFadeTime {
+class PushMenus extends Table with WithPrimaryKey, WithAfter, WithFadeLength {
   /// The ID of the menu to push.
   IntColumn get menuId =>
       integer().references(Menus, #id, onDelete: KeyAction.cascade)();

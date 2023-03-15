@@ -5,7 +5,7 @@ import 'mixins.dart';
 
 /// The push custom levels table.
 class PushCustomLevels extends Table
-    with WithPrimaryKey, WithAfter, WithFadeTime {
+    with WithPrimaryKey, WithAfter, WithFadeLength {
   /// The ID of the custom level to push.
   IntColumn get customLevelId =>
       integer().references(CustomLevels, #id, onDelete: KeyAction.cascade)();

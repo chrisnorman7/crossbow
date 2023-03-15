@@ -15,7 +15,7 @@ mixin WithName on Table {
 }
 
 /// Add a [fadeLength] column.
-mixin WithFadeTime on Table {
+mixin WithFadeLength on Table {
   /// The fade length to use when pushing a level.
   RealColumn get fadeLength => real().nullable()();
 }
