@@ -3697,6 +3697,271 @@ class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
   }
 }
 
+class $PushCustomLevelsTable extends PushCustomLevels
+    with TableInfo<$PushCustomLevelsTable, PushCustomLevel> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PushCustomLevelsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _afterMeta = const VerificationMeta('after');
+  @override
+  late final GeneratedColumn<int> after = GeneratedColumn<int>(
+      'after', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _fadeLengthMeta =
+      const VerificationMeta('fadeLength');
+  @override
+  late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
+      'fade_length', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _customLevelIdMeta =
+      const VerificationMeta('customLevelId');
+  @override
+  late final GeneratedColumn<int> customLevelId = GeneratedColumn<int>(
+      'custom_level_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES custom_levels (id) ON DELETE CASCADE'));
+  @override
+  List<GeneratedColumn> get $columns => [id, after, fadeLength, customLevelId];
+  @override
+  String get aliasedName => _alias ?? 'push_custom_levels';
+  @override
+  String get actualTableName => 'push_custom_levels';
+  @override
+  VerificationContext validateIntegrity(Insertable<PushCustomLevel> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('after')) {
+      context.handle(
+          _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
+    }
+    if (data.containsKey('fade_length')) {
+      context.handle(
+          _fadeLengthMeta,
+          fadeLength.isAcceptableOrUnknown(
+              data['fade_length']!, _fadeLengthMeta));
+    }
+    if (data.containsKey('custom_level_id')) {
+      context.handle(
+          _customLevelIdMeta,
+          customLevelId.isAcceptableOrUnknown(
+              data['custom_level_id']!, _customLevelIdMeta));
+    } else if (isInserting) {
+      context.missing(_customLevelIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PushCustomLevel map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PushCustomLevel(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      after: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}after']),
+      fadeLength: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
+      customLevelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
+    );
+  }
+
+  @override
+  $PushCustomLevelsTable createAlias(String alias) {
+    return $PushCustomLevelsTable(attachedDatabase, alias);
+  }
+}
+
+class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
+  /// The primary key.
+  final int id;
+
+  /// How many milliseconds to wait before doing something.
+  final int? after;
+
+  /// The fade length to use when pushing a level.
+  final double? fadeLength;
+
+  /// The ID of the custom level to push.
+  final int customLevelId;
+  const PushCustomLevel(
+      {required this.id,
+      this.after,
+      this.fadeLength,
+      required this.customLevelId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || after != null) {
+      map['after'] = Variable<int>(after);
+    }
+    if (!nullToAbsent || fadeLength != null) {
+      map['fade_length'] = Variable<double>(fadeLength);
+    }
+    map['custom_level_id'] = Variable<int>(customLevelId);
+    return map;
+  }
+
+  PushCustomLevelsCompanion toCompanion(bool nullToAbsent) {
+    return PushCustomLevelsCompanion(
+      id: Value(id),
+      after:
+          after == null && nullToAbsent ? const Value.absent() : Value(after),
+      fadeLength: fadeLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fadeLength),
+      customLevelId: Value(customLevelId),
+    );
+  }
+
+  factory PushCustomLevel.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PushCustomLevel(
+      id: serializer.fromJson<int>(json['id']),
+      after: serializer.fromJson<int?>(json['after']),
+      fadeLength: serializer.fromJson<double?>(json['fadeLength']),
+      customLevelId: serializer.fromJson<int>(json['customLevelId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'after': serializer.toJson<int?>(after),
+      'fadeLength': serializer.toJson<double?>(fadeLength),
+      'customLevelId': serializer.toJson<int>(customLevelId),
+    };
+  }
+
+  PushCustomLevel copyWith(
+          {int? id,
+          Value<int?> after = const Value.absent(),
+          Value<double?> fadeLength = const Value.absent(),
+          int? customLevelId}) =>
+      PushCustomLevel(
+        id: id ?? this.id,
+        after: after.present ? after.value : this.after,
+        fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
+        customLevelId: customLevelId ?? this.customLevelId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('PushCustomLevel(')
+          ..write('id: $id, ')
+          ..write('after: $after, ')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('customLevelId: $customLevelId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, after, fadeLength, customLevelId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PushCustomLevel &&
+          other.id == this.id &&
+          other.after == this.after &&
+          other.fadeLength == this.fadeLength &&
+          other.customLevelId == this.customLevelId);
+}
+
+class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
+  final Value<int> id;
+  final Value<int?> after;
+  final Value<double?> fadeLength;
+  final Value<int> customLevelId;
+  const PushCustomLevelsCompanion({
+    this.id = const Value.absent(),
+    this.after = const Value.absent(),
+    this.fadeLength = const Value.absent(),
+    this.customLevelId = const Value.absent(),
+  });
+  PushCustomLevelsCompanion.insert({
+    this.id = const Value.absent(),
+    this.after = const Value.absent(),
+    this.fadeLength = const Value.absent(),
+    required int customLevelId,
+  }) : customLevelId = Value(customLevelId);
+  static Insertable<PushCustomLevel> custom({
+    Expression<int>? id,
+    Expression<int>? after,
+    Expression<double>? fadeLength,
+    Expression<int>? customLevelId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (after != null) 'after': after,
+      if (fadeLength != null) 'fade_length': fadeLength,
+      if (customLevelId != null) 'custom_level_id': customLevelId,
+    });
+  }
+
+  PushCustomLevelsCompanion copyWith(
+      {Value<int>? id,
+      Value<int?>? after,
+      Value<double?>? fadeLength,
+      Value<int>? customLevelId}) {
+    return PushCustomLevelsCompanion(
+      id: id ?? this.id,
+      after: after ?? this.after,
+      fadeLength: fadeLength ?? this.fadeLength,
+      customLevelId: customLevelId ?? this.customLevelId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (after.present) {
+      map['after'] = Variable<int>(after.value);
+    }
+    if (fadeLength.present) {
+      map['fade_length'] = Variable<double>(fadeLength.value);
+    }
+    if (customLevelId.present) {
+      map['custom_level_id'] = Variable<int>(customLevelId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PushCustomLevelsCompanion(')
+          ..write('id: $id, ')
+          ..write('after: $after, ')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('customLevelId: $customLevelId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -3716,6 +3981,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
+  late final $PushCustomLevelsTable pushCustomLevels =
+      $PushCustomLevelsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -3759,7 +4026,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         customLevels,
         customLevelCommands,
         callCommands,
-        pinnedCommands
+        pinnedCommands,
+        pushCustomLevels
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -3902,6 +4170,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('call_commands', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('custom_levels',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('push_custom_levels', kind: UpdateKind.delete),
             ],
           ),
         ],

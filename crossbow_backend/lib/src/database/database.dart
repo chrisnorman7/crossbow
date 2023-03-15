@@ -25,6 +25,7 @@ part 'database.g.dart';
     PinnedCommands,
     CustomLevels,
     CustomLevelCommands,
+    PushCustomLevels,
   ],
   daos: [
     MenusDao,
