@@ -42,6 +42,7 @@ part 'database.g.dart';
     PinnedCommandsDao,
     CustomLevelsDao,
     CustomLevelCommandsDao,
+    PushCustomLevelsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {

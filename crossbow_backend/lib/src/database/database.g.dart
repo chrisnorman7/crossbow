@@ -4009,6 +4009,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       CustomLevelsDao(this as CrossbowBackendDatabase);
   late final CustomLevelCommandsDao customLevelCommandsDao =
       CustomLevelCommandsDao(this as CrossbowBackendDatabase);
+  late final PushCustomLevelsDao pushCustomLevelsDao =
+      PushCustomLevelsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

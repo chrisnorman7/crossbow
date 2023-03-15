@@ -25,4 +25,38 @@ class PushCustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
           fadeLength: Value(fadeTime),
         ),
       );
+
+  /// Delete the push custom level with the given [id].
+  Future<int> deletePushCustomLevel({
+    required final int id,
+  }) =>
+      (delete(pushCustomLevels)..where((final table) => table.id.equals(id)))
+          .go();
+
+  /// Get an [update] query that matches the given [id].
+  UpdateStatement<$PushCustomLevelsTable, PushCustomLevel> getUpdateQuery(
+    final int id,
+  ) =>
+      update(pushCustomLevels)..where((final table) => table.id.equals(id));
+
+  /// Set the [after] value for the push custom level with the given
+  /// [pushCustomLevelId].
+  Future<PushCustomLevel> setAfter({
+    required final int pushCustomLevelId,
+    final int? after,
+  }) async =>
+      (await getUpdateQuery(pushCustomLevelId)
+              .writeReturning(PushCustomLevelsCompanion(after: Value(after))))
+          .single;
+
+  /// Set the [fadeLength] value for the push custom level with the given
+  /// [pushCustomLevelId].
+  Future<PushCustomLevel> setFadeLength({
+    required final int pushCustomLevelId,
+    final double? fadeLength,
+  }) async =>
+      (await getUpdateQuery(pushCustomLevelId).writeReturning(
+        PushCustomLevelsCompanion(fadeLength: Value(fadeLength)),
+      ))
+          .single;
 }
