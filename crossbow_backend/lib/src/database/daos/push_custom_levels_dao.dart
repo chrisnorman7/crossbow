@@ -26,6 +26,11 @@ class PushCustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       );
 
+  /// Get the push custom level with the given [id].
+  Future<PushCustomLevel> getPushCustomLevel({required final int id}) =>
+      (select(pushCustomLevels)..where((final table) => table.id.equals(id)))
+          .getSingle();
+
   /// Delete the push custom level with the given [id].
   Future<int> deletePushCustomLevel({
     required final int id,
