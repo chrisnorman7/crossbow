@@ -2152,413 +2152,6 @@ class StopGamesCompanion extends UpdateCompanion<StopGame> {
   }
 }
 
-class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CommandsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _pushMenuIdMeta =
-      const VerificationMeta('pushMenuId');
-  @override
-  late final GeneratedColumn<int> pushMenuId = GeneratedColumn<int>(
-      'push_menu_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES push_menus (id) ON DELETE SET NULL'));
-  static const VerificationMeta _messageTextMeta =
-      const VerificationMeta('messageText');
-  @override
-  late final GeneratedColumn<String> messageText = GeneratedColumn<String>(
-      'message_text', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _messageSoundIdMeta =
-      const VerificationMeta('messageSoundId');
-  @override
-  late final GeneratedColumn<int> messageSoundId = GeneratedColumn<int>(
-      'message_sound_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset_references (id) ON DELETE SET NULL'));
-  static const VerificationMeta _popLevelIdMeta =
-      const VerificationMeta('popLevelId');
-  @override
-  late final GeneratedColumn<int> popLevelId = GeneratedColumn<int>(
-      'pop_level_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES pop_levels (id) ON DELETE SET NULL'));
-  static const VerificationMeta _stopGameIdMeta =
-      const VerificationMeta('stopGameId');
-  @override
-  late final GeneratedColumn<int> stopGameId = GeneratedColumn<int>(
-      'stop_game_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES stop_games (id) ON DELETE SET NULL'));
-  static const VerificationMeta _urlMeta = const VerificationMeta('url');
-  @override
-  late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        pushMenuId,
-        messageText,
-        messageSoundId,
-        popLevelId,
-        stopGameId,
-        url
-      ];
-  @override
-  String get aliasedName => _alias ?? 'commands';
-  @override
-  String get actualTableName => 'commands';
-  @override
-  VerificationContext validateIntegrity(Insertable<Command> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('push_menu_id')) {
-      context.handle(
-          _pushMenuIdMeta,
-          pushMenuId.isAcceptableOrUnknown(
-              data['push_menu_id']!, _pushMenuIdMeta));
-    }
-    if (data.containsKey('message_text')) {
-      context.handle(
-          _messageTextMeta,
-          messageText.isAcceptableOrUnknown(
-              data['message_text']!, _messageTextMeta));
-    }
-    if (data.containsKey('message_sound_id')) {
-      context.handle(
-          _messageSoundIdMeta,
-          messageSoundId.isAcceptableOrUnknown(
-              data['message_sound_id']!, _messageSoundIdMeta));
-    }
-    if (data.containsKey('pop_level_id')) {
-      context.handle(
-          _popLevelIdMeta,
-          popLevelId.isAcceptableOrUnknown(
-              data['pop_level_id']!, _popLevelIdMeta));
-    }
-    if (data.containsKey('stop_game_id')) {
-      context.handle(
-          _stopGameIdMeta,
-          stopGameId.isAcceptableOrUnknown(
-              data['stop_game_id']!, _stopGameIdMeta));
-    }
-    if (data.containsKey('url')) {
-      context.handle(
-          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Command map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Command(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      pushMenuId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}push_menu_id']),
-      messageText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}message_text']),
-      messageSoundId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}message_sound_id']),
-      popLevelId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}pop_level_id']),
-      stopGameId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}stop_game_id']),
-      url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url']),
-    );
-  }
-
-  @override
-  $CommandsTable createAlias(String alias) {
-    return $CommandsTable(attachedDatabase, alias);
-  }
-}
-
-class Command extends DataClass implements Insertable<Command> {
-  /// The primary key.
-  final int id;
-
-  /// The ID of a menu to push.
-  final int? pushMenuId;
-
-  /// Some text to output.
-  final String? messageText;
-
-  /// The ID of a sound to play.
-  final int? messageSoundId;
-
-  /// How to pop a level.
-  final int? popLevelId;
-
-  /// The ID of a stop game.
-  final int? stopGameId;
-
-  /// A URL to open.
-  final String? url;
-  const Command(
-      {required this.id,
-      this.pushMenuId,
-      this.messageText,
-      this.messageSoundId,
-      this.popLevelId,
-      this.stopGameId,
-      this.url});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    if (!nullToAbsent || pushMenuId != null) {
-      map['push_menu_id'] = Variable<int>(pushMenuId);
-    }
-    if (!nullToAbsent || messageText != null) {
-      map['message_text'] = Variable<String>(messageText);
-    }
-    if (!nullToAbsent || messageSoundId != null) {
-      map['message_sound_id'] = Variable<int>(messageSoundId);
-    }
-    if (!nullToAbsent || popLevelId != null) {
-      map['pop_level_id'] = Variable<int>(popLevelId);
-    }
-    if (!nullToAbsent || stopGameId != null) {
-      map['stop_game_id'] = Variable<int>(stopGameId);
-    }
-    if (!nullToAbsent || url != null) {
-      map['url'] = Variable<String>(url);
-    }
-    return map;
-  }
-
-  CommandsCompanion toCompanion(bool nullToAbsent) {
-    return CommandsCompanion(
-      id: Value(id),
-      pushMenuId: pushMenuId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(pushMenuId),
-      messageText: messageText == null && nullToAbsent
-          ? const Value.absent()
-          : Value(messageText),
-      messageSoundId: messageSoundId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(messageSoundId),
-      popLevelId: popLevelId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(popLevelId),
-      stopGameId: stopGameId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(stopGameId),
-      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
-    );
-  }
-
-  factory Command.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Command(
-      id: serializer.fromJson<int>(json['id']),
-      pushMenuId: serializer.fromJson<int?>(json['pushMenuId']),
-      messageText: serializer.fromJson<String?>(json['messageText']),
-      messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
-      popLevelId: serializer.fromJson<int?>(json['popLevelId']),
-      stopGameId: serializer.fromJson<int?>(json['stopGameId']),
-      url: serializer.fromJson<String?>(json['url']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'pushMenuId': serializer.toJson<int?>(pushMenuId),
-      'messageText': serializer.toJson<String?>(messageText),
-      'messageSoundId': serializer.toJson<int?>(messageSoundId),
-      'popLevelId': serializer.toJson<int?>(popLevelId),
-      'stopGameId': serializer.toJson<int?>(stopGameId),
-      'url': serializer.toJson<String?>(url),
-    };
-  }
-
-  Command copyWith(
-          {int? id,
-          Value<int?> pushMenuId = const Value.absent(),
-          Value<String?> messageText = const Value.absent(),
-          Value<int?> messageSoundId = const Value.absent(),
-          Value<int?> popLevelId = const Value.absent(),
-          Value<int?> stopGameId = const Value.absent(),
-          Value<String?> url = const Value.absent()}) =>
-      Command(
-        id: id ?? this.id,
-        pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
-        messageText: messageText.present ? messageText.value : this.messageText,
-        messageSoundId:
-            messageSoundId.present ? messageSoundId.value : this.messageSoundId,
-        popLevelId: popLevelId.present ? popLevelId.value : this.popLevelId,
-        stopGameId: stopGameId.present ? stopGameId.value : this.stopGameId,
-        url: url.present ? url.value : this.url,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('Command(')
-          ..write('id: $id, ')
-          ..write('pushMenuId: $pushMenuId, ')
-          ..write('messageText: $messageText, ')
-          ..write('messageSoundId: $messageSoundId, ')
-          ..write('popLevelId: $popLevelId, ')
-          ..write('stopGameId: $stopGameId, ')
-          ..write('url: $url')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      id, pushMenuId, messageText, messageSoundId, popLevelId, stopGameId, url);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Command &&
-          other.id == this.id &&
-          other.pushMenuId == this.pushMenuId &&
-          other.messageText == this.messageText &&
-          other.messageSoundId == this.messageSoundId &&
-          other.popLevelId == this.popLevelId &&
-          other.stopGameId == this.stopGameId &&
-          other.url == this.url);
-}
-
-class CommandsCompanion extends UpdateCompanion<Command> {
-  final Value<int> id;
-  final Value<int?> pushMenuId;
-  final Value<String?> messageText;
-  final Value<int?> messageSoundId;
-  final Value<int?> popLevelId;
-  final Value<int?> stopGameId;
-  final Value<String?> url;
-  const CommandsCompanion({
-    this.id = const Value.absent(),
-    this.pushMenuId = const Value.absent(),
-    this.messageText = const Value.absent(),
-    this.messageSoundId = const Value.absent(),
-    this.popLevelId = const Value.absent(),
-    this.stopGameId = const Value.absent(),
-    this.url = const Value.absent(),
-  });
-  CommandsCompanion.insert({
-    this.id = const Value.absent(),
-    this.pushMenuId = const Value.absent(),
-    this.messageText = const Value.absent(),
-    this.messageSoundId = const Value.absent(),
-    this.popLevelId = const Value.absent(),
-    this.stopGameId = const Value.absent(),
-    this.url = const Value.absent(),
-  });
-  static Insertable<Command> custom({
-    Expression<int>? id,
-    Expression<int>? pushMenuId,
-    Expression<String>? messageText,
-    Expression<int>? messageSoundId,
-    Expression<int>? popLevelId,
-    Expression<int>? stopGameId,
-    Expression<String>? url,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (pushMenuId != null) 'push_menu_id': pushMenuId,
-      if (messageText != null) 'message_text': messageText,
-      if (messageSoundId != null) 'message_sound_id': messageSoundId,
-      if (popLevelId != null) 'pop_level_id': popLevelId,
-      if (stopGameId != null) 'stop_game_id': stopGameId,
-      if (url != null) 'url': url,
-    });
-  }
-
-  CommandsCompanion copyWith(
-      {Value<int>? id,
-      Value<int?>? pushMenuId,
-      Value<String?>? messageText,
-      Value<int?>? messageSoundId,
-      Value<int?>? popLevelId,
-      Value<int?>? stopGameId,
-      Value<String?>? url}) {
-    return CommandsCompanion(
-      id: id ?? this.id,
-      pushMenuId: pushMenuId ?? this.pushMenuId,
-      messageText: messageText ?? this.messageText,
-      messageSoundId: messageSoundId ?? this.messageSoundId,
-      popLevelId: popLevelId ?? this.popLevelId,
-      stopGameId: stopGameId ?? this.stopGameId,
-      url: url ?? this.url,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (pushMenuId.present) {
-      map['push_menu_id'] = Variable<int>(pushMenuId.value);
-    }
-    if (messageText.present) {
-      map['message_text'] = Variable<String>(messageText.value);
-    }
-    if (messageSoundId.present) {
-      map['message_sound_id'] = Variable<int>(messageSoundId.value);
-    }
-    if (popLevelId.present) {
-      map['pop_level_id'] = Variable<int>(popLevelId.value);
-    }
-    if (stopGameId.present) {
-      map['stop_game_id'] = Variable<int>(stopGameId.value);
-    }
-    if (url.present) {
-      map['url'] = Variable<String>(url.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CommandsCompanion(')
-          ..write('id: $id, ')
-          ..write('pushMenuId: $pushMenuId, ')
-          ..write('messageText: $messageText, ')
-          ..write('messageSoundId: $messageSoundId, ')
-          ..write('popLevelId: $popLevelId, ')
-          ..write('stopGameId: $stopGameId, ')
-          ..write('url: $url')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $CustomLevelsTable extends CustomLevels
     with TableInfo<$CustomLevelsTable, CustomLevel> {
   @override
@@ -2773,6 +2366,725 @@ class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('musicId: $musicId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PushCustomLevelsTable extends PushCustomLevels
+    with TableInfo<$PushCustomLevelsTable, PushCustomLevel> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PushCustomLevelsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _afterMeta = const VerificationMeta('after');
+  @override
+  late final GeneratedColumn<int> after = GeneratedColumn<int>(
+      'after', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _fadeLengthMeta =
+      const VerificationMeta('fadeLength');
+  @override
+  late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
+      'fade_length', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _customLevelIdMeta =
+      const VerificationMeta('customLevelId');
+  @override
+  late final GeneratedColumn<int> customLevelId = GeneratedColumn<int>(
+      'custom_level_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES custom_levels (id) ON DELETE CASCADE'));
+  @override
+  List<GeneratedColumn> get $columns => [id, after, fadeLength, customLevelId];
+  @override
+  String get aliasedName => _alias ?? 'push_custom_levels';
+  @override
+  String get actualTableName => 'push_custom_levels';
+  @override
+  VerificationContext validateIntegrity(Insertable<PushCustomLevel> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('after')) {
+      context.handle(
+          _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
+    }
+    if (data.containsKey('fade_length')) {
+      context.handle(
+          _fadeLengthMeta,
+          fadeLength.isAcceptableOrUnknown(
+              data['fade_length']!, _fadeLengthMeta));
+    }
+    if (data.containsKey('custom_level_id')) {
+      context.handle(
+          _customLevelIdMeta,
+          customLevelId.isAcceptableOrUnknown(
+              data['custom_level_id']!, _customLevelIdMeta));
+    } else if (isInserting) {
+      context.missing(_customLevelIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PushCustomLevel map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PushCustomLevel(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      after: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}after']),
+      fadeLength: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
+      customLevelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
+    );
+  }
+
+  @override
+  $PushCustomLevelsTable createAlias(String alias) {
+    return $PushCustomLevelsTable(attachedDatabase, alias);
+  }
+}
+
+class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
+  /// The primary key.
+  final int id;
+
+  /// How many milliseconds to wait before doing something.
+  final int? after;
+
+  /// The fade length to use when pushing a level.
+  final double? fadeLength;
+
+  /// The ID of the custom level to push.
+  final int customLevelId;
+  const PushCustomLevel(
+      {required this.id,
+      this.after,
+      this.fadeLength,
+      required this.customLevelId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || after != null) {
+      map['after'] = Variable<int>(after);
+    }
+    if (!nullToAbsent || fadeLength != null) {
+      map['fade_length'] = Variable<double>(fadeLength);
+    }
+    map['custom_level_id'] = Variable<int>(customLevelId);
+    return map;
+  }
+
+  PushCustomLevelsCompanion toCompanion(bool nullToAbsent) {
+    return PushCustomLevelsCompanion(
+      id: Value(id),
+      after:
+          after == null && nullToAbsent ? const Value.absent() : Value(after),
+      fadeLength: fadeLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fadeLength),
+      customLevelId: Value(customLevelId),
+    );
+  }
+
+  factory PushCustomLevel.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PushCustomLevel(
+      id: serializer.fromJson<int>(json['id']),
+      after: serializer.fromJson<int?>(json['after']),
+      fadeLength: serializer.fromJson<double?>(json['fadeLength']),
+      customLevelId: serializer.fromJson<int>(json['customLevelId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'after': serializer.toJson<int?>(after),
+      'fadeLength': serializer.toJson<double?>(fadeLength),
+      'customLevelId': serializer.toJson<int>(customLevelId),
+    };
+  }
+
+  PushCustomLevel copyWith(
+          {int? id,
+          Value<int?> after = const Value.absent(),
+          Value<double?> fadeLength = const Value.absent(),
+          int? customLevelId}) =>
+      PushCustomLevel(
+        id: id ?? this.id,
+        after: after.present ? after.value : this.after,
+        fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
+        customLevelId: customLevelId ?? this.customLevelId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('PushCustomLevel(')
+          ..write('id: $id, ')
+          ..write('after: $after, ')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('customLevelId: $customLevelId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, after, fadeLength, customLevelId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PushCustomLevel &&
+          other.id == this.id &&
+          other.after == this.after &&
+          other.fadeLength == this.fadeLength &&
+          other.customLevelId == this.customLevelId);
+}
+
+class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
+  final Value<int> id;
+  final Value<int?> after;
+  final Value<double?> fadeLength;
+  final Value<int> customLevelId;
+  const PushCustomLevelsCompanion({
+    this.id = const Value.absent(),
+    this.after = const Value.absent(),
+    this.fadeLength = const Value.absent(),
+    this.customLevelId = const Value.absent(),
+  });
+  PushCustomLevelsCompanion.insert({
+    this.id = const Value.absent(),
+    this.after = const Value.absent(),
+    this.fadeLength = const Value.absent(),
+    required int customLevelId,
+  }) : customLevelId = Value(customLevelId);
+  static Insertable<PushCustomLevel> custom({
+    Expression<int>? id,
+    Expression<int>? after,
+    Expression<double>? fadeLength,
+    Expression<int>? customLevelId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (after != null) 'after': after,
+      if (fadeLength != null) 'fade_length': fadeLength,
+      if (customLevelId != null) 'custom_level_id': customLevelId,
+    });
+  }
+
+  PushCustomLevelsCompanion copyWith(
+      {Value<int>? id,
+      Value<int?>? after,
+      Value<double?>? fadeLength,
+      Value<int>? customLevelId}) {
+    return PushCustomLevelsCompanion(
+      id: id ?? this.id,
+      after: after ?? this.after,
+      fadeLength: fadeLength ?? this.fadeLength,
+      customLevelId: customLevelId ?? this.customLevelId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (after.present) {
+      map['after'] = Variable<int>(after.value);
+    }
+    if (fadeLength.present) {
+      map['fade_length'] = Variable<double>(fadeLength.value);
+    }
+    if (customLevelId.present) {
+      map['custom_level_id'] = Variable<int>(customLevelId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PushCustomLevelsCompanion(')
+          ..write('id: $id, ')
+          ..write('after: $after, ')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('customLevelId: $customLevelId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CommandsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _pushMenuIdMeta =
+      const VerificationMeta('pushMenuId');
+  @override
+  late final GeneratedColumn<int> pushMenuId = GeneratedColumn<int>(
+      'push_menu_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES push_menus (id) ON DELETE SET NULL'));
+  static const VerificationMeta _messageTextMeta =
+      const VerificationMeta('messageText');
+  @override
+  late final GeneratedColumn<String> messageText = GeneratedColumn<String>(
+      'message_text', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _messageSoundIdMeta =
+      const VerificationMeta('messageSoundId');
+  @override
+  late final GeneratedColumn<int> messageSoundId = GeneratedColumn<int>(
+      'message_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _popLevelIdMeta =
+      const VerificationMeta('popLevelId');
+  @override
+  late final GeneratedColumn<int> popLevelId = GeneratedColumn<int>(
+      'pop_level_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES pop_levels (id) ON DELETE SET NULL'));
+  static const VerificationMeta _stopGameIdMeta =
+      const VerificationMeta('stopGameId');
+  @override
+  late final GeneratedColumn<int> stopGameId = GeneratedColumn<int>(
+      'stop_game_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES stop_games (id) ON DELETE SET NULL'));
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _pushCustomLevelIdMeta =
+      const VerificationMeta('pushCustomLevelId');
+  @override
+  late final GeneratedColumn<int> pushCustomLevelId = GeneratedColumn<int>(
+      'push_custom_level_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES push_custom_levels (id) ON DELETE SET NULL'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        pushMenuId,
+        messageText,
+        messageSoundId,
+        popLevelId,
+        stopGameId,
+        url,
+        pushCustomLevelId
+      ];
+  @override
+  String get aliasedName => _alias ?? 'commands';
+  @override
+  String get actualTableName => 'commands';
+  @override
+  VerificationContext validateIntegrity(Insertable<Command> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('push_menu_id')) {
+      context.handle(
+          _pushMenuIdMeta,
+          pushMenuId.isAcceptableOrUnknown(
+              data['push_menu_id']!, _pushMenuIdMeta));
+    }
+    if (data.containsKey('message_text')) {
+      context.handle(
+          _messageTextMeta,
+          messageText.isAcceptableOrUnknown(
+              data['message_text']!, _messageTextMeta));
+    }
+    if (data.containsKey('message_sound_id')) {
+      context.handle(
+          _messageSoundIdMeta,
+          messageSoundId.isAcceptableOrUnknown(
+              data['message_sound_id']!, _messageSoundIdMeta));
+    }
+    if (data.containsKey('pop_level_id')) {
+      context.handle(
+          _popLevelIdMeta,
+          popLevelId.isAcceptableOrUnknown(
+              data['pop_level_id']!, _popLevelIdMeta));
+    }
+    if (data.containsKey('stop_game_id')) {
+      context.handle(
+          _stopGameIdMeta,
+          stopGameId.isAcceptableOrUnknown(
+              data['stop_game_id']!, _stopGameIdMeta));
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
+    }
+    if (data.containsKey('push_custom_level_id')) {
+      context.handle(
+          _pushCustomLevelIdMeta,
+          pushCustomLevelId.isAcceptableOrUnknown(
+              data['push_custom_level_id']!, _pushCustomLevelIdMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Command map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Command(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      pushMenuId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}push_menu_id']),
+      messageText: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}message_text']),
+      messageSoundId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}message_sound_id']),
+      popLevelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}pop_level_id']),
+      stopGameId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}stop_game_id']),
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url']),
+      pushCustomLevelId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}push_custom_level_id']),
+    );
+  }
+
+  @override
+  $CommandsTable createAlias(String alias) {
+    return $CommandsTable(attachedDatabase, alias);
+  }
+}
+
+class Command extends DataClass implements Insertable<Command> {
+  /// The primary key.
+  final int id;
+
+  /// The ID of a menu to push.
+  final int? pushMenuId;
+
+  /// Some text to output.
+  final String? messageText;
+
+  /// The ID of a sound to play.
+  final int? messageSoundId;
+
+  /// How to pop a level.
+  final int? popLevelId;
+
+  /// The ID of a stop game.
+  final int? stopGameId;
+
+  /// A URL to open.
+  final String? url;
+
+  /// The ID of a push custom level.
+  final int? pushCustomLevelId;
+  const Command(
+      {required this.id,
+      this.pushMenuId,
+      this.messageText,
+      this.messageSoundId,
+      this.popLevelId,
+      this.stopGameId,
+      this.url,
+      this.pushCustomLevelId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || pushMenuId != null) {
+      map['push_menu_id'] = Variable<int>(pushMenuId);
+    }
+    if (!nullToAbsent || messageText != null) {
+      map['message_text'] = Variable<String>(messageText);
+    }
+    if (!nullToAbsent || messageSoundId != null) {
+      map['message_sound_id'] = Variable<int>(messageSoundId);
+    }
+    if (!nullToAbsent || popLevelId != null) {
+      map['pop_level_id'] = Variable<int>(popLevelId);
+    }
+    if (!nullToAbsent || stopGameId != null) {
+      map['stop_game_id'] = Variable<int>(stopGameId);
+    }
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    if (!nullToAbsent || pushCustomLevelId != null) {
+      map['push_custom_level_id'] = Variable<int>(pushCustomLevelId);
+    }
+    return map;
+  }
+
+  CommandsCompanion toCompanion(bool nullToAbsent) {
+    return CommandsCompanion(
+      id: Value(id),
+      pushMenuId: pushMenuId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pushMenuId),
+      messageText: messageText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(messageText),
+      messageSoundId: messageSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(messageSoundId),
+      popLevelId: popLevelId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(popLevelId),
+      stopGameId: stopGameId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stopGameId),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
+      pushCustomLevelId: pushCustomLevelId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pushCustomLevelId),
+    );
+  }
+
+  factory Command.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Command(
+      id: serializer.fromJson<int>(json['id']),
+      pushMenuId: serializer.fromJson<int?>(json['pushMenuId']),
+      messageText: serializer.fromJson<String?>(json['messageText']),
+      messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
+      popLevelId: serializer.fromJson<int?>(json['popLevelId']),
+      stopGameId: serializer.fromJson<int?>(json['stopGameId']),
+      url: serializer.fromJson<String?>(json['url']),
+      pushCustomLevelId: serializer.fromJson<int?>(json['pushCustomLevelId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'pushMenuId': serializer.toJson<int?>(pushMenuId),
+      'messageText': serializer.toJson<String?>(messageText),
+      'messageSoundId': serializer.toJson<int?>(messageSoundId),
+      'popLevelId': serializer.toJson<int?>(popLevelId),
+      'stopGameId': serializer.toJson<int?>(stopGameId),
+      'url': serializer.toJson<String?>(url),
+      'pushCustomLevelId': serializer.toJson<int?>(pushCustomLevelId),
+    };
+  }
+
+  Command copyWith(
+          {int? id,
+          Value<int?> pushMenuId = const Value.absent(),
+          Value<String?> messageText = const Value.absent(),
+          Value<int?> messageSoundId = const Value.absent(),
+          Value<int?> popLevelId = const Value.absent(),
+          Value<int?> stopGameId = const Value.absent(),
+          Value<String?> url = const Value.absent(),
+          Value<int?> pushCustomLevelId = const Value.absent()}) =>
+      Command(
+        id: id ?? this.id,
+        pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
+        messageText: messageText.present ? messageText.value : this.messageText,
+        messageSoundId:
+            messageSoundId.present ? messageSoundId.value : this.messageSoundId,
+        popLevelId: popLevelId.present ? popLevelId.value : this.popLevelId,
+        stopGameId: stopGameId.present ? stopGameId.value : this.stopGameId,
+        url: url.present ? url.value : this.url,
+        pushCustomLevelId: pushCustomLevelId.present
+            ? pushCustomLevelId.value
+            : this.pushCustomLevelId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Command(')
+          ..write('id: $id, ')
+          ..write('pushMenuId: $pushMenuId, ')
+          ..write('messageText: $messageText, ')
+          ..write('messageSoundId: $messageSoundId, ')
+          ..write('popLevelId: $popLevelId, ')
+          ..write('stopGameId: $stopGameId, ')
+          ..write('url: $url, ')
+          ..write('pushCustomLevelId: $pushCustomLevelId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, pushMenuId, messageText, messageSoundId,
+      popLevelId, stopGameId, url, pushCustomLevelId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Command &&
+          other.id == this.id &&
+          other.pushMenuId == this.pushMenuId &&
+          other.messageText == this.messageText &&
+          other.messageSoundId == this.messageSoundId &&
+          other.popLevelId == this.popLevelId &&
+          other.stopGameId == this.stopGameId &&
+          other.url == this.url &&
+          other.pushCustomLevelId == this.pushCustomLevelId);
+}
+
+class CommandsCompanion extends UpdateCompanion<Command> {
+  final Value<int> id;
+  final Value<int?> pushMenuId;
+  final Value<String?> messageText;
+  final Value<int?> messageSoundId;
+  final Value<int?> popLevelId;
+  final Value<int?> stopGameId;
+  final Value<String?> url;
+  final Value<int?> pushCustomLevelId;
+  const CommandsCompanion({
+    this.id = const Value.absent(),
+    this.pushMenuId = const Value.absent(),
+    this.messageText = const Value.absent(),
+    this.messageSoundId = const Value.absent(),
+    this.popLevelId = const Value.absent(),
+    this.stopGameId = const Value.absent(),
+    this.url = const Value.absent(),
+    this.pushCustomLevelId = const Value.absent(),
+  });
+  CommandsCompanion.insert({
+    this.id = const Value.absent(),
+    this.pushMenuId = const Value.absent(),
+    this.messageText = const Value.absent(),
+    this.messageSoundId = const Value.absent(),
+    this.popLevelId = const Value.absent(),
+    this.stopGameId = const Value.absent(),
+    this.url = const Value.absent(),
+    this.pushCustomLevelId = const Value.absent(),
+  });
+  static Insertable<Command> custom({
+    Expression<int>? id,
+    Expression<int>? pushMenuId,
+    Expression<String>? messageText,
+    Expression<int>? messageSoundId,
+    Expression<int>? popLevelId,
+    Expression<int>? stopGameId,
+    Expression<String>? url,
+    Expression<int>? pushCustomLevelId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (pushMenuId != null) 'push_menu_id': pushMenuId,
+      if (messageText != null) 'message_text': messageText,
+      if (messageSoundId != null) 'message_sound_id': messageSoundId,
+      if (popLevelId != null) 'pop_level_id': popLevelId,
+      if (stopGameId != null) 'stop_game_id': stopGameId,
+      if (url != null) 'url': url,
+      if (pushCustomLevelId != null) 'push_custom_level_id': pushCustomLevelId,
+    });
+  }
+
+  CommandsCompanion copyWith(
+      {Value<int>? id,
+      Value<int?>? pushMenuId,
+      Value<String?>? messageText,
+      Value<int?>? messageSoundId,
+      Value<int?>? popLevelId,
+      Value<int?>? stopGameId,
+      Value<String?>? url,
+      Value<int?>? pushCustomLevelId}) {
+    return CommandsCompanion(
+      id: id ?? this.id,
+      pushMenuId: pushMenuId ?? this.pushMenuId,
+      messageText: messageText ?? this.messageText,
+      messageSoundId: messageSoundId ?? this.messageSoundId,
+      popLevelId: popLevelId ?? this.popLevelId,
+      stopGameId: stopGameId ?? this.stopGameId,
+      url: url ?? this.url,
+      pushCustomLevelId: pushCustomLevelId ?? this.pushCustomLevelId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (pushMenuId.present) {
+      map['push_menu_id'] = Variable<int>(pushMenuId.value);
+    }
+    if (messageText.present) {
+      map['message_text'] = Variable<String>(messageText.value);
+    }
+    if (messageSoundId.present) {
+      map['message_sound_id'] = Variable<int>(messageSoundId.value);
+    }
+    if (popLevelId.present) {
+      map['pop_level_id'] = Variable<int>(popLevelId.value);
+    }
+    if (stopGameId.present) {
+      map['stop_game_id'] = Variable<int>(stopGameId.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (pushCustomLevelId.present) {
+      map['push_custom_level_id'] = Variable<int>(pushCustomLevelId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CommandsCompanion(')
+          ..write('id: $id, ')
+          ..write('pushMenuId: $pushMenuId, ')
+          ..write('messageText: $messageText, ')
+          ..write('messageSoundId: $messageSoundId, ')
+          ..write('popLevelId: $popLevelId, ')
+          ..write('stopGameId: $stopGameId, ')
+          ..write('url: $url, ')
+          ..write('pushCustomLevelId: $pushCustomLevelId')
           ..write(')'))
         .toString();
   }
@@ -3697,271 +4009,6 @@ class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
   }
 }
 
-class $PushCustomLevelsTable extends PushCustomLevels
-    with TableInfo<$PushCustomLevelsTable, PushCustomLevel> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PushCustomLevelsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _afterMeta = const VerificationMeta('after');
-  @override
-  late final GeneratedColumn<int> after = GeneratedColumn<int>(
-      'after', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _fadeLengthMeta =
-      const VerificationMeta('fadeLength');
-  @override
-  late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
-      'fade_length', aliasedName, true,
-      type: DriftSqlType.double, requiredDuringInsert: false);
-  static const VerificationMeta _customLevelIdMeta =
-      const VerificationMeta('customLevelId');
-  @override
-  late final GeneratedColumn<int> customLevelId = GeneratedColumn<int>(
-      'custom_level_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES custom_levels (id) ON DELETE CASCADE'));
-  @override
-  List<GeneratedColumn> get $columns => [id, after, fadeLength, customLevelId];
-  @override
-  String get aliasedName => _alias ?? 'push_custom_levels';
-  @override
-  String get actualTableName => 'push_custom_levels';
-  @override
-  VerificationContext validateIntegrity(Insertable<PushCustomLevel> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('after')) {
-      context.handle(
-          _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
-    }
-    if (data.containsKey('fade_length')) {
-      context.handle(
-          _fadeLengthMeta,
-          fadeLength.isAcceptableOrUnknown(
-              data['fade_length']!, _fadeLengthMeta));
-    }
-    if (data.containsKey('custom_level_id')) {
-      context.handle(
-          _customLevelIdMeta,
-          customLevelId.isAcceptableOrUnknown(
-              data['custom_level_id']!, _customLevelIdMeta));
-    } else if (isInserting) {
-      context.missing(_customLevelIdMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PushCustomLevel map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PushCustomLevel(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      after: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}after']),
-      fadeLength: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
-      customLevelId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
-    );
-  }
-
-  @override
-  $PushCustomLevelsTable createAlias(String alias) {
-    return $PushCustomLevelsTable(attachedDatabase, alias);
-  }
-}
-
-class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
-  /// The primary key.
-  final int id;
-
-  /// How many milliseconds to wait before doing something.
-  final int? after;
-
-  /// The fade length to use when pushing a level.
-  final double? fadeLength;
-
-  /// The ID of the custom level to push.
-  final int customLevelId;
-  const PushCustomLevel(
-      {required this.id,
-      this.after,
-      this.fadeLength,
-      required this.customLevelId});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    if (!nullToAbsent || after != null) {
-      map['after'] = Variable<int>(after);
-    }
-    if (!nullToAbsent || fadeLength != null) {
-      map['fade_length'] = Variable<double>(fadeLength);
-    }
-    map['custom_level_id'] = Variable<int>(customLevelId);
-    return map;
-  }
-
-  PushCustomLevelsCompanion toCompanion(bool nullToAbsent) {
-    return PushCustomLevelsCompanion(
-      id: Value(id),
-      after:
-          after == null && nullToAbsent ? const Value.absent() : Value(after),
-      fadeLength: fadeLength == null && nullToAbsent
-          ? const Value.absent()
-          : Value(fadeLength),
-      customLevelId: Value(customLevelId),
-    );
-  }
-
-  factory PushCustomLevel.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PushCustomLevel(
-      id: serializer.fromJson<int>(json['id']),
-      after: serializer.fromJson<int?>(json['after']),
-      fadeLength: serializer.fromJson<double?>(json['fadeLength']),
-      customLevelId: serializer.fromJson<int>(json['customLevelId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'after': serializer.toJson<int?>(after),
-      'fadeLength': serializer.toJson<double?>(fadeLength),
-      'customLevelId': serializer.toJson<int>(customLevelId),
-    };
-  }
-
-  PushCustomLevel copyWith(
-          {int? id,
-          Value<int?> after = const Value.absent(),
-          Value<double?> fadeLength = const Value.absent(),
-          int? customLevelId}) =>
-      PushCustomLevel(
-        id: id ?? this.id,
-        after: after.present ? after.value : this.after,
-        fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
-        customLevelId: customLevelId ?? this.customLevelId,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('PushCustomLevel(')
-          ..write('id: $id, ')
-          ..write('after: $after, ')
-          ..write('fadeLength: $fadeLength, ')
-          ..write('customLevelId: $customLevelId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, after, fadeLength, customLevelId);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PushCustomLevel &&
-          other.id == this.id &&
-          other.after == this.after &&
-          other.fadeLength == this.fadeLength &&
-          other.customLevelId == this.customLevelId);
-}
-
-class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
-  final Value<int> id;
-  final Value<int?> after;
-  final Value<double?> fadeLength;
-  final Value<int> customLevelId;
-  const PushCustomLevelsCompanion({
-    this.id = const Value.absent(),
-    this.after = const Value.absent(),
-    this.fadeLength = const Value.absent(),
-    this.customLevelId = const Value.absent(),
-  });
-  PushCustomLevelsCompanion.insert({
-    this.id = const Value.absent(),
-    this.after = const Value.absent(),
-    this.fadeLength = const Value.absent(),
-    required int customLevelId,
-  }) : customLevelId = Value(customLevelId);
-  static Insertable<PushCustomLevel> custom({
-    Expression<int>? id,
-    Expression<int>? after,
-    Expression<double>? fadeLength,
-    Expression<int>? customLevelId,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (after != null) 'after': after,
-      if (fadeLength != null) 'fade_length': fadeLength,
-      if (customLevelId != null) 'custom_level_id': customLevelId,
-    });
-  }
-
-  PushCustomLevelsCompanion copyWith(
-      {Value<int>? id,
-      Value<int?>? after,
-      Value<double?>? fadeLength,
-      Value<int>? customLevelId}) {
-    return PushCustomLevelsCompanion(
-      id: id ?? this.id,
-      after: after ?? this.after,
-      fadeLength: fadeLength ?? this.fadeLength,
-      customLevelId: customLevelId ?? this.customLevelId,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (after.present) {
-      map['after'] = Variable<int>(after.value);
-    }
-    if (fadeLength.present) {
-      map['fade_length'] = Variable<double>(fadeLength.value);
-    }
-    if (customLevelId.present) {
-      map['custom_level_id'] = Variable<int>(customLevelId.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PushCustomLevelsCompanion(')
-          ..write('id: $id, ')
-          ..write('after: $after, ')
-          ..write('fadeLength: $fadeLength, ')
-          ..write('customLevelId: $customLevelId')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -3975,14 +4022,14 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final $PushMenusTable pushMenus = $PushMenusTable(this);
   late final $PopLevelsTable popLevels = $PopLevelsTable(this);
   late final $StopGamesTable stopGames = $StopGamesTable(this);
-  late final $CommandsTable commands = $CommandsTable(this);
   late final $CustomLevelsTable customLevels = $CustomLevelsTable(this);
+  late final $PushCustomLevelsTable pushCustomLevels =
+      $PushCustomLevelsTable(this);
+  late final $CommandsTable commands = $CommandsTable(this);
   late final $CustomLevelCommandsTable customLevelCommands =
       $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
-  late final $PushCustomLevelsTable pushCustomLevels =
-      $PushCustomLevelsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -4024,12 +4071,12 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         pushMenus,
         popLevels,
         stopGames,
-        commands,
         customLevels,
+        pushCustomLevels,
+        commands,
         customLevelCommands,
         callCommands,
-        pinnedCommands,
-        pushCustomLevels
+        pinnedCommands
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -4091,6 +4138,20 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
             ],
           ),
           WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('custom_levels', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('custom_levels',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('push_custom_levels', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
             on: TableUpdateQuery.onTableName('push_menus',
                 limitUpdateKind: UpdateKind.delete),
             result: [
@@ -4119,10 +4180,10 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('asset_references',
+            on: TableUpdateQuery.onTableName('push_custom_levels',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('custom_levels', kind: UpdateKind.update),
+              TableUpdate('commands', kind: UpdateKind.update),
             ],
           ),
           WritePropagation(
@@ -4172,13 +4233,6 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('call_commands', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('custom_levels',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('push_custom_levels', kind: UpdateKind.delete),
             ],
           ),
         ],
