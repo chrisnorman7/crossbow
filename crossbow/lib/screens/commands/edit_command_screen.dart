@@ -167,7 +167,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             popLevelId: command.popLevelId,
             onChanged: (final value) async {
               await commands.setPopLevelId(
-                commandID: command.id,
+                commandId: command.id,
                 popLevelId: value,
               );
               invalidateCommandProvider();
