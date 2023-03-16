@@ -9,6 +9,9 @@ mixin _$PinnedCommandsDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $PushMenusTable get pushMenus => attachedDatabase.pushMenus;
   $PopLevelsTable get popLevels => attachedDatabase.popLevels;
   $StopGamesTable get stopGames => attachedDatabase.stopGames;
+  $CustomLevelsTable get customLevels => attachedDatabase.customLevels;
+  $PushCustomLevelsTable get pushCustomLevels =>
+      attachedDatabase.pushCustomLevels;
   $CommandsTable get commands => attachedDatabase.commands;
   $PinnedCommandsTable get pinnedCommands => attachedDatabase.pinnedCommands;
 }

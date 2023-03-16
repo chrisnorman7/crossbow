@@ -13,6 +13,8 @@ void main() {
       final pushMenus = db.pushMenusDao;
       final callCommandsDao = db.callCommandsDao;
       final pinnedCommandsDao = db.pinnedCommandsDao;
+      final customLevelsDao = db.customLevelsDao;
+      final pushCustomLevelsDao = db.pushCustomLevelsDao;
 
       test(
         '.createCommand',
@@ -163,12 +165,12 @@ void main() {
           final command = await commands.createCommand(popLevelId: popLevel.id);
           expect(command.popLevelId, popLevel.id);
           var updatedCommand = await commands.setPopLevelId(
-            commandID: command.id,
+            commandId: command.id,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.popLevelId, null);
           updatedCommand = await commands.setPopLevelId(
-            commandID: command.id,
+            commandId: command.id,
             popLevelId: popLevel.id,
           );
           expect(updatedCommand.id, command.id);
@@ -339,6 +341,31 @@ void main() {
                   value.commandId == command.id,
             ),
           );
+        },
+      );
+
+      test(
+        '.setPushCustomLevelId',
+        () async {
+          final level = await customLevelsDao.createCustomLevel(
+            name: 'Test Custom Level',
+          );
+          final pushCustomLevel = await pushCustomLevelsDao
+              .createPushCustomLevel(customLevelId: level.id);
+          final command = await commands.createCommand(
+            pushCustomLevelId: pushCustomLevel.id,
+          );
+          expect(command.pushCustomLevelId, pushCustomLevel.id);
+          var updatedCommand =
+              await commands.setPushCustomLevelId(commandId: command.id);
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.pushCustomLevelId, null);
+          updatedCommand = await commands.setPushCustomLevelId(
+            commandId: command.id,
+            pushCustomLevelId: pushCustomLevel.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.pushCustomLevelId, pushCustomLevel.id);
         },
       );
     },

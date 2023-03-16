@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'asset_references.dart';
 import 'mixins.dart';
 import 'pop_levels.dart';
+import 'push_custom_levels.dart';
 import 'push_menus.dart';
 import 'stop_games.dart';
 
@@ -37,4 +38,9 @@ class Commands extends Table with WithPrimaryKey {
 
   /// A URL to open.
   TextColumn get url => text().nullable()();
+
+  /// The ID of a push custom level.
+  IntColumn get pushCustomLevelId => integer()
+      .references(PushCustomLevels, #id, onDelete: KeyAction.setNull)
+      .nullable()();
 }
