@@ -6,11 +6,10 @@ version: 0.0.0
 environment:
   sdk: '>=3.0.0-204.0.dev <4.0.0'
 
-# Add regular dependencies here.
 dependencies:
   dart_sdl: ^0.10.1
   dart_style: ^2.2.5
-  dart_synthizer: ^0.11.1
+  dart_synthizer: ^0.11.2
   drift: ^2.5.0
   jinja: ^0.4.2
   json_annotation: ^4.8.0
