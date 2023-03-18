@@ -372,7 +372,7 @@ class ProjectRunner {
     for (final customLevelCommand in await db.customLevelsDao
         .getCustomLevelCommands(customLevelId: customLevel.id)) {
       final trigger = await db.commandTriggersDao.getCommandTrigger(
-        id: customLevel.id,
+        id: customLevelCommand.commandTriggerId,
       );
       final callCommands = await db.customLevelCommandsDao.getCallCommands(
         customLevelCommandId: customLevelCommand.id,
