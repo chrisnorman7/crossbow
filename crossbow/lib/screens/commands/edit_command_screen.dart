@@ -15,6 +15,7 @@ import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
+import '../../widgets/push_custom_level_list_tile.dart';
 import '../../widgets/push_menu_list_tile.dart';
 import '../../widgets/stop_game_list_tile.dart';
 import '../../widgets/url_list_tile.dart';
@@ -159,6 +160,16 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               await commands.setPushMenuId(
                 commandId: command.id,
                 pushMenuId: value,
+              );
+              invalidateCommandProvider();
+            },
+          ),
+          PushCustomLevelListTile(
+            pushCustomLevelId: command.pushCustomLevelId,
+            onChanged: (final value) async {
+              await commands.setPushCustomLevelId(
+                commandId: command.id,
+                pushCustomLevelId: value,
               );
               invalidateCommandProvider();
             },
