@@ -11,6 +11,7 @@ import '../../src/contexts/custom_level_command_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/call_commands_list_tile.dart';
 import '../../widgets/command_trigger_list_tile.dart';
+import '../../widgets/interval_list_tile.dart';
 
 /// A screen to edit a custom level command with the given
 /// [customLevelCommandId].
@@ -70,13 +71,22 @@ class EditCustomLevelCommandScreen extends ConsumerWidget {
           title: commandTriggerMessage,
           autofocus: true,
         ),
+        IntervalListTile(
+          interval: command.interval,
+          onChanged: (final value) async {
+            await customLevelCommandsDao.setInterval(
+              customLevelCommandId: command.id,
+              interval: value,
+            );
+            invalidateCustomLevelCommandProvider(ref);
+          },
+        ),
         CallCommandsListTile(
           callCommandsContext: CallCommandsContext(
             target: CallCommandsTarget.customLevelCommand,
             id: command.id,
           ),
           title: callCommandsMessage,
-          autofocus: true,
         )
       ],
     );
