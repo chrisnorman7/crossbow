@@ -375,6 +375,7 @@ class ProjectRunner {
         level.registerCommand(
           trigger.name,
           ziggurat.Command(
+            interval: customLevelCommand.interval,
             onStart: () => handleCallCommands(callCommands),
           ),
         );
