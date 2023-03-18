@@ -122,6 +122,32 @@ void main() {
           expect(updatedPushLevel.fadeLength, 1234.5);
         },
       );
+
+      test(
+        '.setCustomLevelId',
+        () async {
+          final level1 =
+              await customLevelsDao.createCustomLevel(name: 'Level 1');
+          final level2 =
+              await customLevelsDao.createCustomLevel(name: 'Level 2');
+          final pushCustomLevel = await pushCustomLevelsDao
+              .createPushCustomLevel(customLevelId: level1.id);
+          expect(pushCustomLevel.customLevelId, level1.id);
+          var updatedPushCustomLevel =
+              await pushCustomLevelsDao.setCustomLevelId(
+            pushCustomLevelId: pushCustomLevel.id,
+            customLevelId: level2.id,
+          );
+          expect(updatedPushCustomLevel.id, pushCustomLevel.id);
+          expect(updatedPushCustomLevel.customLevelId, level2.id);
+          updatedPushCustomLevel = await pushCustomLevelsDao.setCustomLevelId(
+            pushCustomLevelId: pushCustomLevel.id,
+            customLevelId: level1.id,
+          );
+          expect(updatedPushCustomLevel.id, pushCustomLevel.id);
+          expect(updatedPushCustomLevel.customLevelId, level1.id);
+        },
+      );
     },
   );
 }

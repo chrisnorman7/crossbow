@@ -64,4 +64,15 @@ class PushCustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         PushCustomLevelsCompanion(fadeLength: Value(fadeLength)),
       ))
           .single;
+
+  /// Set the [customLevelId] value for a push custom level with the given
+  /// [pushCustomLevelId].
+  Future<PushCustomLevel> setCustomLevelId({
+    required final int pushCustomLevelId,
+    required final int customLevelId,
+  }) async =>
+      (await getUpdateQuery(pushCustomLevelId).writeReturning(
+        PushCustomLevelsCompanion(customLevelId: Value(customLevelId)),
+      ))
+          .single;
 }
