@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/command_triggers/select_command_trigger_screen.dart';
 import '../src/providers.dart';
+import 'error_list_tile.dart';
 
 /// A list tile to show a command trigger with the given [commandTriggerId].
 class CommandTriggerListTile extends ConsumerWidget {
@@ -49,7 +50,7 @@ class CommandTriggerListTile extends ConsumerWidget {
           ),
         );
       },
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../messages.dart';
 import '../screens/commands/edit_stop_game_screen.dart';
 import '../src/providers.dart';
+import 'error_list_tile.dart';
 
 /// A list tile that will show the stop game with the given [stopGameId].
 class StopGameListTile extends ConsumerStatefulWidget {
@@ -96,7 +97,7 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
           ),
         );
       },
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

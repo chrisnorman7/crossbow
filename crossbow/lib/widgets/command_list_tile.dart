@@ -11,6 +11,7 @@ import '../screens/commands/select_pinned_command_screen.dart';
 import '../src/providers.dart';
 import '../util.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'error_list_tile.dart';
 
 /// A list tile that allows editing a command.
 class CommandListTile extends ConsumerStatefulWidget {
@@ -136,7 +137,7 @@ class CommandListTileState extends ConsumerState<CommandListTile> {
           ),
         );
       },
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

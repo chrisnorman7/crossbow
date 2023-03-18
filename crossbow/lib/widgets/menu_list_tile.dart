@@ -10,6 +10,7 @@ import '../screens/select_menu_screen.dart';
 import '../src/contexts/menu_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
 /// A list tile that allows selecting a new menu.
@@ -49,7 +50,7 @@ class MenuListTile extends ConsumerWidget {
     final value = ref.watch(menuProvider.call(id));
     return value.when(
       data: (final data) => getBody(context: context, menuContext: data),
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

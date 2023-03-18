@@ -12,6 +12,7 @@ import '../src/contexts/asset_context.dart';
 import '../src/contexts/value_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
 /// A list tile to show the asset reference with the given [assetReferenceId].
@@ -67,7 +68,7 @@ class AssetReferenceListTile extends ConsumerWidget {
         ref: ref,
         assetReferenceContext: data,
       ),
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

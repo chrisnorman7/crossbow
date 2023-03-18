@@ -38,7 +38,13 @@ class AssetReferencePlaySoundSemantics extends ConsumerWidget {
     final value = ref.watch(assetReferenceProvider.call(id));
     return value.when(
       data: getBody,
-      error: ErrorListView.withPositional,
+      error: (final error, final stackTrace) => Column(
+        children: [
+          CenterText(text: error.toString()),
+          CenterText(text: stackTrace.toString()),
+          child,
+        ],
+      ),
       loading: LoadingWidget.new,
     );
   }

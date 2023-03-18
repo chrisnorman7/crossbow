@@ -7,6 +7,7 @@ import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_pop_level_screen.dart';
 import '../src/providers.dart';
+import 'error_list_tile.dart';
 
 /// A list tile to show a pop level with the given [popLevelId].
 class PopLevelListTile extends ConsumerStatefulWidget {
@@ -97,7 +98,7 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
           ),
         );
       },
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }

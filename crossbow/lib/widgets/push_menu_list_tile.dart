@@ -11,6 +11,7 @@ import '../screens/select_menu_screen.dart';
 import '../src/contexts/push_menu_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
 /// A list tile for configuring a push menu.
@@ -49,7 +50,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
     final value = ref.watch(pushMenuProvider.call(id));
     return value.when(
       data: getBody,
-      error: ErrorListView.withPositional,
+      error: ErrorListTile.withPositional,
       loading: LoadingWidget.new,
     );
   }
