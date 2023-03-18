@@ -324,12 +324,7 @@ class ProjectRunner {
           );
         },
       ).toList(),
-      music: music == null
-          ? null
-          : Music(
-              sound: getAssetReference(music),
-              gain: music.gain,
-            ),
+      music: music == null ? null : getMusic(music),
       onCancel: () async {
         final callCommands = await db.menusDao.getOnCancelCallCommands(
           menuId: menu.id,

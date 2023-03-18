@@ -264,6 +264,11 @@ void main() async {
             name: '...',
           );
           final menuLevel = await projectRunner.getMenuLevel(menu);
+          await testMusic(
+            projectRunner: projectRunner,
+            assetReferenceId: menu.musicId!,
+            music: menuLevel.music!,
+          );
           final title = menuLevel.title;
           expect(title.gain, 0.7);
           expect(title.keepAlive, false);
