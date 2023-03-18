@@ -19,6 +19,7 @@ import 'contexts/command_trigger_context.dart';
 import 'contexts/custom_level_command_context.dart';
 import 'contexts/menu_context.dart';
 import 'contexts/menu_item_context.dart';
+import 'contexts/push_custom_level_context.dart';
 import 'contexts/push_menu_context.dart';
 import 'contexts/value_context.dart';
 import 'json/app_preferences.dart';
@@ -459,6 +460,24 @@ final customLevelCommandProvider =
       projectContext: projectContext,
       value: command,
       commandTrigger: commandTrigger,
+    );
+  },
+);
+
+/// Provide a single push custom level.
+final pushCustomLevelProvider =
+    FutureProvider.family<PushCustomLevelContext, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final db = projectContext.db;
+    final pushCustomLevel =
+        await db.pushCustomLevelsDao.getPushCustomLevel(id: arg);
+    final customLevel = await db.customLevelsDao
+        .getCustomLevel(id: pushCustomLevel.customLevelId);
+    return PushCustomLevelContext(
+      projectContext: projectContext,
+      value: pushCustomLevel,
+      customLevel: customLevel,
     );
   },
 );
