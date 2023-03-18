@@ -17,11 +17,13 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<CustomLevelCommand> createCustomLevelCommand({
     required final int customLevelId,
     required final int commandTriggerId,
+    final int? interval,
   }) =>
       into(customLevelCommands).insertReturning(
         CustomLevelCommandsCompanion(
           commandTriggerId: Value(commandTriggerId),
           customLevelId: Value(customLevelId),
+          interval: Value(interval),
         ),
       );
 
@@ -67,4 +69,15 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
                   .equals(customLevelCommandId),
             ))
           .get();
+
+  /// Set the [interval] value for the custom level command with the given
+  /// [customLevelCommandId].
+  Future<CustomLevelCommand> setInterval({
+    required final int customLevelCommandId,
+    final int? interval,
+  }) async =>
+      (await getUpdateQuery(customLevelCommandId).writeReturning(
+        CustomLevelCommandsCompanion(interval: Value(interval)),
+      ))
+          .single;
 }

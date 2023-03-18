@@ -139,6 +139,31 @@ void main() {
           expect(callCommands.last.id, callCommand2.id);
         },
       );
+
+      test(
+        '.setInterval',
+        () async {
+          final level =
+              await customLevelsDao.createCustomLevel(name: 'Test Level');
+          final command = await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+            interval: 1000,
+          );
+          expect(command.interval, 1000);
+          var updatedCommand = await customLevelCommandsDao.setInterval(
+            customLevelCommandId: command.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.interval, null);
+          updatedCommand = await customLevelCommandsDao.setInterval(
+            customLevelCommandId: command.id,
+            interval: 5000,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.interval, 5000);
+        },
+      );
     },
   );
 }
