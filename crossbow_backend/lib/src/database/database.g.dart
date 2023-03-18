@@ -3105,6 +3105,12 @@ class $CustomLevelCommandsTable extends CustomLevelCommands
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _intervalMeta =
+      const VerificationMeta('interval');
+  @override
+  late final GeneratedColumn<int> interval = GeneratedColumn<int>(
+      'interval', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _customLevelIdMeta =
       const VerificationMeta('customLevelId');
   @override
@@ -3124,7 +3130,8 @@ class $CustomLevelCommandsTable extends CustomLevelCommands
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES command_triggers (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns => [id, customLevelId, commandTriggerId];
+  List<GeneratedColumn> get $columns =>
+      [id, interval, customLevelId, commandTriggerId];
   @override
   String get aliasedName => _alias ?? 'custom_level_commands';
   @override
@@ -3136,6 +3143,10 @@ class $CustomLevelCommandsTable extends CustomLevelCommands
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('interval')) {
+      context.handle(_intervalMeta,
+          interval.isAcceptableOrUnknown(data['interval']!, _intervalMeta));
     }
     if (data.containsKey('custom_level_id')) {
       context.handle(
@@ -3164,6 +3175,8 @@ class $CustomLevelCommandsTable extends CustomLevelCommands
     return CustomLevelCommand(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      interval: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}interval']),
       customLevelId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
       commandTriggerId: attachedDatabase.typeMapping.read(
@@ -3182,6 +3195,9 @@ class CustomLevelCommand extends DataClass
   /// The primary key.
   final int id;
 
+  /// How often something should happen.
+  final int? interval;
+
   /// The ID of the custom level to attach to.
   final int customLevelId;
 
@@ -3189,12 +3205,16 @@ class CustomLevelCommand extends DataClass
   final int commandTriggerId;
   const CustomLevelCommand(
       {required this.id,
+      this.interval,
       required this.customLevelId,
       required this.commandTriggerId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || interval != null) {
+      map['interval'] = Variable<int>(interval);
+    }
     map['custom_level_id'] = Variable<int>(customLevelId);
     map['command_trigger_id'] = Variable<int>(commandTriggerId);
     return map;
@@ -3203,6 +3223,9 @@ class CustomLevelCommand extends DataClass
   CustomLevelCommandsCompanion toCompanion(bool nullToAbsent) {
     return CustomLevelCommandsCompanion(
       id: Value(id),
+      interval: interval == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interval),
       customLevelId: Value(customLevelId),
       commandTriggerId: Value(commandTriggerId),
     );
@@ -3213,6 +3236,7 @@ class CustomLevelCommand extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CustomLevelCommand(
       id: serializer.fromJson<int>(json['id']),
+      interval: serializer.fromJson<int?>(json['interval']),
       customLevelId: serializer.fromJson<int>(json['customLevelId']),
       commandTriggerId: serializer.fromJson<int>(json['commandTriggerId']),
     );
@@ -3222,15 +3246,20 @@ class CustomLevelCommand extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'interval': serializer.toJson<int?>(interval),
       'customLevelId': serializer.toJson<int>(customLevelId),
       'commandTriggerId': serializer.toJson<int>(commandTriggerId),
     };
   }
 
   CustomLevelCommand copyWith(
-          {int? id, int? customLevelId, int? commandTriggerId}) =>
+          {int? id,
+          Value<int?> interval = const Value.absent(),
+          int? customLevelId,
+          int? commandTriggerId}) =>
       CustomLevelCommand(
         id: id ?? this.id,
+        interval: interval.present ? interval.value : this.interval,
         customLevelId: customLevelId ?? this.customLevelId,
         commandTriggerId: commandTriggerId ?? this.commandTriggerId,
       );
@@ -3238,6 +3267,7 @@ class CustomLevelCommand extends DataClass
   String toString() {
     return (StringBuffer('CustomLevelCommand(')
           ..write('id: $id, ')
+          ..write('interval: $interval, ')
           ..write('customLevelId: $customLevelId, ')
           ..write('commandTriggerId: $commandTriggerId')
           ..write(')'))
@@ -3245,38 +3275,45 @@ class CustomLevelCommand extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, customLevelId, commandTriggerId);
+  int get hashCode =>
+      Object.hash(id, interval, customLevelId, commandTriggerId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CustomLevelCommand &&
           other.id == this.id &&
+          other.interval == this.interval &&
           other.customLevelId == this.customLevelId &&
           other.commandTriggerId == this.commandTriggerId);
 }
 
 class CustomLevelCommandsCompanion extends UpdateCompanion<CustomLevelCommand> {
   final Value<int> id;
+  final Value<int?> interval;
   final Value<int> customLevelId;
   final Value<int> commandTriggerId;
   const CustomLevelCommandsCompanion({
     this.id = const Value.absent(),
+    this.interval = const Value.absent(),
     this.customLevelId = const Value.absent(),
     this.commandTriggerId = const Value.absent(),
   });
   CustomLevelCommandsCompanion.insert({
     this.id = const Value.absent(),
+    this.interval = const Value.absent(),
     required int customLevelId,
     required int commandTriggerId,
   })  : customLevelId = Value(customLevelId),
         commandTriggerId = Value(commandTriggerId);
   static Insertable<CustomLevelCommand> custom({
     Expression<int>? id,
+    Expression<int>? interval,
     Expression<int>? customLevelId,
     Expression<int>? commandTriggerId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (interval != null) 'interval': interval,
       if (customLevelId != null) 'custom_level_id': customLevelId,
       if (commandTriggerId != null) 'command_trigger_id': commandTriggerId,
     });
@@ -3284,10 +3321,12 @@ class CustomLevelCommandsCompanion extends UpdateCompanion<CustomLevelCommand> {
 
   CustomLevelCommandsCompanion copyWith(
       {Value<int>? id,
+      Value<int?>? interval,
       Value<int>? customLevelId,
       Value<int>? commandTriggerId}) {
     return CustomLevelCommandsCompanion(
       id: id ?? this.id,
+      interval: interval ?? this.interval,
       customLevelId: customLevelId ?? this.customLevelId,
       commandTriggerId: commandTriggerId ?? this.commandTriggerId,
     );
@@ -3298,6 +3337,9 @@ class CustomLevelCommandsCompanion extends UpdateCompanion<CustomLevelCommand> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (interval.present) {
+      map['interval'] = Variable<int>(interval.value);
     }
     if (customLevelId.present) {
       map['custom_level_id'] = Variable<int>(customLevelId.value);
@@ -3312,6 +3354,7 @@ class CustomLevelCommandsCompanion extends UpdateCompanion<CustomLevelCommand> {
   String toString() {
     return (StringBuffer('CustomLevelCommandsCompanion(')
           ..write('id: $id, ')
+          ..write('interval: $interval, ')
           ..write('customLevelId: $customLevelId, ')
           ..write('commandTriggerId: $commandTriggerId')
           ..write(')'))
