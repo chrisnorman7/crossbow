@@ -194,6 +194,12 @@ class ProjectRunner {
     if (url != null) {
       await openUrl(url);
     }
+    final pushCustomLevelId = command.pushCustomLevelId;
+    if (pushCustomLevelId != null) {
+      final pushCustomLevel = await db.pushCustomLevelsDao
+          .getPushCustomLevel(id: pushCustomLevelId);
+      await handlePushCustomLevel(pushCustomLevel);
+    }
   }
 
   /// Handle the given [messageContext].
