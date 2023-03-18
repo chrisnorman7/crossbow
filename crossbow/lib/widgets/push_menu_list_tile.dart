@@ -66,8 +66,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
         bindings: {
           deleteHotkey: () async {
             if (pushMenu != null) {
-              await projectContext.db.pushMenusDao
-                  .deletePushMenu(id: pushMenu.id);
+              await pushMenusDao.deletePushMenu(id: pushMenu.id);
               widget.onChanged(null);
             }
           }
@@ -76,7 +75,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
           builder: (final context) => ListTile(
             autofocus: widget.autofocus,
             title: Text(Intl.message('Push Menu')),
-            subtitle: Text(menu == null ? unsetMessage : menu.name),
+            subtitle: Text(menu?.name ?? unsetMessage),
             onTap: () {
               PlaySoundSemantics.of(context)?.stop();
               if (pushMenu == null) {

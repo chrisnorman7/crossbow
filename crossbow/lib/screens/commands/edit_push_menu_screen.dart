@@ -60,6 +60,7 @@ class EditPushMenuScreen extends ConsumerWidget {
               pushMenuId: pushMenuId,
               menuId: value!,
             );
+            invalidatePushMenuProvider(ref);
           },
           autofocus: true,
         ),
