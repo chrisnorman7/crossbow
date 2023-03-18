@@ -12,6 +12,7 @@ import 'package:ziggurat/ziggurat.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import 'custom_database.dart';
+import 'matchers.dart';
 
 void main() async {
   final db = getDatabase();
@@ -20,6 +21,10 @@ void main() async {
   final callCommandsDao = db.callCommandsDao;
   final menusDao = db.menusDao;
   final menuItemsDao = db.menuItemsDao;
+  final commandTriggersDao = db.commandTriggersDao;
+  final customLevelsDao = db.customLevelsDao;
+  final customLevelCommandsDao = db.customLevelCommandsDao;
+
   final clink = await assetReferencesDao.createAssetReference(
     folderName: 'interface',
     name: 'clink.wav',
@@ -314,6 +319,91 @@ void main() async {
               quitMessage.name,
             ),
           );
+        },
+      );
+
+      test(
+        '.getCustomLevel',
+        () async {
+          var customLevel = await customLevelsDao.createCustomLevel(
+            name: 'Test Level',
+          );
+          var level = await projectRunner.getCustomLevel(customLevel);
+          expect(level.ambiances, isEmpty);
+          expect(level.commands, isEmpty);
+          expect(level.game, projectRunner.game);
+          expect(level.music, null);
+          customLevel = await customLevelsDao.setMusicId(
+            customLevelId: customLevel.id,
+            musicId: clink.id,
+          );
+          level = await projectRunner.getCustomLevel(customLevel);
+          expect(level.ambiances, isEmpty);
+          expect(level.commands, isEmpty);
+          expect(level.game, projectRunner.game);
+          await testMusic(
+            projectRunner: projectRunner,
+            assetReferenceId: clink.id,
+            music: level.music!,
+          );
+          final trigger1 = await commandTriggersDao.createCommandTrigger(
+            description: 'Trigger 1',
+          );
+          final command1 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: customLevel.id,
+            commandTriggerId: trigger1.id,
+            interval: 1000,
+          );
+          var runner = ProjectRunner(
+            projectContext: projectContext,
+            sdl: projectRunner.sdl,
+            synthizerContext: projectRunner.synthizerContext,
+            random: projectRunner.random,
+            soundBackend: projectRunner.soundBackend,
+          );
+          await runner.setupGame();
+          expect(
+            runner.game.triggerMap.triggers.length,
+            (await commandTriggersDao.getCommandTriggers()).length,
+          );
+          level = await runner.getCustomLevel(customLevel);
+          expect(level.commands, isEmpty);
+          final command = await commandsDao.createCommand();
+          await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCustomLevelCommandId: command1.id,
+          );
+          level = await runner.getCustomLevel(customLevel);
+          final levelCommand = level.commands.values.single;
+          expect(level.commands.keys.single, trigger1.name);
+          expect(levelCommand.interval, command1.interval);
+          final trigger2 = await commandTriggersDao.createCommandTrigger(
+            description: 'Trigger 2',
+          );
+          final command2 =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: customLevel.id,
+            commandTriggerId: trigger2.id,
+          );
+          await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            callingCustomLevelCommandId: command2.id,
+          );
+          runner = ProjectRunner(
+            projectContext: projectContext,
+            sdl: projectRunner.sdl,
+            synthizerContext: projectRunner.synthizerContext,
+            random: projectRunner.random,
+            soundBackend: projectRunner.soundBackend,
+          );
+          await runner.setupGame();
+          level = await runner.getCustomLevel(customLevel);
+          expect(level.commands.length, 2);
+          final levelCommand1 = level.commands.values.first;
+          final levelCommand2 = level.commands.values.last;
+          expect(levelCommand1.interval, command1.interval);
+          expect(levelCommand2.interval, command2.interval);
         },
       );
     },
