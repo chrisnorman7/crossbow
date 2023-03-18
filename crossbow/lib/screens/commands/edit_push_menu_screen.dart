@@ -26,14 +26,17 @@ class EditPushMenuScreen extends ConsumerWidget {
   Widget build(final BuildContext context, final WidgetRef ref) {
     final value = ref.watch(pushMenuProvider.call(pushMenuId));
     return Cancel(
-      child: value.when(
-        data: (final data) => getBody(
-          context: context,
-          ref: ref,
-          pushMenuContext: data,
+      child: SimpleScaffold(
+        title: Intl.message('Edit Push Menu'),
+        body: value.when(
+          data: (final data) => getBody(
+            context: context,
+            ref: ref,
+            pushMenuContext: data,
+          ),
+          error: ErrorListView.withPositional,
+          loading: LoadingWidget.new,
         ),
-        error: ErrorScreen.withPositional,
-        loading: LoadingScreen.new,
       ),
     );
   }
@@ -48,43 +51,40 @@ class EditPushMenuScreen extends ConsumerWidget {
     final pushMenusDao = projectContext.db.pushMenusDao;
     final pushMenu = pushMenuContext.value;
     final menu = pushMenuContext.menu;
-    return SimpleScaffold(
-      title: Intl.message('Edit Push Menu'),
-      body: ListView(
-        children: [
-          MenuListTile(
-            menuId: menu.id,
-            onChanged: (final value) async {
-              await pushMenusDao.setMenuId(
-                pushMenuId: pushMenuId,
-                menuId: value!,
-              );
-            },
-            autofocus: true,
-          ),
-          AfterListTile(
-            after: pushMenu.after,
-            onChanged: (final value) async {
-              await pushMenusDao.setAfter(
-                pushMenuId: pushMenuId,
-                after: value == 0 ? null : value,
-              );
-              invalidatePushMenuProvider(ref);
-            },
-            title: Intl.message('Push Delay'),
-          ),
-          FadeLengthListTile(
-            fadeLength: pushMenu.fadeLength,
-            onChanged: (final value) async {
-              await pushMenusDao.setFadeLength(
-                pushMenuId: pushMenuId,
-                fadeLength: value,
-              );
-              invalidatePushMenuProvider(ref);
-            },
-          )
-        ],
-      ),
+    return ListView(
+      children: [
+        MenuListTile(
+          menuId: menu.id,
+          onChanged: (final value) async {
+            await pushMenusDao.setMenuId(
+              pushMenuId: pushMenuId,
+              menuId: value!,
+            );
+          },
+          autofocus: true,
+        ),
+        AfterListTile(
+          after: pushMenu.after,
+          onChanged: (final value) async {
+            await pushMenusDao.setAfter(
+              pushMenuId: pushMenuId,
+              after: value == 0 ? null : value,
+            );
+            invalidatePushMenuProvider(ref);
+          },
+          title: Intl.message('Push Delay'),
+        ),
+        FadeLengthListTile(
+          fadeLength: pushMenu.fadeLength,
+          onChanged: (final value) async {
+            await pushMenusDao.setFadeLength(
+              pushMenuId: pushMenuId,
+              fadeLength: value,
+            );
+            invalidatePushMenuProvider(ref);
+          },
+        )
+      ],
     );
   }
 
