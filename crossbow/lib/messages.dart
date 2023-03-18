@@ -166,3 +166,6 @@ final selectCommandTriggerMessage = Intl.message('Select Command Trigger');
 
 /// Command trigger.
 final commandTriggerMessage = Intl.message('Command Trigger');
+
+/// Interval.
+final intervalMessage = Intl.message('Interval');
