@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/extensions.dart';
 import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:path/path.dart' as path;
@@ -82,8 +83,10 @@ void main() async {
           final commandTriggersDao = db.commandTriggersDao;
           await db.delete(db.commandTriggers).go();
           final keyboardKeysDao = db.commandTriggerKeyboardKeysDao;
-          final forwardsKey = await keyboardKeysDao
-              .createCommandTriggerKeyboardKey(scanCode: ScanCode.w);
+          final forwardsKey =
+              await keyboardKeysDao.createCommandTriggerKeyboardKey(
+            scanCode: ScanCode.w,
+          );
           final forwardsTrigger = await commandTriggersDao.createCommandTrigger(
             description: 'Forward',
             gameControllerButton: GameControllerButton.dpadUp,
@@ -95,6 +98,7 @@ void main() async {
           var trigger = triggers.single;
           expect(trigger.button, GameControllerButton.dpadUp);
           expect(trigger.description, forwardsTrigger.description);
+          expect(trigger.name, forwardsTrigger.name);
           var keyboardKey = trigger.keyboardKey!;
           expect(keyboardKey.altKey, false);
           expect(keyboardKey.controlKey, false);
@@ -118,6 +122,7 @@ void main() async {
           trigger = triggers.first;
           expect(trigger.button, GameControllerButton.dpadUp);
           expect(trigger.description, forwardsTrigger.description);
+          expect(trigger.name, forwardsTrigger.name);
           keyboardKey = trigger.keyboardKey!;
           expect(keyboardKey.altKey, false);
           expect(keyboardKey.controlKey, false);
@@ -126,6 +131,7 @@ void main() async {
           trigger = triggers.last;
           expect(trigger.button, GameControllerButton.leftshoulder);
           expect(trigger.description, saveTrigger.description);
+          expect(trigger.name, saveTrigger.name);
           keyboardKey = trigger.keyboardKey!;
           expect(keyboardKey.altKey, true);
           expect(keyboardKey.controlKey, true);

@@ -5,10 +5,12 @@ import 'package:dart_sdl/dart_sdl.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:open_url/open_url.dart';
 import 'package:path/path.dart' as path;
+import 'package:ziggurat/levels.dart';
 import 'package:ziggurat/menus.dart' as ziggurat_menus;
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
+import 'extensions.dart';
 import 'src/contexts/message_context.dart';
 import 'src/contexts/project_context.dart';
 import 'src/database/database.dart';
@@ -69,7 +71,7 @@ class ProjectRunner {
               .getCommandTriggerKeyboardKey(id: keyboardKeyId);
       return ziggurat.CommandTrigger(
         description: e.description,
-        name: e.id.toString(),
+        name: e.name,
         button: e.gameControllerButton,
         keyboardKey: keyboardKey == null
             ? null
@@ -346,5 +348,54 @@ class ProjectRunner {
   /// Handle the given [popLevel].
   Future<void> handlePopLevel(final PopLevel popLevel) async {
     game.popLevel(ambianceFadeTime: popLevel.fadeLength);
+  }
+
+  /// Get a level from the provided [customLevel].
+  Future<Level> getCustomLevel(final CustomLevel customLevel) async {
+    final musicId = customLevel.musicId;
+    final level = Level(
+      game: game,
+      music: musicId == null
+          ? null
+          : Music(
+              sound: getAssetReference(
+                await db.assetReferencesDao.getAssetReference(id: musicId),
+              ),
+            ),
+    );
+    for (final customLevelCommand in await db.customLevelsDao
+        .getCustomLevelCommands(customLevelId: customLevel.id)) {
+      final trigger = await db.commandTriggersDao.getCommandTrigger(
+        id: customLevel.id,
+      );
+      final callCommands = await db.customLevelCommandsDao.getCallCommands(
+        customLevelCommandId: customLevelCommand.id,
+      );
+      if (callCommands.isNotEmpty) {
+        level.registerCommand(
+          trigger.name,
+          ziggurat.Command(
+            onStart: () => handleCallCommands(callCommands),
+          ),
+        );
+      }
+    }
+    return level;
+  }
+
+  /// Handle the given [pushCustomLevel].
+  Future<void> handlePushCustomLevel(
+    final PushCustomLevel pushCustomLevel,
+  ) async {
+    final customLevelsDao = db.customLevelsDao;
+    final customLevel = await customLevelsDao.getCustomLevel(
+      id: pushCustomLevel.customLevelId,
+    );
+    final level = await getCustomLevel(customLevel);
+    game.pushLevel(
+      level,
+      after: pushCustomLevel.after,
+      fadeLength: pushCustomLevel.fadeLength,
+    );
   }
 }
