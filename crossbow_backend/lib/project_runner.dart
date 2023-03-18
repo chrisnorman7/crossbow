@@ -158,6 +158,15 @@ class ProjectRunner {
     throw FileSystemException('Cannot find the given path.', name);
   }
 
+  /// Get music from the given [assetReference].
+  Music getMusic(final AssetReference assetReference) {
+    final sound = getAssetReference(assetReference);
+    return Music(
+      sound: sound,
+      gain: sound.gain,
+    );
+  }
+
   /// Run the given [command].
   Future<void> handleCommand(final Command command) async {
     final messageText = command.messageText;
@@ -363,10 +372,8 @@ class ProjectRunner {
       game: game,
       music: musicId == null
           ? null
-          : Music(
-              sound: getAssetReference(
-                await db.assetReferencesDao.getAssetReference(id: musicId),
-              ),
+          : getMusic(
+              await db.assetReferencesDao.getAssetReference(id: musicId),
             ),
     );
     for (final customLevelCommand in await db.customLevelsDao
