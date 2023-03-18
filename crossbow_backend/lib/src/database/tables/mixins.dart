@@ -25,3 +25,9 @@ mixin WithAfter on Table {
   /// How many milliseconds to wait before doing something.
   IntColumn get after => integer().nullable()();
 }
+
+/// Add the [interval] column.
+mixin WithInterval on Table {
+  /// How often something should happen.
+  IntColumn get interval => integer().nullable()();
+}
