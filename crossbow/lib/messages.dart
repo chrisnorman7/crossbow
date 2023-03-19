@@ -169,3 +169,9 @@ final commandTriggerMessage = Intl.message('Command Trigger');
 
 /// Interval.
 final intervalMessage = Intl.message('Interval');
+
+/// Activate call commands.
+final activateCallCommandsMessage = Intl.message('Activate Commands');
+
+/// Release call commands.
+final releaseCallCommandsMessage = Intl.message('Release Commands');

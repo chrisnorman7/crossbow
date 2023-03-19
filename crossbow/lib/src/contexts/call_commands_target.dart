@@ -13,6 +13,9 @@ enum CallCommandsTarget {
   /// Commands to be called from a [Menu]'s `onCancel` handler.
   menuOnCancel,
 
-  /// Commands called by a [CustomLevelCommand].
-  customLevelCommand,
+  /// Commands called by activating a [CustomLevelCommand].
+  activatingCustomLevelCommand,
+
+  /// Commands called by releasing a [CustomLevelCommand].
+  releaseCustomLevelCommand,
 }

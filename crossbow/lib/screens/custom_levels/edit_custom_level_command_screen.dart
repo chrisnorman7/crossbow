@@ -83,11 +83,18 @@ class EditCustomLevelCommandScreen extends ConsumerWidget {
         ),
         CallCommandsListTile(
           callCommandsContext: CallCommandsContext(
-            target: CallCommandsTarget.customLevelCommand,
+            target: CallCommandsTarget.activatingCustomLevelCommand,
             id: command.id,
           ),
-          title: callCommandsMessage,
-        )
+          title: activateCallCommandsMessage,
+        ),
+        CallCommandsListTile(
+          callCommandsContext: CallCommandsContext(
+            target: CallCommandsTarget.releaseCustomLevelCommand,
+            id: command.id,
+          ),
+          title: releaseCallCommandsMessage,
+        ),
       ],
     );
   }

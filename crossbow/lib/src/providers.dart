@@ -265,6 +265,7 @@ final callCommandsProvider =
     final db = projectContext.db;
     final List<CallCommand> callCommands;
     final commandsDao = db.commandsDao;
+    final customLevelCommandsDao = db.customLevelCommandsDao;
     switch (arg.target) {
       case CallCommandsTarget.command:
         callCommands = await commandsDao.getCallCommands(commandId: id);
@@ -275,9 +276,15 @@ final callCommandsProvider =
       case CallCommandsTarget.menuOnCancel:
         callCommands = await db.menusDao.getOnCancelCallCommands(menuId: id);
         break;
-      case CallCommandsTarget.customLevelCommand:
-        callCommands = await db.customLevelCommandsDao
-            .getCallCommands(customLevelCommandId: id);
+      case CallCommandsTarget.activatingCustomLevelCommand:
+        callCommands = await customLevelCommandsDao.getCallCommands(
+          customLevelCommandId: id,
+        );
+        break;
+      case CallCommandsTarget.releaseCustomLevelCommand:
+        callCommands = await customLevelCommandsDao.getReleaseCommands(
+          customLevelCommandId: id,
+        );
         break;
     }
     final futures = callCommands.map<Future<CallCommandContext>>(
