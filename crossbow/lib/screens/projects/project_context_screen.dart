@@ -331,38 +331,41 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get the dart functions page.
   Widget getDartFunctionsPage(final BuildContext context) {
     final value = ref.watch(dartFunctionsProvider);
-    return value.when(
-      data: (final data) {
-        if (data.isEmpty) {
-          return CenterText(
-            text: nothingToShowMessage,
-            autofocus: true,
-          );
-        }
-        return BuiltSearchableListView(
-          items: data,
-          builder: (final context, final index) {
-            final f = data[index];
-            return SearchableListTile(
-              searchString: f.description,
-              child: ListTile(
-                autofocus: index == 0,
-                title: Text(f.description),
-                onTap: () async {
-                  await pushWidget(
-                    context: context,
-                    builder: (final context) =>
-                        EditDartFunctionScreen(dartFunctionId: f.id),
-                  );
-                  ref.invalidate(dartFunctionsProvider);
-                },
-              ),
+    return NewCallbackShortcuts(
+      newCallback: newDartFunction,
+      child: value.when(
+        data: (final data) {
+          if (data.isEmpty) {
+            return CenterText(
+              text: nothingToShowMessage,
+              autofocus: true,
             );
-          },
-        );
-      },
-      error: ErrorListView.withPositional,
-      loading: LoadingWidget.new,
+          }
+          return BuiltSearchableListView(
+            items: data,
+            builder: (final context, final index) {
+              final f = data[index];
+              return SearchableListTile(
+                searchString: f.description,
+                child: ListTile(
+                  autofocus: index == 0,
+                  title: Text(f.description),
+                  onTap: () async {
+                    await pushWidget(
+                      context: context,
+                      builder: (final context) =>
+                          EditDartFunctionScreen(dartFunctionId: f.id),
+                    );
+                    ref.invalidate(dartFunctionsProvider);
+                  },
+                ),
+              );
+            },
+          );
+        },
+        error: ErrorListView.withPositional,
+        loading: LoadingWidget.new,
+      ),
     );
   }
 
