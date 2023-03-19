@@ -1,5 +1,4 @@
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -196,23 +195,15 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               invalidateCommandProvider();
             },
           ),
-          CallbackShortcuts(
-            bindings: {
-              deleteShortcut: () async {
-                await commands.setUrl(commandId: command.id);
-                invalidateCommandProvider();
-              }
+          UrlListTile(
+            url: command.url,
+            onChanged: (final value) async {
+              await commands.setUrl(
+                commandId: command.id,
+                url: value,
+              );
+              invalidateCommandProvider();
             },
-            child: UrlListTile(
-              url: command.url,
-              onChanged: (final value) async {
-                await commands.setUrl(
-                  commandId: command.id,
-                  url: value,
-                );
-                invalidateCommandProvider();
-              },
-            ),
           ),
           DartFunctionListTile(
             dartFunctionId: command.dartFunctionId,

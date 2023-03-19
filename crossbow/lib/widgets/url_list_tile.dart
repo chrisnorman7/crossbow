@@ -1,6 +1,8 @@
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,40 +35,54 @@ class UrlListTile extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final value = url;
-    return ListTile(
-      autofocus: autofocus,
-      title: Text(title ?? urlMessage),
-      subtitle: Text(value ?? unsetMessage),
-      onTap: () => pushWidget(
-        context: context,
-        builder: (final context) => GetText(
-          onDone: (final value) {
-            Navigator.pop(context);
-            onChanged(value.isEmpty ? null : value);
-          },
-          labelText: urlMessage,
-          text: value ?? '',
-          title: Intl.message('Edit URL'),
-          tooltip: doneMessage,
-          validator: (final value) {
-            final uri = Uri.tryParse(value ?? '');
-            if (uri == null || uri.isAbsolute == false) {
-              return invalidInputMessage;
-            }
-            return null;
-          },
+    return CallbackShortcuts(
+      bindings: {
+        deleteShortcut: () => onChanged(null),
+        SingleActivator(
+          LogicalKeyboardKey.keyT,
+          control: useControlKey,
+          meta: useMetaKey,
+        ): () {
+          if (value != null) {
+            launchUrl(Uri.parse(value));
+          }
+        }
+      },
+      child: ListTile(
+        autofocus: autofocus,
+        title: Text(title ?? urlMessage),
+        subtitle: Text(value ?? unsetMessage),
+        onTap: () => pushWidget(
+          context: context,
+          builder: (final context) => GetText(
+            onDone: (final value) {
+              Navigator.pop(context);
+              onChanged(value.isEmpty ? null : value);
+            },
+            labelText: urlMessage,
+            text: value ?? '',
+            title: Intl.message('Edit URL'),
+            tooltip: doneMessage,
+            validator: (final value) {
+              final uri = Uri.tryParse(value ?? '');
+              if (uri == null || uri.isAbsolute == false) {
+                return invalidInputMessage;
+              }
+              return null;
+            },
+          ),
         ),
-      ),
-      isThreeLine: true,
-      trailing: value == null
-          ? null
-          : IconButton(
-              icon: Icon(
-                Icons.open_in_browser,
-                semanticLabel: Intl.message('Test URL'),
+        isThreeLine: true,
+        trailing: value == null
+            ? null
+            : IconButton(
+                icon: Icon(
+                  Icons.open_in_browser,
+                  semanticLabel: Intl.message('Test URL'),
+                ),
+                onPressed: () => launchUrl(Uri.parse(value)),
               ),
-              onPressed: () => launchUrl(Uri.parse(value)),
-            ),
+      ),
     );
   }
 }
