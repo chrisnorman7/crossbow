@@ -488,3 +488,9 @@ final pushCustomLevelProvider =
     );
   },
 );
+
+/// Provide all dart functions.
+final dartFunctionsProvider = FutureProvider((final ref) async {
+  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  return projectContext.db.dartFunctionsDao.getDartFunctions();
+});
