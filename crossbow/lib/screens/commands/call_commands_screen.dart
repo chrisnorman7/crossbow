@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../constants.dart';
 import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/contexts/call_command_context.dart';
@@ -81,11 +80,24 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
         child: SimpleScaffold(
           title: callCommandsMessage,
           body: Table(children: [headerRow, ...callCommandRows]),
-          floatingActionButton: FloatingActionButton(
-            onPressed: newCallCommand,
-            autofocus: callCommands.isEmpty,
-            tooltip: Intl.message('New Call Command'),
-            child: intlNewIcon,
+          floatingActionButton: Row(
+            children: [
+              TextButton(
+                onPressed: () => pushWidget(
+                  context: context,
+                  builder: (final context) => SelectPinnedCommandScreen(
+                    onChanged: (final value) =>
+                        newCallCommand(commandId: value?.commandId),
+                  ),
+                ),
+                child: Text(Intl.message('Select Pinned Command')),
+              ),
+              TextButton(
+                onPressed: newCallCommand,
+                autofocus: callCommands.isEmpty,
+                child: Text(Intl.message('New Call Command')),
+              ),
+            ],
           ),
         ),
       ),
@@ -97,41 +109,48 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       ref.invalidate(callCommandsProvider.call(widget.callCommandsContext));
 
   /// Create a new call command.
-  Future<void> newCallCommand() async {
+  Future<void> newCallCommand({
+    final int? commandId,
+  }) async {
     final callingId = widget.callCommandsContext.id;
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final db = projectContext.db;
     final callCommandsDao = db.callCommandsDao;
-    final command = await db.commandsDao.createCommand();
-    final commandId = command.id;
+    final int actualCommandId;
+    if (commandId == null) {
+      final command = await db.commandsDao.createCommand();
+      actualCommandId = command.id;
+    } else {
+      actualCommandId = commandId;
+    }
     switch (widget.callCommandsContext.target) {
       case CallCommandsTarget.command:
         await callCommandsDao.createCallCommand(
-          commandId: commandId,
+          commandId: actualCommandId,
           callingCommandId: callingId,
         );
         break;
       case CallCommandsTarget.menuItem:
         await callCommandsDao.createCallCommand(
-          commandId: commandId,
+          commandId: actualCommandId,
           callingMenuItemId: callingId,
         );
         break;
       case CallCommandsTarget.menuOnCancel:
         await callCommandsDao.createCallCommand(
-          commandId: commandId,
+          commandId: actualCommandId,
           onCancelMenuId: callingId,
         );
         break;
       case CallCommandsTarget.activatingCustomLevelCommand:
         await callCommandsDao.createCallCommand(
-          commandId: commandId,
+          commandId: actualCommandId,
           callingCustomLevelCommandId: callingId,
         );
         break;
       case CallCommandsTarget.releaseCustomLevelCommand:
         await callCommandsDao.createCallCommand(
-          commandId: commandId,
+          commandId: actualCommandId,
           releasingCustomLevelCommandId: callingId,
         );
         break;
