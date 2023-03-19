@@ -416,4 +416,13 @@ class ProjectRunner {
       fadeLength: pushCustomLevel.fadeLength,
     );
   }
+
+  /// Handle the given [dartFunction].
+  Future<void> handleDartFunction(final DartFunction dartFunction) async {
+    final f = projectContext.dartFunctionsMap[dartFunction.id];
+    if (f == null) {
+      throw StateError('There is no dart code for $dartFunction.');
+    }
+    await f(this);
+  }
 }

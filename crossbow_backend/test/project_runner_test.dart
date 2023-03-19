@@ -14,6 +14,11 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 import 'custom_database.dart';
 import 'matchers.dart';
 
+class Works implements Exception {
+  /// Create an instance.
+  const Works();
+}
+
 void main() async {
   final db = getDatabase();
   final assetReferencesDao = db.assetReferencesDao;
@@ -24,6 +29,7 @@ void main() async {
   final commandTriggersDao = db.commandTriggersDao;
   final customLevelsDao = db.customLevelsDao;
   final customLevelCommandsDao = db.customLevelCommandsDao;
+  final dartFunctionsDao = db.dartFunctionsDao;
 
   final clink = await assetReferencesDao.createAssetReference(
     folderName: 'interface',
@@ -48,6 +54,7 @@ void main() async {
     assetReferenceEncryptionKeys: {
       boots.id: 'asdf123',
     },
+    dartFunctionsMap: {},
   );
 
   group(
@@ -419,6 +426,29 @@ void main() async {
           expect(levelCommand1.onStop, null);
           expect(levelCommand2.onStart, isNotNull);
           expect(levelCommand2.onStop, isNotNull);
+        },
+      );
+
+      test(
+        '.handleDartFunction',
+        () async {
+          final dartFunction = await dartFunctionsDao.createDartFunction(
+            description: 'Throw something nice.',
+          );
+          expect(
+            projectRunner.projectContext.dartFunctionsMap[dartFunction.id],
+            null,
+          );
+          await expectLater(
+            projectRunner.handleDartFunction(dartFunction),
+            throwsStateError,
+          );
+          projectContext.dartFunctionsMap[dartFunction.id] =
+              (final projectRunner) => throw const Works();
+          await expectLater(
+            projectRunner.handleDartFunction(dartFunction),
+            throwsA(isA<Works>()),
+          );
         },
       );
     },

@@ -15,6 +15,10 @@ import '../../project_runner.dart';
 import '../database/database.dart';
 import '../json/project.dart';
 
+/// The type for the dart functions map.
+typedef DartFunctionsMap
+    = Map<int, Future<void> Function(ProjectRunner projectRunner)>;
+
 /// The context for a particular project.
 class ProjectContext {
   /// Create an instance.
@@ -23,6 +27,7 @@ class ProjectContext {
     required this.project,
     required this.db,
     this.assetReferenceEncryptionKeys = const {},
+    this.dartFunctionsMap = const {},
   });
 
   /// Create an instance from a file.
@@ -30,6 +35,7 @@ class ProjectContext {
     final File file, {
     final String? encryptionKey,
     final Map<int, String> assetReferenceEncryptionKeys = const {},
+    final DartFunctionsMap dartFunctionsMap = const {},
   }) {
     final String data;
     if (encryptionKey == null) {
@@ -48,6 +54,7 @@ class ProjectContext {
       project: project,
       db: db,
       assetReferenceEncryptionKeys: assetReferenceEncryptionKeys,
+      dartFunctionsMap: dartFunctionsMap,
     );
   }
 
@@ -101,6 +108,9 @@ class ProjectContext {
   /// The map of [AssetReference] `id`s to encryption keys for decrypting
   /// assets.
   final Map<int, String> assetReferenceEncryptionKeys;
+
+  /// The custom dart functions to use.
+  final DartFunctionsMap dartFunctionsMap;
 
   /// Get the initial command to run.
   Future<Command> get initialCommand =>
