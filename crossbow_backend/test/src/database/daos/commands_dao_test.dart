@@ -374,11 +374,11 @@ void main() {
         '.setDartFunctionId',
         () async {
           final dartFunction = await dartFunctionsDao.createDartFunction(
-            name: 'Test',
             description: 'Testing.',
           );
-          final command =
-              await commands.createCommand(dartFunctionId: dartFunction.id);
+          final command = await commands.createCommand(
+            dartFunctionId: dartFunction.id,
+          );
           expect(command.dartFunctionId, dartFunction.id);
           var updatedCommand =
               await commands.setDartFunctionId(commandId: command.id);

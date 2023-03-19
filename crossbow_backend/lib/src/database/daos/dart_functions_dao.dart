@@ -14,12 +14,10 @@ class DartFunctionsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Create a new function.
   Future<DartFunction> createDartFunction({
-    required final String name,
     required final String description,
   }) =>
       into(dartFunctions).insertReturning(
         DartFunctionsCompanion(
-          name: Value(name),
           description: Value(description),
         ),
       );

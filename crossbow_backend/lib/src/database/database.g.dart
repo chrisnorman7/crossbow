@@ -2651,14 +2651,6 @@ class $DartFunctionsTable extends DartFunctions
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('Untitled Object'));
   static const VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override
@@ -2666,7 +2658,7 @@ class $DartFunctionsTable extends DartFunctions
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, name, description];
+  List<GeneratedColumn> get $columns => [id, description];
   @override
   String get aliasedName => _alias ?? 'dart_functions';
   @override
@@ -2678,10 +2670,6 @@ class $DartFunctionsTable extends DartFunctions
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     }
     if (data.containsKey('description')) {
       context.handle(
@@ -2702,8 +2690,6 @@ class $DartFunctionsTable extends DartFunctions
     return DartFunction(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
@@ -2719,18 +2705,13 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
   /// The primary key.
   final int id;
 
-  /// The name of this object.
-  final String name;
-
   /// The description of this object.
   final String description;
-  const DartFunction(
-      {required this.id, required this.name, required this.description});
+  const DartFunction({required this.id, required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
     return map;
   }
@@ -2738,7 +2719,6 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
   DartFunctionsCompanion toCompanion(bool nullToAbsent) {
     return DartFunctionsCompanion(
       id: Value(id),
-      name: Value(name),
       description: Value(description),
     );
   }
@@ -2748,7 +2728,6 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DartFunction(
       id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
     );
   }
@@ -2757,69 +2736,58 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
     };
   }
 
-  DartFunction copyWith({int? id, String? name, String? description}) =>
-      DartFunction(
+  DartFunction copyWith({int? id, String? description}) => DartFunction(
         id: id ?? this.id,
-        name: name ?? this.name,
         description: description ?? this.description,
       );
   @override
   String toString() {
     return (StringBuffer('DartFunction(')
           ..write('id: $id, ')
-          ..write('name: $name, ')
           ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, description);
+  int get hashCode => Object.hash(id, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DartFunction &&
           other.id == this.id &&
-          other.name == this.name &&
           other.description == this.description);
 }
 
 class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
   final Value<int> id;
-  final Value<String> name;
   final Value<String> description;
   const DartFunctionsCompanion({
     this.id = const Value.absent(),
-    this.name = const Value.absent(),
     this.description = const Value.absent(),
   });
   DartFunctionsCompanion.insert({
     this.id = const Value.absent(),
-    this.name = const Value.absent(),
     required String description,
   }) : description = Value(description);
   static Insertable<DartFunction> custom({
     Expression<int>? id,
-    Expression<String>? name,
     Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (name != null) 'name': name,
       if (description != null) 'description': description,
     });
   }
 
   DartFunctionsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? description}) {
+      {Value<int>? id, Value<String>? description}) {
     return DartFunctionsCompanion(
       id: id ?? this.id,
-      name: name ?? this.name,
       description: description ?? this.description,
     );
   }
@@ -2829,9 +2797,6 @@ class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -2843,7 +2808,6 @@ class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
   String toString() {
     return (StringBuffer('DartFunctionsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name, ')
           ..write('description: $description')
           ..write(')'))
         .toString();
