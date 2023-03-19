@@ -47,4 +47,11 @@ class DartFunctionsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         DartFunctionsCompanion(description: Value(description)),
       ))
           .single;
+
+  /// Get all dart functions, sorted by description.
+  Future<List<DartFunction>> getDartFunctions() async {
+    final query = select(dartFunctions)
+      ..orderBy([(final table) => OrderingTerm.asc(table.description)]);
+    return query.get();
+  }
 }

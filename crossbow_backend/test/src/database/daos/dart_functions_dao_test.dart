@@ -54,6 +54,21 @@ void main() {
           expect(updatedFunction.description, f.description);
         },
       );
+
+      test(
+        '.getDartFunctions',
+        () async {
+          await db.delete(db.dartFunctions).go();
+          final f2 =
+              await dartFunctionsDao.createDartFunction(description: '2');
+          final f1 =
+              await dartFunctionsDao.createDartFunction(description: '1');
+          final functions = await dartFunctionsDao.getDartFunctions();
+          expect(functions.length, 2);
+          expect(functions.first.id, f1.id);
+          expect(functions.last.id, f2.id);
+        },
+      );
     },
   );
 }
