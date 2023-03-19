@@ -383,6 +383,8 @@ void main() async {
           final levelCommand = level.commands.values.single;
           expect(level.commands.keys.single, trigger1.name);
           expect(levelCommand.interval, command1.interval);
+          expect(levelCommand.onStart, isNotNull);
+          expect(levelCommand.onStop, null);
           final trigger2 = await commandTriggersDao.createCommandTrigger(
             description: 'Trigger 2',
           );
@@ -394,6 +396,10 @@ void main() async {
           await callCommandsDao.createCallCommand(
             commandId: command.id,
             callingCustomLevelCommandId: command2.id,
+          );
+          await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            releasingCustomLevelCommandId: command2.id,
           );
           runner = ProjectRunner(
             projectContext: projectContext,
@@ -409,6 +415,10 @@ void main() async {
           final levelCommand2 = level.commands.values.last;
           expect(levelCommand1.interval, command1.interval);
           expect(levelCommand2.interval, command2.interval);
+          expect(levelCommand1.onStart, isNotNull);
+          expect(levelCommand1.onStop, null);
+          expect(levelCommand2.onStart, isNotNull);
+          expect(levelCommand2.onStop, isNotNull);
         },
       );
     },

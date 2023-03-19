@@ -371,20 +371,29 @@ class ProjectRunner {
               await db.assetReferencesDao.getAssetReference(id: musicId),
             ),
     );
+    final customLevelCommandsDao = db.customLevelCommandsDao;
     for (final customLevelCommand in await db.customLevelsDao
         .getCustomLevelCommands(customLevelId: customLevel.id)) {
       final trigger = await db.commandTriggersDao.getCommandTrigger(
         id: customLevelCommand.commandTriggerId,
       );
-      final callCommands = await db.customLevelCommandsDao.getCallCommands(
+      final callCommands = await customLevelCommandsDao.getCallCommands(
         customLevelCommandId: customLevelCommand.id,
       );
-      if (callCommands.isNotEmpty) {
+      final releaseCommands = await customLevelCommandsDao.getReleaseCommands(
+        customLevelCommandId: customLevelCommand.id,
+      );
+      if (callCommands.isNotEmpty || releaseCommands.isNotEmpty) {
         level.registerCommand(
           trigger.name,
           ziggurat.Command(
             interval: customLevelCommand.interval,
-            onStart: () => handleCallCommands(callCommands),
+            onStart: callCommands.isEmpty
+                ? null
+                : () => handleCallCommands(callCommands),
+            onStop: releaseCommands.isEmpty
+                ? null
+                : () => handleCallCommands(releaseCommands),
           ),
         );
       }
