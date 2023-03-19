@@ -25,6 +25,7 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final int? stopGameId,
     final String? url,
     final int? pushCustomLevelId,
+    final int? dartFunctionId,
   }) =>
       into(commands).insertReturning(
         CommandsCompanion(
@@ -35,6 +36,7 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
           stopGameId: Value(stopGameId),
           url: Value(url),
           pushCustomLevelId: Value(pushCustomLevelId),
+          dartFunctionId: Value(dartFunctionId),
         ),
       );
 
@@ -162,6 +164,16 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   }) async =>
       (await getUpdateQuery(commandId).writeReturning(
         CommandsCompanion(pushCustomLevelId: Value(pushCustomLevelId)),
+      ))
+          .single;
+
+  /// Set the [dartFunctionId] for the command with the given [commandId].
+  Future<Command> setDartFunctionId({
+    required final int commandId,
+    final int? dartFunctionId,
+  }) async =>
+      (await getUpdateQuery(commandId).writeReturning(
+        CommandsCompanion(dartFunctionId: Value(dartFunctionId)),
       ))
           .single;
 }

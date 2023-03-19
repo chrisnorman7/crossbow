@@ -18,6 +18,7 @@ mixin _$CustomLevelCommandsDaoMixin
   $StopGamesTable get stopGames => attachedDatabase.stopGames;
   $PushCustomLevelsTable get pushCustomLevels =>
       attachedDatabase.pushCustomLevels;
+  $DartFunctionsTable get dartFunctions => attachedDatabase.dartFunctions;
   $CommandsTable get commands => attachedDatabase.commands;
   $MenuItemsTable get menuItems => attachedDatabase.menuItems;
   $CallCommandsTable get callCommands => attachedDatabase.callCommands;

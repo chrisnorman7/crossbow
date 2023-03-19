@@ -44,6 +44,7 @@ part 'database.g.dart';
     CustomLevelsDao,
     CustomLevelCommandsDao,
     PushCustomLevelsDao,
+    DartFunctionsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
@@ -121,6 +122,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           }
           if (from < 11) {
             await m.createTable(dartFunctions);
+            await m.addColumn(commands, commands.dartFunctionId);
           }
         },
       );

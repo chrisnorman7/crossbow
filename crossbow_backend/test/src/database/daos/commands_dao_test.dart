@@ -15,6 +15,7 @@ void main() {
       final pinnedCommandsDao = db.pinnedCommandsDao;
       final customLevelsDao = db.customLevelsDao;
       final pushCustomLevelsDao = db.pushCustomLevelsDao;
+      final dartFunctionsDao = db.dartFunctionsDao;
 
       test(
         '.createCommand',
@@ -366,6 +367,29 @@ void main() {
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.pushCustomLevelId, pushCustomLevel.id);
+        },
+      );
+
+      test(
+        '.setDartFunctionId',
+        () async {
+          final dartFunction = await dartFunctionsDao.createDartFunction(
+            name: 'Test',
+            description: 'Testing.',
+          );
+          final command =
+              await commands.createCommand(dartFunctionId: dartFunction.id);
+          expect(command.dartFunctionId, dartFunction.id);
+          var updatedCommand =
+              await commands.setDartFunctionId(commandId: command.id);
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.dartFunctionId, null);
+          updatedCommand = await commands.setDartFunctionId(
+            commandId: command.id,
+            dartFunctionId: dartFunction.id,
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.dartFunctionId, dartFunction.id);
         },
       );
     },

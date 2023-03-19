@@ -13,6 +13,7 @@ mixin _$MenuItemsDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $CustomLevelsTable get customLevels => attachedDatabase.customLevels;
   $PushCustomLevelsTable get pushCustomLevels =>
       attachedDatabase.pushCustomLevels;
+  $DartFunctionsTable get dartFunctions => attachedDatabase.dartFunctions;
   $CommandsTable get commands => attachedDatabase.commands;
   $CommandTriggerKeyboardKeysTable get commandTriggerKeyboardKeys =>
       attachedDatabase.commandTriggerKeyboardKeys;

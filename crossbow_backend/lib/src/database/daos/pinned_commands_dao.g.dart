@@ -12,6 +12,7 @@ mixin _$PinnedCommandsDaoMixin on DatabaseAccessor<CrossbowBackendDatabase> {
   $CustomLevelsTable get customLevels => attachedDatabase.customLevels;
   $PushCustomLevelsTable get pushCustomLevels =>
       attachedDatabase.pushCustomLevels;
+  $DartFunctionsTable get dartFunctions => attachedDatabase.dartFunctions;
   $CommandsTable get commands => attachedDatabase.commands;
   $PinnedCommandsTable get pinnedCommands => attachedDatabase.pinnedCommands;
 }

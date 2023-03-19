@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'asset_references.dart';
+import 'dart_functions.dart';
 import 'mixins.dart';
 import 'pop_levels.dart';
 import 'push_custom_levels.dart';
@@ -42,5 +43,10 @@ class Commands extends Table with WithPrimaryKey {
   /// The ID of a push custom level.
   IntColumn get pushCustomLevelId => integer()
       .references(PushCustomLevels, #id, onDelete: KeyAction.setNull)
+      .nullable()();
+
+  /// The ID of a dart function to call.
+  IntColumn get dartFunctionId => integer()
+      .references(DartFunctions, #id, onDelete: KeyAction.setNull)
       .nullable()();
 }

@@ -5,6 +5,7 @@ export 'command_triggers_dao.dart';
 export 'commands_dao.dart';
 export 'custom_level_commands_dao.dart';
 export 'custom_levels_dao.dart';
+export 'dart_functions_dao.dart';
 export 'menu_items_dao.dart';
 export 'menus_dao.dart';
 export 'pinned_commands_dao.dart';

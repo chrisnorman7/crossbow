@@ -2636,6 +2636,220 @@ class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
   }
 }
 
+class $DartFunctionsTable extends DartFunctions
+    with TableInfo<$DartFunctionsTable, DartFunction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DartFunctionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, description];
+  @override
+  String get aliasedName => _alias ?? 'dart_functions';
+  @override
+  String get actualTableName => 'dart_functions';
+  @override
+  VerificationContext validateIntegrity(Insertable<DartFunction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DartFunction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DartFunction(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+    );
+  }
+
+  @override
+  $DartFunctionsTable createAlias(String alias) {
+    return $DartFunctionsTable(attachedDatabase, alias);
+  }
+}
+
+class DartFunction extends DataClass implements Insertable<DartFunction> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The description of this object.
+  final String description;
+  const DartFunction(
+      {required this.id, required this.name, required this.description});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    return map;
+  }
+
+  DartFunctionsCompanion toCompanion(bool nullToAbsent) {
+    return DartFunctionsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: Value(description),
+    );
+  }
+
+  factory DartFunction.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DartFunction(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+    };
+  }
+
+  DartFunction copyWith({int? id, String? name, String? description}) =>
+      DartFunction(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('DartFunction(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DartFunction &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description);
+}
+
+class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> description;
+  const DartFunctionsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+  });
+  DartFunctionsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    required String description,
+  }) : description = Value(description);
+  static Insertable<DartFunction> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+    });
+  }
+
+  DartFunctionsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<String>? description}) {
+    return DartFunctionsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DartFunctionsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2706,6 +2920,15 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES push_custom_levels (id) ON DELETE SET NULL'));
+  static const VerificationMeta _dartFunctionIdMeta =
+      const VerificationMeta('dartFunctionId');
+  @override
+  late final GeneratedColumn<int> dartFunctionId = GeneratedColumn<int>(
+      'dart_function_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES dart_functions (id) ON DELETE SET NULL'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2715,7 +2938,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
         popLevelId,
         stopGameId,
         url,
-        pushCustomLevelId
+        pushCustomLevelId,
+        dartFunctionId
       ];
   @override
   String get aliasedName => _alias ?? 'commands';
@@ -2769,6 +2993,12 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           pushCustomLevelId.isAcceptableOrUnknown(
               data['push_custom_level_id']!, _pushCustomLevelIdMeta));
     }
+    if (data.containsKey('dart_function_id')) {
+      context.handle(
+          _dartFunctionIdMeta,
+          dartFunctionId.isAcceptableOrUnknown(
+              data['dart_function_id']!, _dartFunctionIdMeta));
+    }
     return context;
   }
 
@@ -2794,6 +3024,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           .read(DriftSqlType.string, data['${effectivePrefix}url']),
       pushCustomLevelId: attachedDatabase.typeMapping.read(
           DriftSqlType.int, data['${effectivePrefix}push_custom_level_id']),
+      dartFunctionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}dart_function_id']),
     );
   }
 
@@ -2827,6 +3059,9 @@ class Command extends DataClass implements Insertable<Command> {
 
   /// The ID of a push custom level.
   final int? pushCustomLevelId;
+
+  /// The ID of a dart function to call.
+  final int? dartFunctionId;
   const Command(
       {required this.id,
       this.pushMenuId,
@@ -2835,7 +3070,8 @@ class Command extends DataClass implements Insertable<Command> {
       this.popLevelId,
       this.stopGameId,
       this.url,
-      this.pushCustomLevelId});
+      this.pushCustomLevelId,
+      this.dartFunctionId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2860,6 +3096,9 @@ class Command extends DataClass implements Insertable<Command> {
     }
     if (!nullToAbsent || pushCustomLevelId != null) {
       map['push_custom_level_id'] = Variable<int>(pushCustomLevelId);
+    }
+    if (!nullToAbsent || dartFunctionId != null) {
+      map['dart_function_id'] = Variable<int>(dartFunctionId);
     }
     return map;
   }
@@ -2886,6 +3125,9 @@ class Command extends DataClass implements Insertable<Command> {
       pushCustomLevelId: pushCustomLevelId == null && nullToAbsent
           ? const Value.absent()
           : Value(pushCustomLevelId),
+      dartFunctionId: dartFunctionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dartFunctionId),
     );
   }
 
@@ -2901,6 +3143,7 @@ class Command extends DataClass implements Insertable<Command> {
       stopGameId: serializer.fromJson<int?>(json['stopGameId']),
       url: serializer.fromJson<String?>(json['url']),
       pushCustomLevelId: serializer.fromJson<int?>(json['pushCustomLevelId']),
+      dartFunctionId: serializer.fromJson<int?>(json['dartFunctionId']),
     );
   }
   @override
@@ -2915,6 +3158,7 @@ class Command extends DataClass implements Insertable<Command> {
       'stopGameId': serializer.toJson<int?>(stopGameId),
       'url': serializer.toJson<String?>(url),
       'pushCustomLevelId': serializer.toJson<int?>(pushCustomLevelId),
+      'dartFunctionId': serializer.toJson<int?>(dartFunctionId),
     };
   }
 
@@ -2926,7 +3170,8 @@ class Command extends DataClass implements Insertable<Command> {
           Value<int?> popLevelId = const Value.absent(),
           Value<int?> stopGameId = const Value.absent(),
           Value<String?> url = const Value.absent(),
-          Value<int?> pushCustomLevelId = const Value.absent()}) =>
+          Value<int?> pushCustomLevelId = const Value.absent(),
+          Value<int?> dartFunctionId = const Value.absent()}) =>
       Command(
         id: id ?? this.id,
         pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
@@ -2939,6 +3184,8 @@ class Command extends DataClass implements Insertable<Command> {
         pushCustomLevelId: pushCustomLevelId.present
             ? pushCustomLevelId.value
             : this.pushCustomLevelId,
+        dartFunctionId:
+            dartFunctionId.present ? dartFunctionId.value : this.dartFunctionId,
       );
   @override
   String toString() {
@@ -2950,14 +3197,15 @@ class Command extends DataClass implements Insertable<Command> {
           ..write('popLevelId: $popLevelId, ')
           ..write('stopGameId: $stopGameId, ')
           ..write('url: $url, ')
-          ..write('pushCustomLevelId: $pushCustomLevelId')
+          ..write('pushCustomLevelId: $pushCustomLevelId, ')
+          ..write('dartFunctionId: $dartFunctionId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, pushMenuId, messageText, messageSoundId,
-      popLevelId, stopGameId, url, pushCustomLevelId);
+      popLevelId, stopGameId, url, pushCustomLevelId, dartFunctionId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2969,7 +3217,8 @@ class Command extends DataClass implements Insertable<Command> {
           other.popLevelId == this.popLevelId &&
           other.stopGameId == this.stopGameId &&
           other.url == this.url &&
-          other.pushCustomLevelId == this.pushCustomLevelId);
+          other.pushCustomLevelId == this.pushCustomLevelId &&
+          other.dartFunctionId == this.dartFunctionId);
 }
 
 class CommandsCompanion extends UpdateCompanion<Command> {
@@ -2981,6 +3230,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int?> stopGameId;
   final Value<String?> url;
   final Value<int?> pushCustomLevelId;
+  final Value<int?> dartFunctionId;
   const CommandsCompanion({
     this.id = const Value.absent(),
     this.pushMenuId = const Value.absent(),
@@ -2990,6 +3240,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.stopGameId = const Value.absent(),
     this.url = const Value.absent(),
     this.pushCustomLevelId = const Value.absent(),
+    this.dartFunctionId = const Value.absent(),
   });
   CommandsCompanion.insert({
     this.id = const Value.absent(),
@@ -3000,6 +3251,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.stopGameId = const Value.absent(),
     this.url = const Value.absent(),
     this.pushCustomLevelId = const Value.absent(),
+    this.dartFunctionId = const Value.absent(),
   });
   static Insertable<Command> custom({
     Expression<int>? id,
@@ -3010,6 +3262,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     Expression<int>? stopGameId,
     Expression<String>? url,
     Expression<int>? pushCustomLevelId,
+    Expression<int>? dartFunctionId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3020,6 +3273,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       if (stopGameId != null) 'stop_game_id': stopGameId,
       if (url != null) 'url': url,
       if (pushCustomLevelId != null) 'push_custom_level_id': pushCustomLevelId,
+      if (dartFunctionId != null) 'dart_function_id': dartFunctionId,
     });
   }
 
@@ -3031,7 +3285,8 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       Value<int?>? popLevelId,
       Value<int?>? stopGameId,
       Value<String?>? url,
-      Value<int?>? pushCustomLevelId}) {
+      Value<int?>? pushCustomLevelId,
+      Value<int?>? dartFunctionId}) {
     return CommandsCompanion(
       id: id ?? this.id,
       pushMenuId: pushMenuId ?? this.pushMenuId,
@@ -3041,6 +3296,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       stopGameId: stopGameId ?? this.stopGameId,
       url: url ?? this.url,
       pushCustomLevelId: pushCustomLevelId ?? this.pushCustomLevelId,
+      dartFunctionId: dartFunctionId ?? this.dartFunctionId,
     );
   }
 
@@ -3071,6 +3327,9 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     if (pushCustomLevelId.present) {
       map['push_custom_level_id'] = Variable<int>(pushCustomLevelId.value);
     }
+    if (dartFunctionId.present) {
+      map['dart_function_id'] = Variable<int>(dartFunctionId.value);
+    }
     return map;
   }
 
@@ -3084,7 +3343,8 @@ class CommandsCompanion extends UpdateCompanion<Command> {
           ..write('popLevelId: $popLevelId, ')
           ..write('stopGameId: $stopGameId, ')
           ..write('url: $url, ')
-          ..write('pushCustomLevelId: $pushCustomLevelId')
+          ..write('pushCustomLevelId: $pushCustomLevelId, ')
+          ..write('dartFunctionId: $dartFunctionId')
           ..write(')'))
         .toString();
   }
@@ -4115,220 +4375,6 @@ class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
   }
 }
 
-class $DartFunctionsTable extends DartFunctions
-    with TableInfo<$DartFunctionsTable, DartFunction> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $DartFunctionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('Untitled Object'));
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, name, description];
-  @override
-  String get aliasedName => _alias ?? 'dart_functions';
-  @override
-  String get actualTableName => 'dart_functions';
-  @override
-  VerificationContext validateIntegrity(Insertable<DartFunction> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  DartFunction map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DartFunction(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-    );
-  }
-
-  @override
-  $DartFunctionsTable createAlias(String alias) {
-    return $DartFunctionsTable(attachedDatabase, alias);
-  }
-}
-
-class DartFunction extends DataClass implements Insertable<DartFunction> {
-  /// The primary key.
-  final int id;
-
-  /// The name of this object.
-  final String name;
-
-  /// The description of this object.
-  final String description;
-  const DartFunction(
-      {required this.id, required this.name, required this.description});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['description'] = Variable<String>(description);
-    return map;
-  }
-
-  DartFunctionsCompanion toCompanion(bool nullToAbsent) {
-    return DartFunctionsCompanion(
-      id: Value(id),
-      name: Value(name),
-      description: Value(description),
-    );
-  }
-
-  factory DartFunction.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DartFunction(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String>(json['description']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String>(description),
-    };
-  }
-
-  DartFunction copyWith({int? id, String? name, String? description}) =>
-      DartFunction(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        description: description ?? this.description,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DartFunction(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, description);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DartFunction &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.description == this.description);
-}
-
-class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<String> description;
-  const DartFunctionsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.description = const Value.absent(),
-  });
-  DartFunctionsCompanion.insert({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    required String description,
-  }) : description = Value(description);
-  static Insertable<DartFunction> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<String>? description,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (description != null) 'description': description,
-    });
-  }
-
-  DartFunctionsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? description}) {
-    return DartFunctionsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DartFunctionsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -4345,12 +4391,12 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   late final $CustomLevelsTable customLevels = $CustomLevelsTable(this);
   late final $PushCustomLevelsTable pushCustomLevels =
       $PushCustomLevelsTable(this);
+  late final $DartFunctionsTable dartFunctions = $DartFunctionsTable(this);
   late final $CommandsTable commands = $CommandsTable(this);
   late final $CustomLevelCommandsTable customLevelCommands =
       $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
-  late final $DartFunctionsTable dartFunctions = $DartFunctionsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -4379,6 +4425,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       CustomLevelCommandsDao(this as CrossbowBackendDatabase);
   late final PushCustomLevelsDao pushCustomLevelsDao =
       PushCustomLevelsDao(this as CrossbowBackendDatabase);
+  late final DartFunctionsDao dartFunctionsDao =
+      DartFunctionsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4394,11 +4442,11 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         stopGames,
         customLevels,
         pushCustomLevels,
+        dartFunctions,
         commands,
         customLevelCommands,
         callCommands,
-        pinnedCommands,
-        dartFunctions
+        pinnedCommands
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -4503,6 +4551,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
           ),
           WritePropagation(
             on: TableUpdateQuery.onTableName('push_custom_levels',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('commands', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('dart_functions',
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('commands', kind: UpdateKind.update),
