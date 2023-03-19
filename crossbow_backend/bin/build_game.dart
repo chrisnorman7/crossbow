@@ -15,6 +15,13 @@ const code = '''
 import 'dart:io';
 import 'package:crossbow_backend/crossbow_backend.dart';
 
+{% for dartFunction in dartFunctions %}
+/// {{ dartFunction.description }}
+Future<void> function{{ dartFunction.id }}(final ProjectRunner projectRunner) async {
+  // TODO(Whoever): Code this function.
+}
+{% endfor %}
+
 Future<void> main() async {
   final projectContext = ProjectContext.fromFile(
     File('{{ filename}}'),
@@ -22,6 +29,11 @@ Future<void> main() async {
     assetReferenceEncryptionKeys: {
       {% for id, key in assetReferenceEncryptionKeys %}
       {{ id }}: '{{ key }}',
+      {% endfor %}
+    },
+    dartFunctionsMap: {
+      {% for dartFunction in dartFunctions %}
+      {{ dartFunction.id }}: function{{ dartFunction.id }},
       {% endfor %}
     },
   );
@@ -139,6 +151,7 @@ Future<void> main(final List<String> args) async {
       );
     }
   }
+  final dartFunctions = await db.dartFunctionsDao.getDartFunctions();
   print('Closing database...');
   await db.close();
   final when = DateTime.now();
@@ -149,7 +162,9 @@ Future<void> main(final List<String> args) async {
     'filename': path.basename(filename),
     'encryptionKey': encryptionKey,
     'assetReferenceEncryptionKeys': encryptionKeys,
+    'dartFunctions': dartFunctions.map((final e) => e.toJson()),
   });
+  print(output);
   final formatter = DartFormatter();
   final projectNameSnake = project.projectName.snakeCase;
   final outputFilename = path.join(
