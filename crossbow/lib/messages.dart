@@ -178,3 +178,6 @@ final releaseCallCommandsMessage = Intl.message('Release Commands');
 
 /// Description.
 final descriptionMessage = Intl.message('Description');
+
+/// Dart function.
+final dartFunctionMessage = Intl.message('Dart Function');

@@ -14,6 +14,7 @@ import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/call_commands_list_tile.dart';
+import '../../widgets/dart_function_list_tile.dart';
 import '../../widgets/pop_level_list_tile.dart';
 import '../../widgets/push_custom_level_list_tile.dart';
 import '../../widgets/push_menu_list_tile.dart';
@@ -213,6 +214,16 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               },
             ),
           ),
+          DartFunctionListTile(
+            dartFunctionId: command.dartFunctionId,
+            onChanged: (final value) async {
+              await commands.setDartFunctionId(
+                commandId: command.id,
+                dartFunctionId: value,
+              );
+              invalidateCommandProvider();
+            },
+          )
         ],
       ),
     );
