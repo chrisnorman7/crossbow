@@ -90,7 +90,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                         newCallCommand(commandId: value?.commandId),
                   ),
                 ),
-                child: Text(Intl.message('Select Pinned Command')),
+                child: Text(Intl.message('New Pinned Call Command')),
               ),
               TextButton(
                 onPressed: newCallCommand,
@@ -220,22 +220,17 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                             callCommandId: callCommand.id,
                             commandId: value.commandId,
                           );
-                        }
-                        if ((await commandsDao.isPinned(
-                              commandId: callCommand.commandId,
-                            )) ==
-                            false) {
-                          await utilsDao.deleteCommand(
-                            await commandsDao.getCommand(
+                          if (pinnedCommand == null) {
+                            // The old command wasn't pinned, let's delete it.
+                            final command = await commandsDao.getCommand(
                               id: callCommand.commandId,
-                            ),
-                          );
+                            );
+                            await utilsDao.deleteCommand(command);
+                          }
                         }
-                        if (pinnedCommand == null) {
-                          await projectContext.db.callCommandsDao
-                              .deleteCallCommand(callCommandId: callCommand.id);
-                        }
+                        invalidateCallCommandsProvider();
                       },
+                      pinnedCommandId: pinnedCommand?.id,
                     ),
                   ),
                   child: Text(
