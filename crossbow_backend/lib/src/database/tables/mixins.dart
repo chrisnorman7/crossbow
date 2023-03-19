@@ -14,6 +14,12 @@ mixin WithName on Table {
       .withDefault(const Constant('Untitled Object'))();
 }
 
+/// Add a [description] column.
+mixin WithDescription on Table {
+  /// The description of this object.
+  TextColumn get description => text()();
+}
+
 /// Add a [fadeLength] column.
 mixin WithFadeLength on Table {
   /// The fade length to use when pushing a level.
