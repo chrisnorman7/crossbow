@@ -26,6 +26,7 @@ part 'database.g.dart';
     CustomLevels,
     CustomLevelCommands,
     PushCustomLevels,
+    DartFunctions,
   ],
   daos: [
     MenusDao,
@@ -59,7 +60,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   /// Migrate the database.
   @override
@@ -117,6 +118,9 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
               callCommands,
               callCommands.releasingCustomLevelCommandId,
             );
+          }
+          if (from < 11) {
+            await m.createTable(dartFunctions);
           }
         },
       );

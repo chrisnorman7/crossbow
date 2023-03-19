@@ -685,7 +685,7 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
   /// The primary key.
   final int id;
 
-  /// The description of this command trigger.
+  /// The description of this object.
   final String description;
 
   /// The game controller button that will trigger this command.
@@ -4115,6 +4115,220 @@ class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
   }
 }
 
+class $DartFunctionsTable extends DartFunctions
+    with TableInfo<$DartFunctionsTable, DartFunction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DartFunctionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, description];
+  @override
+  String get aliasedName => _alias ?? 'dart_functions';
+  @override
+  String get actualTableName => 'dart_functions';
+  @override
+  VerificationContext validateIntegrity(Insertable<DartFunction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DartFunction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DartFunction(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+    );
+  }
+
+  @override
+  $DartFunctionsTable createAlias(String alias) {
+    return $DartFunctionsTable(attachedDatabase, alias);
+  }
+}
+
+class DartFunction extends DataClass implements Insertable<DartFunction> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The description of this object.
+  final String description;
+  const DartFunction(
+      {required this.id, required this.name, required this.description});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    return map;
+  }
+
+  DartFunctionsCompanion toCompanion(bool nullToAbsent) {
+    return DartFunctionsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: Value(description),
+    );
+  }
+
+  factory DartFunction.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DartFunction(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+    };
+  }
+
+  DartFunction copyWith({int? id, String? name, String? description}) =>
+      DartFunction(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('DartFunction(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DartFunction &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description);
+}
+
+class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> description;
+  const DartFunctionsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+  });
+  DartFunctionsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    required String description,
+  }) : description = Value(description);
+  static Insertable<DartFunction> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+    });
+  }
+
+  DartFunctionsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<String>? description}) {
+    return DartFunctionsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DartFunctionsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -4136,6 +4350,7 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
+  late final $DartFunctionsTable dartFunctions = $DartFunctionsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -4182,7 +4397,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         commands,
         customLevelCommands,
         callCommands,
-        pinnedCommands
+        pinnedCommands,
+        dartFunctions
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(

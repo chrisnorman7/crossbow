@@ -5,6 +5,7 @@ export 'command_triggers.dart';
 export 'commands.dart';
 export 'custom_level_commands.dart';
 export 'custom_levels.dart';
+export 'dart_functions.dart';
 export 'menu_items.dart';
 export 'menus.dart';
 export 'pinned_commands.dart';
