@@ -19,6 +19,7 @@ import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
+import '../commands/edit_dart_function_screen.dart';
 import '../custom_levels/edit_custom_level_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
@@ -81,6 +82,16 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               floatingActionButton: FloatingActionButton(
                 onPressed: newCommandTrigger,
                 tooltip: Intl.message('New Command Trigger'),
+                child: intlNewIcon,
+              ),
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Dart Functions'),
+              icon: Text(Intl.message('Functions that can be coded in Dart.')),
+              builder: getDartFunctionsPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: newDartFunction,
+                tooltip: Intl.message('New Dart Function'),
                 child: intlNewIcon,
               ),
             ),
@@ -317,6 +328,44 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     );
   }
 
+  /// Get the dart functions page.
+  Widget getDartFunctionsPage(final BuildContext context) {
+    final value = ref.watch(dartFunctionsProvider);
+    return value.when(
+      data: (final data) {
+        if (data.isEmpty) {
+          return CenterText(
+            text: nothingToShowMessage,
+            autofocus: true,
+          );
+        }
+        return BuiltSearchableListView(
+          items: data,
+          builder: (final context, final index) {
+            final f = data[index];
+            return SearchableListTile(
+              searchString: f.description,
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(f.description),
+                onTap: () async {
+                  await pushWidget(
+                    context: context,
+                    builder: (final context) =>
+                        EditDartFunctionScreen(dartFunctionId: f.id),
+                  );
+                  ref.invalidate(dartFunctionsProvider);
+                },
+              ),
+            );
+          },
+        );
+      },
+      error: ErrorListView.withPositional,
+      loading: LoadingWidget.new,
+    );
+  }
+
   /// Get the pinned commands page.
   Widget getPinnedCommandsPage(final BuildContext context) {
     final value = ref.watch(pinnedCommandsProvider);
@@ -515,5 +564,22 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
       );
     }
     ref.invalidate(customLevelsProvider);
+  }
+
+  /// Create a new dart function.
+  Future<void> newDartFunction() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final dartFunction =
+        await projectContext.db.dartFunctionsDao.createDartFunction(
+      description: 'A function with no description.',
+    );
+    if (mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final context) =>
+            EditDartFunctionScreen(dartFunctionId: dartFunction.id),
+      );
+    }
+    ref.invalidate(dartFunctionsProvider);
   }
 }

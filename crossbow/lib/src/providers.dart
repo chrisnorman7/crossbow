@@ -494,3 +494,13 @@ final dartFunctionsProvider = FutureProvider((final ref) async {
   final projectContext = ref.watch(projectContextNotifierProvider)!;
   return projectContext.db.dartFunctionsDao.getDartFunctions();
 });
+
+/// Provide a single dart function.
+final dartFunctionProvider =
+    FutureProvider.family<ValueContext<DartFunction>, int>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final f = await projectContext.db.dartFunctionsDao.getDartFunction(id: arg);
+    return ValueContext(projectContext: projectContext, value: f);
+  },
+);

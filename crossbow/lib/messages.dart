@@ -175,3 +175,6 @@ final activateCallCommandsMessage = Intl.message('Activate Commands');
 
 /// Release call commands.
 final releaseCallCommandsMessage = Intl.message('Release Commands');
+
+/// Description.
+final descriptionMessage = Intl.message('Description');

@@ -69,7 +69,7 @@ class EditCommandTriggerScreenState
             );
             invalidateCommandTriggerProvider();
           },
-          header: Intl.message('Description'),
+          header: descriptionMessage,
           autofocus: true,
         ),
         ListTile(
