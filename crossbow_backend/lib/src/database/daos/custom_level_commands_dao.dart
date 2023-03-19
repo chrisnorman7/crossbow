@@ -58,14 +58,26 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (delete(customLevelCommands)..where((final table) => table.id.equals(id)))
           .go();
 
-  /// Get the call commands associated with the custom level command with the
-  /// given [customLevelCommandId].
+  /// Get the activation call commands associated with the custom level command
+  /// with the given [customLevelCommandId].
   Future<List<CallCommand>> getCallCommands({
     required final int customLevelCommandId,
   }) =>
       (select(callCommands)
             ..where(
               (final table) => table.callingCustomLevelCommandId
+                  .equals(customLevelCommandId),
+            ))
+          .get();
+
+  /// Get the release call commands associated with the custom level command
+  /// with the given [customLevelCommandId].
+  Future<List<CallCommand>> getReleaseCommands({
+    required final int customLevelCommandId,
+  }) =>
+      (select(callCommands)
+            ..where(
+              (final table) => table.releasingCustomLevelCommandId
                   .equals(customLevelCommandId),
             ))
           .get();

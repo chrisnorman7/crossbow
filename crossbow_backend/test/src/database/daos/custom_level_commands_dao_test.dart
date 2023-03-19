@@ -141,6 +141,33 @@ void main() {
       );
 
       test(
+        '.getReleaseCommands',
+        () async {
+          final level = await customLevelsDao.createCustomLevel(name: 'Test');
+          final customLevelCommand =
+              await customLevelCommandsDao.createCustomLevelCommand(
+            customLevelId: level.id,
+            commandTriggerId: commandTrigger.id,
+          );
+          final command = await commandsDao.createCommand();
+          final callCommand1 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            releasingCustomLevelCommandId: customLevelCommand.id,
+          );
+          final callCommand2 = await callCommandsDao.createCallCommand(
+            commandId: command.id,
+            releasingCustomLevelCommandId: customLevelCommand.id,
+          );
+          final callCommands = await customLevelCommandsDao.getReleaseCommands(
+            customLevelCommandId: customLevelCommand.id,
+          );
+          expect(callCommands.length, 2);
+          expect(callCommands.first.id, callCommand1.id);
+          expect(callCommands.last.id, callCommand2.id);
+        },
+      );
+
+      test(
         '.setInterval',
         () async {
           final level =
