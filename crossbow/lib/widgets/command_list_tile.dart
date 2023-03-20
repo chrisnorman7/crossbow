@@ -11,6 +11,7 @@ import '../screens/commands/select_pinned_command_screen.dart';
 import '../src/providers.dart';
 import '../util.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 
 /// A list tile that allows editing a command.
@@ -92,53 +93,56 @@ class CommandListTileState extends ConsumerState<CommandListTile> {
       );
     }
     final value = ref.watch(commandProvider.call(commandId));
-    return value.when(
-      data: (final valueContext) {
-        final projectContext = valueContext.projectContext;
-        final command = valueContext.value;
-        final pinnedCommand = valueContext.pinnedCommand;
-        return CallbackShortcuts(
-          bindings: {
-            deleteHotkey: () async {
-              if (widget.nullable) {
-                if (pinnedCommand != null) {
-                  await intlConfirm(
-                    context: context,
-                    message: Intl.message(
-                      'Are you sure you want to delete this command?',
-                    ),
-                    title: confirmDeleteTitle,
-                    yesCallback: () async {
-                      Navigator.of(context).pop();
-                      await projectContext.db.utilsDao.deleteCommand(command);
-                      widget.onChanged(null);
-                    },
-                  );
-                } else {
-                  widget.onChanged(null);
+    return CommonShortcuts(
+      copyText: commandId.toString(),
+      child: value.when(
+        data: (final valueContext) {
+          final projectContext = valueContext.projectContext;
+          final command = valueContext.value;
+          final pinnedCommand = valueContext.pinnedCommand;
+          return CallbackShortcuts(
+            bindings: {
+              deleteHotkey: () async {
+                if (widget.nullable) {
+                  if (pinnedCommand != null) {
+                    await intlConfirm(
+                      context: context,
+                      message: Intl.message(
+                        'Are you sure you want to delete this command?',
+                      ),
+                      title: confirmDeleteTitle,
+                      yesCallback: () async {
+                        Navigator.of(context).pop();
+                        await projectContext.db.utilsDao.deleteCommand(command);
+                        widget.onChanged(null);
+                      },
+                    );
+                  } else {
+                    widget.onChanged(null);
+                  }
                 }
               }
-            }
-          },
-          child: AssetReferencePlaySoundSemantics(
-            assetReferenceId: command.messageSoundId,
-            child: ListTile(
-              autofocus: widget.autofocus,
-              title: Text(widget.title),
-              subtitle: Text(setMessage),
-              onTap: () => pushWidget(
-                context: context,
-                builder: (final context) => EditCommandScreen(
-                  commandId: command.id,
-                  onChanged: widget.onChanged,
+            },
+            child: AssetReferencePlaySoundSemantics(
+              assetReferenceId: command.messageSoundId,
+              child: ListTile(
+                autofocus: widget.autofocus,
+                title: Text(widget.title),
+                subtitle: Text(setMessage),
+                onTap: () => pushWidget(
+                  context: context,
+                  builder: (final context) => EditCommandScreen(
+                    commandId: command.id,
+                    onChanged: widget.onChanged,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-      error: ErrorListTile.withPositional,
-      loading: LoadingWidget.new,
+          );
+        },
+        error: ErrorListTile.withPositional,
+        loading: LoadingWidget.new,
+      ),
     );
   }
 }

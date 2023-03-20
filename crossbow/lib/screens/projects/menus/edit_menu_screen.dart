@@ -18,7 +18,7 @@ import '../../../util.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
 import '../../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../../widgets/call_commands_list_tile.dart';
-import '../../../widgets/new_callback_shortcuts.dart';
+import '../../../widgets/common_shortcuts.dart';
 import 'edit_menu_item_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
@@ -156,7 +156,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     final menusDao = db.menusDao;
     final menu = menuContext.value;
     final menuItems = menuContext.menuItems;
-    return NewCallbackShortcuts(
+    return CommonShortcuts(
       newCallback: newMenuItem,
       child: ReorderableList(
         itemBuilder: (final context, final index) {

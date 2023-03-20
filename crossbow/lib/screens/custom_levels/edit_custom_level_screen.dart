@@ -12,7 +12,7 @@ import '../../messages.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
-import '../../widgets/new_callback_shortcuts.dart';
+import '../../widgets/common_shortcuts.dart';
 import '../command_triggers/select_command_trigger_screen.dart';
 import 'edit_custom_level_command_screen.dart';
 
@@ -175,7 +175,7 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
             },
           );
         }
-        return NewCallbackShortcuts(newCallback: newCommand, child: child);
+        return CommonShortcuts(newCallback: newCommand, child: child);
       },
       error: ErrorListView.withPositional,
       loading: LoadingWidget.new,
