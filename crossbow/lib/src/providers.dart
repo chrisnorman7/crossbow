@@ -379,6 +379,14 @@ final commandTriggersProvider = FutureProvider<List<CommandTriggerContext>>(
             commandTriggerKeyboardKey: keyboardKey.value,
           ),
         );
+      } else {
+        list.add(
+          CommandTriggerContext(
+            projectContext: projectContext,
+            value: commandTrigger,
+            commandTriggerKeyboardKey: null,
+          ),
+        );
       }
     }
     return list;
