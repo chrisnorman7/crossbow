@@ -1,16 +1,16 @@
 import 'dart:io';
 
 import 'package:backstreets_widgets/widgets.dart';
-import 'package:crossbow_backend/crossbow_backend.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 
 import '../../messages.dart';
+import '../../src/contexts/asset_context.dart';
 import '../../src/providers.dart';
-import '../../widgets/play_sound_semantics.dart';
+import '../../widgets/common_shortcuts.dart';
+import '../../widgets/detached_asset_reference_list_tile.dart';
 
 /// A screen to show assets.
 class AssetsPage extends ConsumerStatefulWidget {
@@ -45,10 +45,13 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
           final name = path.basename(directory.path);
           return SearchableListTile(
             searchString: name,
-            child: ListTile(
-              autofocus: index == 0,
-              title: Text(name),
-              onTap: () => setState(() => _directoryName = name),
+            child: CommonShortcuts(
+              copyText: directory.path,
+              child: ListTile(
+                autofocus: index == 0,
+                title: Text(name),
+                onTap: () => setState(() => _directoryName = name),
+              ),
             ),
           );
         },
@@ -73,58 +76,19 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
             return SearchableListTile(
               searchString: upMessage,
               child: ListTile(
-                autofocus: true,
+                autofocus: entries.length == 1,
                 title: Text(upMessage),
                 onTap: () => setState(() => _directoryName = null),
               ),
             );
           }
           final name = path.basename(entry.path);
-          final directory = Directory(entry.path);
-          final file = File(entry.path);
-          AssetReference? assetReference;
-          final String size;
-          if (file.existsSync()) {
-            assetReference = AssetReference(
-              id: -1,
-              name: name,
-              folderName: directoryName,
-              gain: 0.7,
-              detached: true,
-            );
-            size = filesize(file.statSync().size);
-          } else if (directory.existsSync()) {
-            assetReference = AssetReference(
-              id: -1,
-              name: name,
-              folderName: directoryName,
-              gain: 0.7,
-              detached: true,
-            );
-            size = filesize(
-              directory.listSync().whereType<File>().fold(
-                    0,
-                    (final previousValue, final element) =>
-                        previousValue + element.statSync().size,
-                  ),
-            );
-          } else {
-            assetReference = null;
-            size = unknownMessage;
-          }
-          final child = ListTile(
-            title: Text(path.join(directoryName, name)),
-            subtitle: Text(size),
-            onTap: () {},
-          );
           return SearchableListTile(
             searchString: name,
-            child: assetReference == null
-                ? child
-                : PlaySoundSemantics(
-                    assetReference: assetReference,
-                    child: child,
-                  ),
+            child: DetachedAssetReferenceListTile(
+              assetContext: AssetContext(folderName: directoryName, name: name),
+              autofocus: index == 1,
+            ),
           );
         },
       ),

@@ -11,6 +11,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../constants.dart';
 import 'contexts/app_preferences_context.dart';
+import 'contexts/asset_context.dart';
 import 'contexts/call_command_context.dart';
 import 'contexts/call_commands_context.dart';
 import 'contexts/call_commands_target.dart';
@@ -510,5 +511,16 @@ final dartFunctionProvider =
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final f = await projectContext.db.dartFunctionsDao.getDartFunction(id: arg);
     return ValueContext(projectContext: projectContext, value: f);
+  },
+);
+
+/// Possibly provide a single detached asset reference.
+final detachedAssetReferenceProvider =
+    FutureProvider.family<ValueContext<AssetReference?>, AssetContext>(
+  (final ref, final arg) async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final assetReference = await projectContext.db.assetReferencesDao
+        .getDetachedAssetReference(folderName: arg.folderName, name: arg.name);
+    return ValueContext(projectContext: projectContext, value: assetReference);
   },
 );
