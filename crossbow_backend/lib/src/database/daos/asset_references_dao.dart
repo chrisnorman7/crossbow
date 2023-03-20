@@ -17,12 +17,14 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
     required final String folderName,
     required final String name,
     final double gain = 0.7,
+    final bool detached = false,
   }) async =>
       into(assetReferences).insertReturning(
         AssetReferencesCompanion(
           folderName: Value(folderName),
           name: Value(name),
           gain: Value(gain),
+          detached: Value(detached),
         ),
       );
 

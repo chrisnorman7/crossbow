@@ -123,6 +123,7 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
               name: value,
               folderName: folderName,
               gain: 0.7,
+              detached: true,
             ),
             child: Text('$value ($type)'),
           );

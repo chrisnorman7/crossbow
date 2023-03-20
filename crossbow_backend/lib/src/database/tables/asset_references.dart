@@ -9,4 +9,7 @@ class AssetReferences extends Table with WithPrimaryKey, WithName {
 
   /// The gain to play this sound at.
   RealColumn get gain => real().withDefault(const Constant(0.7))();
+
+  /// Whether or not this asset reference is detached from any other row.
+  BoolColumn get detached => boolean().withDefault(const Constant(false))();
 }

@@ -39,8 +39,21 @@ class $AssetReferencesTable extends AssetReferences
       type: DriftSqlType.double,
       requiredDuringInsert: false,
       defaultValue: const Constant(0.7));
+  static const VerificationMeta _detachedMeta =
+      const VerificationMeta('detached');
   @override
-  List<GeneratedColumn> get $columns => [id, name, folderName, gain];
+  late final GeneratedColumn<bool> detached =
+      GeneratedColumn<bool>('detached', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("detached" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, folderName, gain, detached];
   @override
   String get aliasedName => _alias ?? 'asset_references';
   @override
@@ -69,6 +82,10 @@ class $AssetReferencesTable extends AssetReferences
       context.handle(
           _gainMeta, gain.isAcceptableOrUnknown(data['gain']!, _gainMeta));
     }
+    if (data.containsKey('detached')) {
+      context.handle(_detachedMeta,
+          detached.isAcceptableOrUnknown(data['detached']!, _detachedMeta));
+    }
     return context;
   }
 
@@ -86,6 +103,8 @@ class $AssetReferencesTable extends AssetReferences
           .read(DriftSqlType.string, data['${effectivePrefix}folder_name'])!,
       gain: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}gain'])!,
+      detached: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}detached'])!,
     );
   }
 
@@ -107,11 +126,15 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
 
   /// The gain to play this sound at.
   final double gain;
+
+  /// Whether or not this asset reference is detached from any other row.
+  final bool detached;
   const AssetReference(
       {required this.id,
       required this.name,
       required this.folderName,
-      required this.gain});
+      required this.gain,
+      required this.detached});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -119,6 +142,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     map['name'] = Variable<String>(name);
     map['folder_name'] = Variable<String>(folderName);
     map['gain'] = Variable<double>(gain);
+    map['detached'] = Variable<bool>(detached);
     return map;
   }
 
@@ -128,6 +152,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       name: Value(name),
       folderName: Value(folderName),
       gain: Value(gain),
+      detached: Value(detached),
     );
   }
 
@@ -139,6 +164,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       name: serializer.fromJson<String>(json['name']),
       folderName: serializer.fromJson<String>(json['folderName']),
       gain: serializer.fromJson<double>(json['gain']),
+      detached: serializer.fromJson<bool>(json['detached']),
     );
   }
   @override
@@ -149,16 +175,22 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       'name': serializer.toJson<String>(name),
       'folderName': serializer.toJson<String>(folderName),
       'gain': serializer.toJson<double>(gain),
+      'detached': serializer.toJson<bool>(detached),
     };
   }
 
   AssetReference copyWith(
-          {int? id, String? name, String? folderName, double? gain}) =>
+          {int? id,
+          String? name,
+          String? folderName,
+          double? gain,
+          bool? detached}) =>
       AssetReference(
         id: id ?? this.id,
         name: name ?? this.name,
         folderName: folderName ?? this.folderName,
         gain: gain ?? this.gain,
+        detached: detached ?? this.detached,
       );
   @override
   String toString() {
@@ -166,13 +198,14 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('folderName: $folderName, ')
-          ..write('gain: $gain')
+          ..write('gain: $gain, ')
+          ..write('detached: $detached')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, folderName, gain);
+  int get hashCode => Object.hash(id, name, folderName, gain, detached);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -180,7 +213,8 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
           other.id == this.id &&
           other.name == this.name &&
           other.folderName == this.folderName &&
-          other.gain == this.gain);
+          other.gain == this.gain &&
+          other.detached == this.detached);
 }
 
 class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
@@ -188,29 +222,34 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   final Value<String> name;
   final Value<String> folderName;
   final Value<double> gain;
+  final Value<bool> detached;
   const AssetReferencesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.folderName = const Value.absent(),
     this.gain = const Value.absent(),
+    this.detached = const Value.absent(),
   });
   AssetReferencesCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     required String folderName,
     this.gain = const Value.absent(),
+    this.detached = const Value.absent(),
   }) : folderName = Value(folderName);
   static Insertable<AssetReference> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? folderName,
     Expression<double>? gain,
+    Expression<bool>? detached,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (folderName != null) 'folder_name': folderName,
       if (gain != null) 'gain': gain,
+      if (detached != null) 'detached': detached,
     });
   }
 
@@ -218,12 +257,14 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
       {Value<int>? id,
       Value<String>? name,
       Value<String>? folderName,
-      Value<double>? gain}) {
+      Value<double>? gain,
+      Value<bool>? detached}) {
     return AssetReferencesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       folderName: folderName ?? this.folderName,
       gain: gain ?? this.gain,
+      detached: detached ?? this.detached,
     );
   }
 
@@ -242,6 +283,9 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     if (gain.present) {
       map['gain'] = Variable<double>(gain.value);
     }
+    if (detached.present) {
+      map['detached'] = Variable<bool>(detached.value);
+    }
     return map;
   }
 
@@ -251,7 +295,8 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('folderName: $folderName, ')
-          ..write('gain: $gain')
+          ..write('gain: $gain, ')
+          ..write('detached: $detached')
           ..write(')'))
         .toString();
   }

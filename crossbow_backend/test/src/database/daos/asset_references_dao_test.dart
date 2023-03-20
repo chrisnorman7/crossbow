@@ -21,6 +21,8 @@ Future<void> main() async {
           expect(assetReference.folderName, 'music');
           expect(assetReference.id, isNonZero);
           expect(assetReference.name, 'main_theme.mp3');
+          expect(assetReference.gain, 0.7);
+          expect(assetReference.detached, false);
         },
       );
 
