@@ -20,6 +20,7 @@ import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
 import '../commands/edit_dart_function_screen.dart';
 import '../custom_levels/edit_custom_level_screen.dart';
+import 'assets_page.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
@@ -102,6 +103,11 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                 ),
               ),
               builder: getPinnedCommandsPage,
+            ),
+            TabbedScaffoldTab(
+              title: Intl.message('Assets'),
+              icon: Text(Intl.message('Existing assets on disk')),
+              builder: (final context) => const AssetsPage(),
             )
           ],
         ),
