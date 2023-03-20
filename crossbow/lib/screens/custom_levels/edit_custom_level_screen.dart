@@ -1,6 +1,5 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -131,32 +130,31 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               final command = commandContext.value;
               return SearchableListTile(
                 searchString: commandTrigger.description,
-                child: CallbackShortcuts(
-                  bindings: {
-                    deleteShortcut: () {
-                      final customLevelCommandsDao =
-                          projectContext.db.customLevelCommandsDao;
-                      intlConfirm(
-                        context: context,
-                        message: Intl.message(
-                          'Are you sure you want to delete this command?',
-                        ),
-                        title: confirmDeleteTitle,
-                        yesCallback: () async {
-                          await customLevelCommandsDao.deleteCustomLevelCommand(
-                            id: commandContext.value.id,
-                          );
-                          ref.invalidate(
-                            customLevelCommandsProvider
-                                .call(widget.customLevelId),
-                          );
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
-                      );
-                    }
+                child: CommonShortcuts(
+                  deleteCallback: () {
+                    final customLevelCommandsDao =
+                        projectContext.db.customLevelCommandsDao;
+                    intlConfirm(
+                      context: context,
+                      message: Intl.message(
+                        'Are you sure you want to delete this command?',
+                      ),
+                      title: confirmDeleteTitle,
+                      yesCallback: () async {
+                        await customLevelCommandsDao.deleteCustomLevelCommand(
+                          id: commandContext.value.id,
+                        );
+                        ref.invalidate(
+                          customLevelCommandsProvider
+                              .call(widget.customLevelId),
+                        );
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                    );
                   },
+                  copyText: command.id.toString(),
                   child: ListTile(
                     autofocus: index == 0,
                     title: Text(commandTrigger.description),

@@ -1,8 +1,8 @@
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../messages.dart';
+import 'common_shortcuts.dart';
 
 /// A list tile that shows the given [after] value.
 class AfterListTile extends StatelessWidget {
@@ -31,8 +31,8 @@ class AfterListTile extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final value = after ?? 0;
-    return CallbackShortcuts(
-      bindings: {deleteShortcut: () => onChanged(null)},
+    return CommonShortcuts(
+      deleteCallback: () => onChanged(null),
       child: IntListTile(
         value: value,
         onChanged: (final value) => onChanged(value == 0 ? null : value),

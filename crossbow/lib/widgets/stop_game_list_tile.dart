@@ -1,4 +1,3 @@
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../messages.dart';
 import '../screens/commands/edit_stop_game_screen.dart';
 import '../src/providers.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 
 /// A list tile that will show the stop game with the given [stopGameId].
@@ -69,21 +69,19 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
       );
     }
     final value = ref.watch(stopGameProvider.call(id));
-    return value.when(
-      data: (final valueContext) {
-        final projectContext = valueContext.projectContext;
-        final stopGame = valueContext.value;
-        return CallbackShortcuts(
-          bindings: {
-            deleteShortcut: () async {
-              if (widget.nullable) {
-                await projectContext.db.stopGamesDao
-                    .deleteStopGame(stopGameId: stopGame.id);
-                widget.onChanged(null);
-              }
-            }
-          },
-          child: ListTile(
+    return CommonShortcuts(
+      deleteCallback: () async {
+        if (widget.nullable) {
+          final projectContext = ref.watch(projectContextNotifierProvider)!;
+          await projectContext.db.stopGamesDao.deleteStopGame(stopGameId: id);
+          widget.onChanged(null);
+        }
+      },
+      copyText: id.toString(),
+      child: value.when(
+        data: (final valueContext) {
+          final stopGame = valueContext.value;
+          return ListTile(
             autofocus: widget.autofocus,
             title: Text(widget.title ?? Intl.message('Stop Game')),
             subtitle: Text(setMessage),
@@ -94,11 +92,11 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
                     EditStopGameScreen(stopGameId: stopGame.id),
               );
             },
-          ),
-        );
-      },
-      error: ErrorListTile.withPositional,
-      loading: LoadingWidget.new,
+          );
+        },
+        error: ErrorListTile.withPositional,
+        loading: LoadingWidget.new,
+      ),
     );
   }
 }

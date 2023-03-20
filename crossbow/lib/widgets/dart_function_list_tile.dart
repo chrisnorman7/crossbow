@@ -1,4 +1,3 @@
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../messages.dart';
 import '../screens/commands/select_dart_function_screen.dart';
 import '../src/providers.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 
 /// A list tile to show a dart function.
@@ -45,8 +45,9 @@ class DartFunctionListTile extends ConsumerWidget {
       );
     }
     final value = ref.watch(dartFunctionProvider.call(id));
-    return CallbackShortcuts(
-      bindings: {deleteShortcut: () => onChanged(null)},
+    return CommonShortcuts(
+      deleteCallback: () => onChanged(null),
+      copyText: id.toString(),
       child: value.when(
         data: (final data) => ListTile(
           autofocus: autofocus,

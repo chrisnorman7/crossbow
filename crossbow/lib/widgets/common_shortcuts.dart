@@ -11,6 +11,8 @@ class CommonShortcuts extends StatelessWidget {
     required this.child,
     this.newCallback,
     this.deleteCallback,
+    this.moveUpCallback,
+    this.moveDownCallback,
     this.copyText,
     super.key,
   });
@@ -24,6 +26,12 @@ class CommonShortcuts extends StatelessWidget {
   /// The function to call with the [deleteHotkey].
   final VoidCallback? deleteCallback;
 
+  /// The function to call with the [moveUpShortcut].
+  final VoidCallback? moveUpCallback;
+
+  /// The function to call with the [moveDownShortcut].
+  final VoidCallback? moveDownCallback;
+
   /// The text to copy with the [copyHotkey].
   final String? copyText;
 
@@ -32,11 +40,15 @@ class CommonShortcuts extends StatelessWidget {
   Widget build(final BuildContext context) {
     final newFunction = newCallback;
     final deleteFunction = deleteCallback;
+    final moveUpFunction = moveUpCallback;
+    final moveDownFunction = moveDownCallback;
     final text = copyText;
     return CallbackShortcuts(
       bindings: {
         if (newFunction != null) newShortcut: newFunction,
         if (deleteFunction != null) deleteShortcut: deleteFunction,
+        if (moveUpFunction != null) moveUpShortcut: moveUpFunction,
+        if (moveDownFunction != null) moveDownShortcut: moveDownFunction,
         copyHotkey: () {
           if (text != null) {
             setClipboardText(text);

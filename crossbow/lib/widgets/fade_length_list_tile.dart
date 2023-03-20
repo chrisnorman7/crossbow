@@ -1,8 +1,8 @@
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../messages.dart';
+import 'common_shortcuts.dart';
 
 /// A list tile to edit the given [fadeLength].
 class FadeLengthListTile extends StatelessWidget {
@@ -27,8 +27,8 @@ class FadeLengthListTile extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final f = fadeLength ?? 0.0;
-    return CallbackShortcuts(
-      bindings: {deleteShortcut: () => onChanged(null)},
+    return CommonShortcuts(
+      deleteCallback: () => onChanged(null),
       child: DoubleListTile(
         value: f,
         onChanged: (final value) => onChanged(value == 0.0 ? null : value),

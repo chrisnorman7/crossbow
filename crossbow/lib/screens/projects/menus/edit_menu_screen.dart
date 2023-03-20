@@ -1,6 +1,5 @@
 import 'package:backstreets_widgets/icons.dart';
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -161,51 +160,50 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
       child: ReorderableList(
         itemBuilder: (final context, final index) {
           final menuItem = menuItems[index];
-          return CallbackShortcuts(
-            bindings: {
-              moveDownShortcut: () => reorderMenuItems(
-                    oldIndex: index,
-                    newIndex: index + 1,
+          return CommonShortcuts(
+            moveDownCallback: () => reorderMenuItems(
+              oldIndex: index,
+              newIndex: index + 1,
+            ),
+            moveUpCallback: () =>
+                reorderMenuItems(oldIndex: index, newIndex: index - 1),
+            deleteCallback: () async {
+              final callCommands = await menuItemsDao.getCallCommands(
+                menuItemId: menuItem.id,
+              );
+              final onCancelCallCommands =
+                  await menusDao.getOnCancelCallCommands(menuId: menu.id);
+              if (!mounted) {
+                return;
+              }
+              if (callCommands.isNotEmpty) {
+                await showMessage(
+                  context: context,
+                  message: Intl.message(
+                    'You cannot delete menu items that have commands.',
                   ),
-              moveUpShortcut: () =>
-                  reorderMenuItems(oldIndex: index, newIndex: index - 1),
-              deleteShortcut: () async {
-                final callCommands = await menuItemsDao.getCallCommands(
-                  menuItemId: menuItem.id,
                 );
-                final onCancelCallCommands =
-                    await menusDao.getOnCancelCallCommands(menuId: menu.id);
-                if (!mounted) {
-                  return;
-                }
-                if (callCommands.isNotEmpty) {
-                  await showMessage(
-                    context: context,
-                    message: Intl.message(
-                      'You cannot delete menu items that have commands.',
-                    ),
-                  );
-                } else if (onCancelCallCommands.isNotEmpty) {
-                  await showMessage(
-                    context: context,
-                    message: Intl.message(
-                      'You cannot delete a menu with cancel commands.',
-                    ),
-                  );
-                } else {
-                  await intlConfirm(
-                    context: context,
-                    message: 'Are you sure you want to delete this menu item?',
-                    title: confirmDeleteTitle,
-                    yesCallback: () async {
-                      Navigator.of(context).pop();
-                      await db.utilsDao.deleteMenuItem(menuItem);
-                      invalidateMenuProvider();
-                    },
-                  );
-                }
+              } else if (onCancelCallCommands.isNotEmpty) {
+                await showMessage(
+                  context: context,
+                  message: Intl.message(
+                    'You cannot delete a menu with cancel commands.',
+                  ),
+                );
+              } else {
+                await intlConfirm(
+                  context: context,
+                  message: 'Are you sure you want to delete this menu item?',
+                  title: confirmDeleteTitle,
+                  yesCallback: () async {
+                    Navigator.of(context).pop();
+                    await db.utilsDao.deleteMenuItem(menuItem);
+                    invalidateMenuProvider();
+                  },
+                );
               }
             },
+            copyText: menuItem.id.toString(),
             key: ValueKey(menuItem.id),
             child: AssetReferencePlaySoundSemantics(
               assetReferenceId:
