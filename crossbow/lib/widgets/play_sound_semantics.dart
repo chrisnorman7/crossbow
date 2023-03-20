@@ -1,4 +1,5 @@
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ziggurat/sound.dart' as ziggurat_sound;
@@ -65,12 +66,16 @@ class PlaySoundSemanticsState extends ConsumerState<PlaySoundSemantics> {
     }
     final game = ref.watch(gameProvider);
     final asset = projectRunner.getAssetReference(assetReference);
-    _sound = game.interfaceSounds.playSound(
-      assetReference: asset,
-      gain: asset.gain,
-      keepAlive: true,
-      looping: widget.looping,
-    );
+    try {
+      _sound = game.interfaceSounds.playSound(
+        assetReference: asset,
+        gain: asset.gain,
+        keepAlive: true,
+        looping: widget.looping,
+      );
+    } on SynthizerError {
+      _sound = null;
+    }
   }
 
   /// Dispose of the widget.
