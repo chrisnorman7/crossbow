@@ -14,8 +14,8 @@ import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../widgets/command_list_tile.dart';
+import '../../widgets/common_shortcuts.dart';
 import '../../widgets/directory_list_tile.dart';
-import '../../widgets/new_callback_shortcuts.dart';
 import '../../widgets/play_sound_semantics.dart';
 import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
@@ -112,7 +112,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   Widget getSettingsPage(final BuildContext context) {
     final projectContext = ref.watch(projectContextNotifierProvider);
     if (projectContext == null) {
-      return const Placeholder();
+      return const CenterText(text: 'If you are seeing this, there is a bug.');
     }
     final project = projectContext.project;
     final assetsDirectory = projectContext.assetsDirectory;
@@ -176,7 +176,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get a list view of the menus in the project.
   Widget getMenusPage(final BuildContext context) {
     final value = ref.watch(menusProvider);
-    return NewCallbackShortcuts(
+    return CommonShortcuts(
       newCallback: newMenu,
       child: value.when(
         data: (final data) {
@@ -262,7 +262,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get the command triggers page.
   Widget getCommandTriggersPage(final BuildContext context) {
     final value = ref.watch(commandTriggersProvider);
-    return NewCallbackShortcuts(
+    return CommonShortcuts(
       newCallback: newCommandTrigger,
       child: value.when(
         data: (final commandTriggers) {
@@ -331,7 +331,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get the dart functions page.
   Widget getDartFunctionsPage(final BuildContext context) {
     final value = ref.watch(dartFunctionsProvider);
-    return NewCallbackShortcuts(
+    return CommonShortcuts(
       newCallback: newDartFunction,
       child: value.when(
         data: (final data) {
@@ -488,7 +488,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
             },
           );
         }
-        return NewCallbackShortcuts(newCallback: newCustomLevel, child: child);
+        return CommonShortcuts(newCallback: newCustomLevel, child: child);
       },
       error: ErrorListView.withPositional,
       loading: LoadingWidget.new,
