@@ -35,6 +35,20 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
+  /// Get the detached asset reference with the given [folderName], and [name].
+  Future<AssetReference?> getDetachedAssetReference({
+    required final String folderName,
+    required final String name,
+  }) =>
+      (select(assetReferences)
+            ..where(
+              (final table) =>
+                  table.folderName.equals(folderName) &
+                  table.name.equals(name) &
+                  table.detached.equals(true),
+            ))
+          .getSingleOrNull();
+
   /// Edit the asset reference with the given [assetReferenceId].
   Future<AssetReference> editAssetReference({
     required final int assetReferenceId,

@@ -48,6 +48,37 @@ Future<void> main() async {
       );
 
       test(
+        '.getDetachedAssetReference',
+        () async {
+          const name = 'testing.mp3';
+          const folderName = 'test_folder';
+          expect(
+            await assetReferences.getDetachedAssetReference(
+              folderName: folderName,
+              name: name,
+            ),
+            isNull,
+          );
+          final assetReference = await assetReferences.createAssetReference(
+            folderName: folderName,
+            name: name,
+            gain: 1.5,
+            detached: true,
+          );
+          final retrievedAssetReference =
+              await assetReferences.getDetachedAssetReference(
+            folderName: folderName,
+            name: name,
+          );
+          expect(retrievedAssetReference!.detached, true);
+          expect(retrievedAssetReference.folderName, folderName);
+          expect(retrievedAssetReference.gain, assetReference.gain);
+          expect(retrievedAssetReference.id, assetReference.id);
+          expect(retrievedAssetReference.name, assetReference.name);
+        },
+      );
+
+      test(
         '.editAssetReference',
         () async {
           final assetReference = await assetReferences.createAssetReference(
