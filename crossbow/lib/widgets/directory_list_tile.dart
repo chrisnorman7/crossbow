@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:backstreets_widgets/util.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../hotkeys.dart';
+import 'common_shortcuts.dart';
 
 /// A list tile to show the given [directory].
 class DirectoryListTile extends StatelessWidget {
@@ -27,8 +26,8 @@ class DirectoryListTile extends StatelessWidget {
 
   /// Build the widget.
   @override
-  Widget build(final BuildContext context) => CallbackShortcuts(
-        bindings: {copyHotkey: () => setClipboardText(directory.path)},
+  Widget build(final BuildContext context) => CommonShortcuts(
+        copyText: directory.path,
         child: ListTile(
           autofocus: autofocus,
           title: Text(title),

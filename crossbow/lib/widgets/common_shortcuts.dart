@@ -30,11 +30,13 @@ class CommonShortcuts extends StatelessWidget {
   /// Build the widget.
   @override
   Widget build(final BuildContext context) {
+    final newFunction = newCallback;
+    final deleteFunction = deleteCallback;
     final text = copyText;
     return CallbackShortcuts(
       bindings: {
-        newShortcut: () => newCallback?.call(),
-        deleteShortcut: () => deleteCallback?.call(),
+        if (newFunction != null) newShortcut: newFunction,
+        if (deleteFunction != null) deleteShortcut: deleteFunction,
         copyHotkey: () {
           if (text != null) {
             setClipboardText(text);

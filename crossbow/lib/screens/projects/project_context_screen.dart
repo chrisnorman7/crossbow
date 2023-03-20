@@ -1,5 +1,4 @@
 import 'package:backstreets_widgets/screens.dart';
-import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -198,41 +197,40 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                   assetReferenceId: menu.musicId,
                   looping: true,
                   child: Builder(
-                    builder: (final context) => CallbackShortcuts(
-                      bindings: {
-                        deleteHotkey: () async {
-                          PlaySoundSemantics.of(context)?.stop();
-                          final menuItems =
-                              await projectContext.db.menuItemsDao.getMenuItems(
-                            menuId: menu.id,
-                          );
-                          if (mounted) {
-                            if (menuItems.isEmpty) {
-                              await intlConfirm(
-                                context: context,
-                                message: Intl.message(
-                                  'Are you sure you want to delete this menu?',
-                                ),
-                                title: confirmDeleteTitle,
-                                yesCallback: () async {
-                                  Navigator.of(context).pop();
-                                  await projectContext.db.utilsDao
-                                      .deleteMenu(menu);
-                                  ref.invalidate(menusProvider);
-                                },
-                              );
-                            } else {
-                              await intlShowMessage(
-                                context: context,
-                                message: Intl.message(
-                                  'You must delete all menu items first.',
-                                ),
-                                title: errorTitle,
-                              );
-                            }
+                    builder: (final context) => CommonShortcuts(
+                      deleteCallback: () async {
+                        PlaySoundSemantics.of(context)?.stop();
+                        final menuItems =
+                            await projectContext.db.menuItemsDao.getMenuItems(
+                          menuId: menu.id,
+                        );
+                        if (mounted) {
+                          if (menuItems.isEmpty) {
+                            await intlConfirm(
+                              context: context,
+                              message: Intl.message(
+                                'Are you sure you want to delete this menu?',
+                              ),
+                              title: confirmDeleteTitle,
+                              yesCallback: () async {
+                                Navigator.of(context).pop();
+                                await projectContext.db.utilsDao
+                                    .deleteMenu(menu);
+                                ref.invalidate(menusProvider);
+                              },
+                            );
+                          } else {
+                            await intlShowMessage(
+                              context: context,
+                              message: Intl.message(
+                                'You must delete all menu items first.',
+                              ),
+                              title: errorTitle,
+                            );
                           }
                         }
                       },
+                      copyText: menu.id.toString(),
                       child: ListTile(
                         autofocus: index == 0,
                         title: Text(menu.name),
@@ -287,22 +285,21 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               final utilsDao = db.utilsDao;
               return SearchableListTile(
                 searchString: commandTrigger.description,
-                child: CallbackShortcuts(
-                  bindings: {
-                    deleteHotkey: () => intlConfirm(
-                          context: context,
-                          message: Intl.message(
-                            'Are you sure you want to delete this command '
-                            'trigger?',
-                          ),
-                          title: confirmDeleteTitle,
-                          yesCallback: () async {
-                            Navigator.pop(context);
-                            await utilsDao.deleteCommandTrigger(commandTrigger);
-                            ref.invalidate(commandTriggersProvider);
-                          },
-                        )
-                  },
+                child: CommonShortcuts(
+                  deleteCallback: () => intlConfirm(
+                    context: context,
+                    message: Intl.message(
+                      'Are you sure you want to delete this command '
+                      'trigger?',
+                    ),
+                    title: confirmDeleteTitle,
+                    yesCallback: () async {
+                      Navigator.pop(context);
+                      await utilsDao.deleteCommandTrigger(commandTrigger);
+                      ref.invalidate(commandTriggersProvider);
+                    },
+                  ),
+                  copyText: commandTrigger.id.toString(),
                   child: ListTile(
                     autofocus: index == 0,
                     title: Text(commandTrigger.description),
@@ -347,17 +344,38 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               final f = data[index];
               return SearchableListTile(
                 searchString: f.description,
-                child: ListTile(
-                  autofocus: index == 0,
-                  title: Text(f.description),
-                  onTap: () async {
-                    await pushWidget(
-                      context: context,
-                      builder: (final context) =>
-                          EditDartFunctionScreen(dartFunctionId: f.id),
-                    );
-                    ref.invalidate(dartFunctionsProvider);
-                  },
+                child: CommonShortcuts(
+                  copyText: f.id.toString(),
+                  deleteCallback: () => intlConfirm(
+                    context: context,
+                    message: Intl.message(
+                      'Are you sure you want to delete this dart function?',
+                    ),
+                    title: confirmDeleteTitle,
+                    yesCallback: () async {
+                      Navigator.pop(context);
+                      final projectContext = ref.watch(
+                        projectContextNotifierProvider,
+                      )!;
+                      await projectContext.db.dartFunctionsDao
+                          .deleteDartFunction(
+                        id: f.id,
+                      );
+                      ref.invalidate(dartFunctionsProvider);
+                    },
+                  ),
+                  child: ListTile(
+                    autofocus: index == 0,
+                    title: Text(f.description),
+                    onTap: () async {
+                      await pushWidget(
+                        context: context,
+                        builder: (final context) =>
+                            EditDartFunctionScreen(dartFunctionId: f.id),
+                      );
+                      ref.invalidate(dartFunctionsProvider);
+                    },
+                  ),
                 ),
               );
             },
@@ -387,20 +405,23 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
             final pinnedCommand = pinnedCommands[index];
             return SearchableListTile(
               searchString: pinnedCommand.name,
-              child: ListTile(
-                autofocus: index == 0,
-                title: Text(pinnedCommand.name),
-                subtitle: Text('#${pinnedCommand.commandId}'),
-                onTap: () async {
-                  await pushWidget(
-                    context: context,
-                    builder: (final context) => EditCommandScreen(
-                      commandId: pinnedCommand.commandId,
-                      onChanged: (final value) {},
-                    ),
-                  );
-                  ref.invalidate(pinnedCommandsProvider);
-                },
+              child: CommonShortcuts(
+                copyText: pinnedCommand.commandId.toString(),
+                child: ListTile(
+                  autofocus: index == 0,
+                  title: Text(pinnedCommand.name),
+                  subtitle: Text('#${pinnedCommand.commandId}'),
+                  onTap: () async {
+                    await pushWidget(
+                      context: context,
+                      builder: (final context) => EditCommandScreen(
+                        commandId: pinnedCommand.commandId,
+                        onChanged: (final value) {},
+                      ),
+                    );
+                    ref.invalidate(pinnedCommandsProvider);
+                  },
+                ),
               ),
             );
           },
@@ -414,57 +435,57 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Get the custom levels page.
   Widget getCustomLevelsPage(final BuildContext context) {
     final value = ref.watch(customLevelsProvider);
-    return value.when(
-      data: (final data) {
-        final projectContext = data.projectContext;
-        final levels = data.value;
-        final Widget child;
-        if (levels.isEmpty) {
-          child = CenterText(
-            text: nothingToShowMessage,
-            autofocus: true,
-          );
-        } else {
-          child = BuiltSearchableListView(
+    return CommonShortcuts(
+      newCallback: newCustomLevel,
+      child: value.when(
+        data: (final data) {
+          final projectContext = data.projectContext;
+          final levels = data.value;
+          if (levels.isEmpty) {
+            return CenterText(
+              text: nothingToShowMessage,
+              autofocus: true,
+            );
+          }
+          return BuiltSearchableListView(
             items: levels,
             builder: (final context, final index) {
               final level = levels[index];
               return SearchableListTile(
                 searchString: level.name,
-                child: CallbackShortcuts(
-                  bindings: {
-                    deleteShortcut: () async {
-                      final commands = await projectContext.db.customLevelsDao
-                          .getCustomLevelCommands(customLevelId: level.id);
-                      if (commands.isNotEmpty) {
-                        if (mounted) {
-                          await intlShowMessage(
-                            context: context,
-                            message: levelWithCommandsMessage,
-                            title: errorTitle,
-                          );
-                        }
-                        return;
-                      }
+                child: CommonShortcuts(
+                  deleteCallback: () async {
+                    final commands = await projectContext.db.customLevelsDao
+                        .getCustomLevelCommands(customLevelId: level.id);
+                    if (commands.isNotEmpty) {
                       if (mounted) {
-                        return intlConfirm(
+                        await intlShowMessage(
                           context: context,
-                          message: Intl.message(
-                            'Are you sure you want to delete this level?',
-                          ),
-                          title: confirmDeleteTitle,
-                          yesCallback: () async {
-                            await projectContext.db.utilsDao
-                                .deleteCustomLevel(level);
-                            ref.invalidate(customLevelsProvider);
-                            if (mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
+                          message: levelWithCommandsMessage,
+                          title: errorTitle,
                         );
                       }
+                      return;
+                    }
+                    if (mounted) {
+                      return intlConfirm(
+                        context: context,
+                        message: Intl.message(
+                          'Are you sure you want to delete this level?',
+                        ),
+                        title: confirmDeleteTitle,
+                        yesCallback: () async {
+                          await projectContext.db.utilsDao
+                              .deleteCustomLevel(level);
+                          ref.invalidate(customLevelsProvider);
+                          if (mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                      );
                     }
                   },
+                  copyText: level.id.toString(),
                   child: AssetReferencePlaySoundSemantics(
                     assetReferenceId: level.musicId,
                     child: Builder(
@@ -475,8 +496,9 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                           PlaySoundSemantics.of(context)?.stop();
                           await pushWidget(
                             context: context,
-                            builder: (final context) =>
-                                EditCustomLevelScreen(customLevelId: level.id),
+                            builder: (final context) => EditCustomLevelScreen(
+                              customLevelId: level.id,
+                            ),
                           );
                           ref.invalidate(customLevelsProvider);
                         },
@@ -487,11 +509,10 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               );
             },
           );
-        }
-        return CommonShortcuts(newCallback: newCustomLevel, child: child);
-      },
-      error: ErrorListView.withPositional,
-      loading: LoadingWidget.new,
+        },
+        error: ErrorListView.withPositional,
+        loading: LoadingWidget.new,
+      ),
     );
   }
 
