@@ -13,6 +13,7 @@ final copyHotkey = SingleActivator(
 final testHotkey = SingleActivator(
   LogicalKeyboardKey.keyT,
   control: useControlKey,
+  meta: useMetaKey,
   shift: true,
 );
 
@@ -21,3 +22,6 @@ const pageUpHotkey = SingleActivator(LogicalKeyboardKey.pageUp);
 
 /// The page down hotkey.
 const pageDownHotkey = SingleActivator(LogicalKeyboardKey.pageDown);
+
+/// The backspace hotkey.
+const backspaceHotkey = SingleActivator(LogicalKeyboardKey.backspace);

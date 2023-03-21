@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:backstreets_widgets/screens.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -11,6 +10,7 @@ import 'package:path/path.dart' as path;
 import '../messages.dart';
 import '../src/contexts/asset_context.dart';
 import '../src/providers.dart';
+import '../widgets/common_shortcuts.dart';
 import '../widgets/play_sound_semantics.dart';
 
 /// A screen for selecting an asset, and creating an asset reference.
@@ -90,12 +90,10 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
     );
     final items =
         directory.listSync().map<String>((final e) => path.basename(e.path));
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.backspace): () => setState(() {
-              _folderName = null;
-            })
-      },
+    return CommonShortcuts(
+      backspaceCallback: () => setState(() {
+        _folderName = null;
+      }),
       child: SelectItem<String?>(
         values: [null, ...items],
         getWidget: (final value) {

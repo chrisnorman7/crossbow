@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 
@@ -101,11 +100,8 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
         },
       );
     }
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.backspace): () =>
-            setState(() => _directoryName = null)
-      },
+    return CommonShortcuts(
+      backspaceCallback: () => setState(() => _directoryName = null),
       child: child,
     );
   }

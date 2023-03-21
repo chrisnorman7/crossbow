@@ -131,11 +131,13 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
         SingleActivator(
           LogicalKeyboardKey.keyP,
           control: useControlKey,
+          meta: useMetaKey,
           shift: true,
         ): () => launchUrl(Uri.directory(projectContext.projectDirectory.path)),
         SingleActivator(
           LogicalKeyboardKey.keyA,
           control: useControlKey,
+          meta: useMetaKey,
           shift: true,
         ): () => launchUrl(Uri.directory(assetsDirectory.path))
       },

@@ -18,6 +18,7 @@ class CommonShortcuts extends StatelessWidget {
     this.pageUpCallback,
     this.pageDownCallback,
     this.testCallback,
+    this.backspaceCallback,
     this.copyText,
     super.key,
   });
@@ -52,6 +53,9 @@ class CommonShortcuts extends StatelessWidget {
   /// The function to call with the [testHotkey].
   final VoidCallback? testCallback;
 
+  /// The function to be called with the [backspaceHotkey].
+  final VoidCallback? backspaceCallback;
+
   /// The text to copy with the [copyHotkey].
   final String? copyText;
 
@@ -67,6 +71,7 @@ class CommonShortcuts extends StatelessWidget {
     final pageUpFunction = pageUpCallback;
     final pageDownFunction = pageDownCallback;
     final testFunction = testCallback;
+    final backspaceFunction = backspaceCallback;
     final text = copyText;
     return CallbackShortcuts(
       bindings: {
@@ -79,6 +84,7 @@ class CommonShortcuts extends StatelessWidget {
         if (pageUpFunction != null) pageUpHotkey: pageUpFunction,
         if (pageDownFunction != null) pageDownHotkey: pageDownFunction,
         if (testFunction != null) testHotkey: testFunction,
+        if (backspaceFunction != null) backspaceHotkey: backspaceFunction,
         if (text != null) copyHotkey: () => setClipboardText(text)
       },
       child: child,
