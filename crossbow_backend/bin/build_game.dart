@@ -164,7 +164,6 @@ Future<void> main(final List<String> args) async {
     'assetReferenceEncryptionKeys': encryptionKeys,
     'dartFunctions': dartFunctions.map((final e) => e.toJson()),
   });
-  print(output);
   final formatter = DartFormatter();
   final projectNameSnake = project.projectName.snakeCase;
   final outputFilename = path.join(
