@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -5,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 
-import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/select_asset_screen.dart';
 import '../src/contexts/asset_context.dart';
 import '../src/contexts/value_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
@@ -80,6 +82,7 @@ class AssetReferenceListTile extends ConsumerWidget {
     required final ValueContext<AssetReference?> assetReferenceContext,
   }) {
     final projectContext = assetReferenceContext.projectContext;
+    final assetReferencesDao = projectContext.db.assetReferencesDao;
     final assetReference = assetReferenceContext.value;
     return AssetReferencePlaySoundSemantics(
       assetReferenceId: assetReferenceId,
@@ -91,16 +94,32 @@ class AssetReferenceListTile extends ConsumerWidget {
               : path.join(assetReference.folderName, assetReference.name);
           final gain = assetReference?.gain;
           final assetReferenceGain = gain?.toStringAsFixed(2);
-          return CallbackShortcuts(
-            bindings: {
-              deleteHotkey: () async {
-                if (nullable && assetReference != null) {
-                  await projectContext.db.assetReferencesDao
-                      .deleteAssetReference(id: assetReference.id);
-                  onChanged(null);
-                }
-              }
-            },
+          return CommonShortcuts(
+            deleteCallback: nullable && assetReference != null
+                ? () async {
+                    await projectContext.db.assetReferencesDao
+                        .deleteAssetReference(id: assetReference.id);
+                    onChanged(null);
+                  }
+                : null,
+            moveDownCallback: assetReference != null
+                ? () async {
+                    await assetReferencesDao.setGain(
+                      assetReferenceId: assetReference.id,
+                      gain: max(0.0, assetReference.gain - 0.1),
+                    );
+                    invalidateAssetReferenceProvider(ref);
+                  }
+                : null,
+            moveUpCallback: assetReference != null
+                ? () async {
+                    await assetReferencesDao.setGain(
+                      assetReferenceId: assetReference.id,
+                      gain: assetReference.gain + 0.1,
+                    );
+                    invalidateAssetReferenceProvider(ref);
+                  }
+                : null,
             child: ListTile(
               autofocus: autofocus,
               title: Text(title),
@@ -161,5 +180,13 @@ class AssetReferenceListTile extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  /// Invalidate the [assetReferenceProvider].
+  void invalidateAssetReferenceProvider(final WidgetRef ref) {
+    final id = assetReferenceId;
+    if (id != null) {
+      ref.invalidate(assetReferenceProvider.call(id));
+    }
   }
 }
