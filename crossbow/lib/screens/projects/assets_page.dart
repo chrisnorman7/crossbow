@@ -38,6 +38,12 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
           .listSync()
           .whereType<Directory>()
           .toList();
+      if (directories.isEmpty) {
+        return CenterText(
+          text: nothingToShowMessage,
+          autofocus: true,
+        );
+      }
       return BuiltSearchableListView(
         items: directories,
         builder: (final context, final index) {
@@ -63,12 +69,14 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
         path.join(projectContext.assetsDirectory.path, directoryName),
       ).listSync().toList()
     ];
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.backspace): () =>
-            setState(() => _directoryName = null)
-      },
-      child: BuiltSearchableListView(
+    final Widget child;
+    if (entries.length == 1) {
+      child = CenterText(
+        text: nothingToShowMessage,
+        autofocus: true,
+      );
+    } else {
+      child = BuiltSearchableListView(
         items: entries,
         builder: (final context, final index) {
           final entry = entries[index];
@@ -91,7 +99,14 @@ class AssetsPageState extends ConsumerState<AssetsPage> {
             ),
           );
         },
-      ),
+      );
+    }
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.backspace): () =>
+            setState(() => _directoryName = null)
+      },
+      child: child,
     );
   }
 }
