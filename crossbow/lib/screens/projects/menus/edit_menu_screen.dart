@@ -120,7 +120,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
             invalidateMenuProvider();
           },
           nullable: true,
-          title: Intl.message('Activate Item Sound'),
+          title: Intl.message('Default Activate Item Sound'),
         ),
         AssetReferenceListTile(
           assetReferenceId: menu.selectItemSoundId,
@@ -132,7 +132,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
             invalidateMenuProvider();
           },
           nullable: true,
-          title: Intl.message('Select Item Sound'),
+          title: Intl.message('Default Select Item Sound'),
         ),
         CallCommandsListTile(
           callCommandsContext: CallCommandsContext(
