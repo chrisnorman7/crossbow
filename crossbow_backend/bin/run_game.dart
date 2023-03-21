@@ -11,6 +11,11 @@ Future<void> main(final List<String> args) async {
   } else {
     file = File(path.join(Directory.current.path, 'project.json'));
   }
-  final projectContext = ProjectContext.fromFile(file);
+  final projectContext = ProjectContext.fromFile(file, dartFunctionsMap: {});
+  for (final dartFunction
+      in await projectContext.db.dartFunctionsDao.getDartFunctions()) {
+    projectContext.dartFunctionsMap[dartFunction.id] = (final projectRunner) =>
+        projectRunner.game.outputText(dartFunction.description);
+  }
   await projectContext.run();
 }
