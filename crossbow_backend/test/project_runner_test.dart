@@ -443,7 +443,7 @@ void main() async {
             projectRunner.handleDartFunction(dartFunction),
             throwsStateError,
           );
-          projectContext.dartFunctionsMap[dartFunction.id] =
+          projectContext.dartFunctionsMap[dartFunction.name] =
               (final projectRunner) => throw const Works();
           await expectLater(
             projectRunner.handleDartFunction(dartFunction),

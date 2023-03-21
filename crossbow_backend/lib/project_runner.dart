@@ -425,7 +425,7 @@ class ProjectRunner {
 
   /// Handle the given [dartFunction].
   Future<void> handleDartFunction(final DartFunction dartFunction) async {
-    final f = projectContext.dartFunctionsMap[dartFunction.id];
+    final f = projectContext.dartFunctionsMap[dartFunction.name];
     if (f == null) {
       throw StateError('There is no dart code for $dartFunction.');
     }
