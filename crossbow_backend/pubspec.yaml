@@ -17,6 +17,8 @@ dependencies:
   meta: ^1.9.0
   open_url: ^2.0.0
   path: ^1.8.3
+  plain_optional: ^1.0.0
+  pubspec_yaml: ^3.1.0
   recase: ^4.1.0
   sqlite3: ^1.9.3
   ziggurat: ^0.58.0

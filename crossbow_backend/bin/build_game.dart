@@ -6,6 +6,8 @@ import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:jinja/jinja.dart';
 import 'package:path/path.dart' as path;
+import 'package:plain_optional/plain_optional.dart';
+import 'package:pubspec_yaml/pubspec_yaml.dart';
 import 'package:recase/recase.dart';
 import 'package:ziggurat/util.dart';
 import 'package:ziggurat/ziggurat.dart' as ziggurat;
@@ -103,8 +105,9 @@ Future<void> main(final List<String> args) async {
       ),
     );
     final comment = path.join(folderName, assetReference.name);
-    final existing =
-        assetStore.assets.where((final element) => element.comment == comment);
+    final existing = assetStore.assets.where(
+      (final element) => element.comment == comment,
+    );
     if (existing.isEmpty) {
       print('Importing asset #${assetReference.id}.');
       final fullPath = path.join(
@@ -149,6 +152,8 @@ Future<void> main(final List<String> args) async {
         folderName: folderName,
         name: path.basename(assetReferenceReference.reference.name),
       );
+      encryptionKeys[assetReference.id] =
+          assetReferenceReference.reference.encryptionKey!;
     }
   }
   final dartFunctions = await db.dartFunctionsDao.getDartFunctions();
@@ -166,10 +171,32 @@ Future<void> main(final List<String> args) async {
   });
   final formatter = DartFormatter();
   final projectNameSnake = project.projectName.snakeCase;
+  final binDirectory = Directory(path.join(newProjectDirectory.path, 'bin'))
+    ..createSync();
   final outputFilename = path.join(
-    newProjectDirectory.path,
+    binDirectory.path,
     '$projectNameSnake.dart',
   );
   File(outputFilename).writeAsStringSync(formatter.format(output));
   print('Code written to $outputFilename.');
+  final pubspecFilename = path.join(newProjectDirectory.path, 'pubspec.yaml');
+  final pubspecFile = File(pubspecFilename);
+  final pubspec = PubspecYaml(
+    name: projectNameSnake,
+    description: const Optional(
+      'A game created with the Crossbow game engine.',
+    ),
+    dependencies: const [
+      PackageDependencySpec.git(
+        GitPackageDependencySpec(
+          package: 'crossbow_backend',
+          url: 'https://github.com/chrisnorman7/crossbow',
+          path: Optional('crossbow_backend'),
+        ),
+      )
+    ],
+    environment: const {'sdk': '>=2.19.0 <4.0.0'},
+  );
+  pubspecFile.writeAsStringSync(pubspec.toYamlString());
+  print('Written $pubspecFilename.');
 }
