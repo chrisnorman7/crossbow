@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -17,7 +18,7 @@ import '../json/project.dart';
 
 /// The type for the dart functions map.
 typedef DartFunctionsMap
-    = Map<int, Future<void> Function(ProjectRunner projectRunner)>;
+    = Map<int, FutureOr<void> Function(ProjectRunner projectRunner)>;
 
 /// The context for a particular project.
 class ProjectContext {
