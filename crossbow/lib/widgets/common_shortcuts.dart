@@ -66,6 +66,7 @@ class CommonShortcuts extends StatelessWidget {
     final endFunction = endCallback;
     final pageUpFunction = pageUpCallback;
     final pageDownFunction = pageDownCallback;
+    final testFunction = testCallback;
     final text = copyText;
     return CallbackShortcuts(
       bindings: {
@@ -77,11 +78,8 @@ class CommonShortcuts extends StatelessWidget {
         if (endFunction != null) moveToEndShortcut: endFunction,
         if (pageUpFunction != null) pageUpHotkey: pageUpFunction,
         if (pageDownFunction != null) pageDownHotkey: pageDownFunction,
-        copyHotkey: () {
-          if (text != null) {
-            setClipboardText(text);
-          }
-        }
+        if (testFunction != null) testHotkey: testFunction,
+        if (text != null) copyHotkey: () => setClipboardText(text)
       },
       child: child,
     );
