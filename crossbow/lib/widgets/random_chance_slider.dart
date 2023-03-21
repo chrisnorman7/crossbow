@@ -1,11 +1,10 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import '../hotkeys.dart';
 import '../messages.dart';
+import 'common_shortcuts.dart';
 
 /// A slider to show a random [chance].
 class RandomChanceSlider extends StatelessWidget {
@@ -34,13 +33,10 @@ class RandomChanceSlider extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final randomChance = chance;
-    return CallbackShortcuts(
-      bindings: {
-        deleteHotkey: () => onChanged(null),
-        const SingleActivator(LogicalKeyboardKey.home): () => onChanged(null),
-        const SingleActivator(LogicalKeyboardKey.end): () =>
-            onChanged(maxChance)
-      },
+    return CommonShortcuts(
+      deleteCallback: () => onChanged(null),
+      homeCallback: () => onChanged(null),
+      endCallback: () => onChanged(maxChance),
       child: Column(
         children: [
           TextButton(

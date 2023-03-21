@@ -13,6 +13,11 @@ class CommonShortcuts extends StatelessWidget {
     this.deleteCallback,
     this.moveUpCallback,
     this.moveDownCallback,
+    this.homeCallback,
+    this.endCallback,
+    this.pageUpCallback,
+    this.pageDownCallback,
+    this.testCallback,
     this.copyText,
     super.key,
   });
@@ -20,10 +25,10 @@ class CommonShortcuts extends StatelessWidget {
   /// The widget below this one in the tree.
   final Widget child;
 
-  /// The function to call with the [newProjectHotkey].
+  /// The function to call with the [newShortcut].
   final VoidCallback? newCallback;
 
-  /// The function to call with the [deleteHotkey].
+  /// The function to call with the [deleteShortcut].
   final VoidCallback? deleteCallback;
 
   /// The function to call with the [moveUpShortcut].
@@ -31,6 +36,21 @@ class CommonShortcuts extends StatelessWidget {
 
   /// The function to call with the [moveDownShortcut].
   final VoidCallback? moveDownCallback;
+
+  /// The function to call with the [moveToStartShortcut].
+  final VoidCallback? homeCallback;
+
+  /// The function to call with the [moveToEndShortcut].
+  final VoidCallback? endCallback;
+
+  /// function to call with the [pageUpHotkey]
+  final VoidCallback? pageUpCallback;
+
+  /// The function to be called with the [pageDownHotkey].
+  final VoidCallback? pageDownCallback;
+
+  /// The function to call with the [testHotkey].
+  final VoidCallback? testCallback;
 
   /// The text to copy with the [copyHotkey].
   final String? copyText;
@@ -42,6 +62,10 @@ class CommonShortcuts extends StatelessWidget {
     final deleteFunction = deleteCallback;
     final moveUpFunction = moveUpCallback;
     final moveDownFunction = moveDownCallback;
+    final homeFunction = homeCallback;
+    final endFunction = endCallback;
+    final pageUpFunction = pageUpCallback;
+    final pageDownFunction = pageDownCallback;
     final text = copyText;
     return CallbackShortcuts(
       bindings: {
@@ -49,6 +73,10 @@ class CommonShortcuts extends StatelessWidget {
         if (deleteFunction != null) deleteShortcut: deleteFunction,
         if (moveUpFunction != null) moveUpShortcut: moveUpFunction,
         if (moveDownFunction != null) moveDownShortcut: moveDownFunction,
+        if (homeFunction != null) moveToStartShortcut: homeFunction,
+        if (endFunction != null) moveToEndShortcut: endFunction,
+        if (pageUpFunction != null) pageUpHotkey: pageUpFunction,
+        if (pageDownFunction != null) pageDownHotkey: pageDownFunction,
         copyHotkey: () {
           if (text != null) {
             setClipboardText(text);

@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
-import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
@@ -43,7 +42,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   @override
   Widget build(final BuildContext context) => CallbackShortcuts(
         bindings: {
-          closeHotkey: () {
+          closeProjectShortcut: () {
             Navigator.of(context).maybePop();
           }
         },

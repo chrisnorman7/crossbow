@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/contexts/call_command_context.dart';
 import '../../src/contexts/call_commands_context.dart';
@@ -200,8 +199,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     return TableRow(
       children: [
         TableCell(
-          child: CallbackShortcuts(
-            bindings: {deleteHotkey: () => deleteCallCommand(callCommand)},
+          child: CommonShortcuts(
+            deleteCallback: () => deleteCallCommand(callCommand),
             child: Column(
               children: [
                 TextButton(
@@ -282,8 +281,8 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
           ),
         ),
         TableCell(
-          child: CallbackShortcuts(
-            bindings: {deleteHotkey: () => deleteCallCommand(callCommand)},
+          child: CommonShortcuts(
+            deleteCallback: () => deleteCallCommand(callCommand),
             child: IconButton(
               onPressed: () => deleteCallCommand(callCommand),
               icon: Icon(

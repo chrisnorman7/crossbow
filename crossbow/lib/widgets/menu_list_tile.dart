@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/select_menu_screen.dart';
 import '../src/contexts/menu_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
@@ -61,12 +61,10 @@ class MenuListTile extends ConsumerWidget {
     final MenuContext? menuContext,
   }) {
     final menu = menuContext?.value;
-    return CallbackShortcuts(
-      bindings: {
-        deleteHotkey: () {
-          if (nullable) {
-            onChanged(null);
-          }
+    return CommonShortcuts(
+      deleteCallback: () {
+        if (nullable) {
+          onChanged(null);
         }
       },
       child: AssetReferencePlaySoundSemantics(

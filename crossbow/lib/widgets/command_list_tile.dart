@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_command_screen.dart';
 import '../screens/commands/select_pinned_command_screen.dart';
@@ -100,26 +99,24 @@ class CommandListTileState extends ConsumerState<CommandListTile> {
           final projectContext = valueContext.projectContext;
           final command = valueContext.value;
           final pinnedCommand = valueContext.pinnedCommand;
-          return CallbackShortcuts(
-            bindings: {
-              deleteHotkey: () async {
-                if (widget.nullable) {
-                  if (pinnedCommand != null) {
-                    await intlConfirm(
-                      context: context,
-                      message: Intl.message(
-                        'Are you sure you want to delete this command?',
-                      ),
-                      title: confirmDeleteTitle,
-                      yesCallback: () async {
-                        Navigator.of(context).pop();
-                        await projectContext.db.utilsDao.deleteCommand(command);
-                        widget.onChanged(null);
-                      },
-                    );
-                  } else {
-                    widget.onChanged(null);
-                  }
+          return CommonShortcuts(
+            deleteCallback: () async {
+              if (widget.nullable) {
+                if (pinnedCommand != null) {
+                  await intlConfirm(
+                    context: context,
+                    message: Intl.message(
+                      'Are you sure you want to delete this command?',
+                    ),
+                    title: confirmDeleteTitle,
+                    yesCallback: () async {
+                      Navigator.of(context).pop();
+                      await projectContext.db.utilsDao.deleteCommand(command);
+                      widget.onChanged(null);
+                    },
+                  );
+                } else {
+                  widget.onChanged(null);
                 }
               }
             },

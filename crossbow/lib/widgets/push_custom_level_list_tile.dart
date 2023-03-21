@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_push_custom_level_screen.dart';
 import '../screens/select_custom_level_screen.dart';
 import '../src/contexts/push_custom_level_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
 
@@ -64,15 +64,13 @@ class PushCustomLevelListTileState
     final customLevel = pushCustomLevelContext?.customLevel;
     return AssetReferencePlaySoundSemantics(
       assetReferenceId: customLevel?.musicId,
-      child: CallbackShortcuts(
-        bindings: {
-          deleteHotkey: () async {
-            if (pushCustomLevel != null) {
-              await pushCustomLevelsDao.deletePushCustomLevel(
-                id: pushCustomLevel.id,
-              );
-              widget.onChanged(null);
-            }
+      child: CommonShortcuts(
+        deleteCallback: () async {
+          if (pushCustomLevel != null) {
+            await pushCustomLevelsDao.deletePushCustomLevel(
+              id: pushCustomLevel.id,
+            );
+            widget.onChanged(null);
           }
         },
         child: Builder(

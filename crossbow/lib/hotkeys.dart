@@ -2,20 +2,6 @@ import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// The hotkey for creating a new project.
-final newProjectHotkey = SingleActivator(
-  LogicalKeyboardKey.keyN,
-  control: useControlKey,
-  meta: useMetaKey,
-);
-
-/// The hotkey for opening an existing project.
-final openProjectHotkey = SingleActivator(
-  LogicalKeyboardKey.keyO,
-  control: useControlKey,
-  meta: useMetaKey,
-);
-
 /// The hotkey for copying things.
 final copyHotkey = SingleActivator(
   LogicalKeyboardKey.keyC,
@@ -23,12 +9,15 @@ final copyHotkey = SingleActivator(
   meta: useMetaKey,
 );
 
-/// The hotkey for closing something.
-final closeHotkey = SingleActivator(
-  LogicalKeyboardKey.keyW,
+/// The hotkey for testing things.
+final testHotkey = SingleActivator(
+  LogicalKeyboardKey.keyT,
   control: useControlKey,
-  meta: useMetaKey,
+  shift: true,
 );
 
-/// The hotkey for deleting things.
-const deleteHotkey = SingleActivator(LogicalKeyboardKey.delete);
+/// The page up hotkey.
+const pageUpHotkey = SingleActivator(LogicalKeyboardKey.pageUp);
+
+/// The page down hotkey.
+const pageDownHotkey = SingleActivator(LogicalKeyboardKey.pageDown);

@@ -3,10 +3,10 @@ import 'package:backstreets_widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../hotkeys.dart';
 import '../messages.dart';
 import '../screens/commands/edit_pop_level_screen.dart';
 import '../src/providers.dart';
+import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 
 /// A list tile to show a pop level with the given [popLevelId].
@@ -74,14 +74,12 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
       data: (final valueContext) {
         final projectContext = valueContext.projectContext;
         final popLevel = valueContext.value;
-        return CallbackShortcuts(
-          bindings: {
-            deleteHotkey: () async {
-              if (widget.nullable) {
-                await projectContext.db.popLevelsDao
-                    .deletePopLevel(id: popLevel.id);
-                widget.onChanged(null);
-              }
+        return CommonShortcuts(
+          deleteCallback: () async {
+            if (widget.nullable) {
+              await projectContext.db.popLevelsDao
+                  .deletePopLevel(id: popLevel.id);
+              widget.onChanged(null);
             }
           },
           child: ListTile(

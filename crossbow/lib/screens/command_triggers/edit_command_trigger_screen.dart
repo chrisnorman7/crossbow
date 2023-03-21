@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/contexts/command_trigger_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
+import '../../widgets/common_shortcuts.dart';
 import 'edit_command_trigger_keyboard_key_screen.dart';
 
 /// A screen for editing a [CommandTrigger] with the given [commandTriggerId].
@@ -92,16 +92,14 @@ class EditCommandTriggerScreenState
             ),
           ),
         ),
-        CallbackShortcuts(
-          bindings: {
-            deleteHotkey: () async {
-              if (keyboardKey != null) {
-                await projectContext.db.commandTriggerKeyboardKeysDao
-                    .deleteCommandTriggerKeyboardKey(
-                  commandTriggerKeyboardKeyId: keyboardKey.id,
-                );
-                invalidateCommandTriggerProvider();
-              }
+        CommonShortcuts(
+          deleteCallback: () async {
+            if (keyboardKey != null) {
+              await projectContext.db.commandTriggerKeyboardKeysDao
+                  .deleteCommandTriggerKeyboardKey(
+                commandTriggerKeyboardKeyId: keyboardKey.id,
+              );
+              invalidateCommandTriggerProvider();
             }
           },
           child: ListTile(

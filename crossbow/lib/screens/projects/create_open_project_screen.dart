@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
@@ -41,8 +41,8 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
             recentProjectPath == null ? null : File(recentProjectPath);
         return CallbackShortcuts(
           bindings: {
-            newProjectHotkey: newProject,
-            openProjectHotkey: openProject
+            newShortcut: newProject,
+            openShortcut: openProject,
           },
           child: SimpleScaffold(
             title: Intl.message('Load Project'),
@@ -71,7 +71,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
                   title: Text(Intl.message('Create New Project')),
                   subtitle: Text(
                     singleActivatorToString(
-                      singleActivator: newProjectHotkey,
+                      singleActivator: newShortcut,
                     ),
                   ),
                   onTap: newProject,
@@ -80,7 +80,7 @@ class CreateOpenProjectState extends ConsumerState<CreateOpenProjectScreen> {
                   title: Text(Intl.message('Open Existing Project')),
                   subtitle: Text(
                     singleActivatorToString(
-                      singleActivator: openProjectHotkey,
+                      singleActivator: openShortcut,
                     ),
                   ),
                   onTap: openProject,
