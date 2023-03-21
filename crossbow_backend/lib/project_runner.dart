@@ -209,6 +209,12 @@ class ProjectRunner {
           .getPushCustomLevel(id: pushCustomLevelId);
       await handlePushCustomLevel(pushCustomLevel);
     }
+    final dartFunctionId = command.dartFunctionId;
+    if (dartFunctionId != null) {
+      final dartFunction =
+          await db.dartFunctionsDao.getDartFunction(id: dartFunctionId);
+      await handleDartFunction(dartFunction);
+    }
   }
 
   /// Handle the given [messageContext].
