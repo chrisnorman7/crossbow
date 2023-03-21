@@ -170,19 +170,19 @@ Future<void> main(final List<String> args) async {
     'dartFunctions': dartFunctions.map((final e) => e.toJson()),
   });
   final formatter = DartFormatter();
-  final projectNameSnake = project.projectName.snakeCase;
+  final packageName = project.projectName.snakeCase;
   final binDirectory = Directory(path.join(newProjectDirectory.path, 'bin'))
     ..createSync();
   final outputFilename = path.join(
     binDirectory.path,
-    '$projectNameSnake.dart',
+    '$packageName.dart',
   );
   File(outputFilename).writeAsStringSync(formatter.format(output));
   print('Code written to $outputFilename.');
   final pubspecFilename = path.join(newProjectDirectory.path, 'pubspec.yaml');
   final pubspecFile = File(pubspecFilename);
   final pubspec = PubspecYaml(
-    name: projectNameSnake,
+    name: packageName,
     description: const Optional(
       'A game created with the Crossbow game engine.',
     ),
