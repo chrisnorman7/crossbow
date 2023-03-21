@@ -1,10 +1,13 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
 import '../../hotkeys.dart';
@@ -124,57 +127,71 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
     if (assetsDirectory.existsSync() == false) {
       assetsDirectory.createSync(recursive: true);
     }
-    return ListView(
-      children: [
-        DirectoryListTile(
-          directory: projectContext.projectDirectory,
-          title: Intl.message('Project Directory'),
-        ),
-        DirectoryListTile(
-          directory: projectContext.assetsDirectory,
-          title: Intl.message('Assets Directory'),
-        ),
-        TextListTile(
-          autofocus: true,
-          value: project.projectName,
-          onChanged: (final value) {
-            editProject(projectName: value);
-          },
-          header: projectNameMessage,
-          labelText: projectNameMessage,
-          title: projectNameMessage,
-        ),
-        CommandListTile(
-          commandId: project.initialCommandId,
-          title: Intl.message('Initial Command'),
-          nullable: false,
-          onChanged: (final value) {},
-        ),
-        TextListTile(
-          value: project.appName,
-          onChanged: (final value) => editProject(appName: value),
-          header: appNameMessage,
-          labelText: appNameMessage,
-          title: appNameMessage,
-        ),
-        TextListTile(
-          value: project.orgName,
-          onChanged: (final value) => editProject(orgName: value),
-          header: orgNameMessage,
-          labelText: orgNameMessage,
-          title: orgNameMessage,
-        ),
-        IntListTile(
-          value: project.framesPerSecond,
-          onChanged: (final value) => editProject(framesPerSecond: value),
-          title: framesPerSecondMessage,
-          labelText: framesPerSecondMessage,
-          min: 1,
-          max: 256,
-          modifier: project.framesPerSecond,
-          subtitle: '${project.framesPerSecond} FPS',
-        )
-      ],
+    return CallbackShortcuts(
+      bindings: {
+        SingleActivator(
+          LogicalKeyboardKey.keyP,
+          control: useControlKey,
+          shift: true,
+        ): () => launchUrl(Uri.directory(projectContext.projectDirectory.path)),
+        SingleActivator(
+          LogicalKeyboardKey.keyA,
+          control: useControlKey,
+          shift: true,
+        ): () => launchUrl(Uri.directory(assetsDirectory.path))
+      },
+      child: ListView(
+        children: [
+          DirectoryListTile(
+            directory: projectContext.projectDirectory,
+            title: Intl.message('Project Directory'),
+          ),
+          DirectoryListTile(
+            directory: projectContext.assetsDirectory,
+            title: Intl.message('Assets Directory'),
+          ),
+          TextListTile(
+            autofocus: true,
+            value: project.projectName,
+            onChanged: (final value) {
+              editProject(projectName: value);
+            },
+            header: projectNameMessage,
+            labelText: projectNameMessage,
+            title: projectNameMessage,
+          ),
+          CommandListTile(
+            commandId: project.initialCommandId,
+            title: Intl.message('Initial Command'),
+            nullable: false,
+            onChanged: (final value) {},
+          ),
+          TextListTile(
+            value: project.appName,
+            onChanged: (final value) => editProject(appName: value),
+            header: appNameMessage,
+            labelText: appNameMessage,
+            title: appNameMessage,
+          ),
+          TextListTile(
+            value: project.orgName,
+            onChanged: (final value) => editProject(orgName: value),
+            header: orgNameMessage,
+            labelText: orgNameMessage,
+            title: orgNameMessage,
+          ),
+          IntListTile(
+            value: project.framesPerSecond,
+            onChanged: (final value) => editProject(framesPerSecond: value),
+            title: framesPerSecondMessage,
+            labelText: framesPerSecondMessage,
+            min: 1,
+            max: 256,
+            modifier: project.framesPerSecond,
+            subtitle: '${project.framesPerSecond} FPS',
+          )
+        ],
+      ),
     );
   }
 
