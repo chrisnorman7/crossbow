@@ -18,7 +18,7 @@ import '../json/project.dart';
 
 /// The type for the dart functions map.
 typedef DartFunctionsMap
-    = Map<String, FutureOr<void> Function(ProjectRunner projectRunner)>;
+    = Map<String, FutureOr<void> Function(ProjectRunner runner)>;
 
 /// The context for a particular project.
 class ProjectContext {
