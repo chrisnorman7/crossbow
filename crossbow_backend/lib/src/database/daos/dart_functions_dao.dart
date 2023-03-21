@@ -54,4 +54,14 @@ class DartFunctionsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..orderBy([(final table) => OrderingTerm.asc(table.description)]);
     return query.get();
   }
+
+  /// Set the [name] for the function with the given [dartFunctionId].
+  Future<DartFunction> setName({
+    required final int dartFunctionId,
+    final String? name,
+  }) async =>
+      (await getUpdateQuery(dartFunctionId).writeReturning(
+        DartFunctionsCompanion(functionName: Value(name)),
+      ))
+          .single;
 }

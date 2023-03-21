@@ -2702,8 +2702,14 @@ class $DartFunctionsTable extends DartFunctions
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _functionNameMeta =
+      const VerificationMeta('functionName');
   @override
-  List<GeneratedColumn> get $columns => [id, description];
+  late final GeneratedColumn<String> functionName = GeneratedColumn<String>(
+      'function_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [id, description, functionName];
   @override
   String get aliasedName => _alias ?? 'dart_functions';
   @override
@@ -2724,6 +2730,12 @@ class $DartFunctionsTable extends DartFunctions
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
+    if (data.containsKey('function_name')) {
+      context.handle(
+          _functionNameMeta,
+          functionName.isAcceptableOrUnknown(
+              data['function_name']!, _functionNameMeta));
+    }
     return context;
   }
 
@@ -2737,6 +2749,8 @@ class $DartFunctionsTable extends DartFunctions
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      functionName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}function_name']),
     );
   }
 
@@ -2752,12 +2766,19 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
 
   /// The description of this object.
   final String description;
-  const DartFunction({required this.id, required this.description});
+
+  /// The name of this function.
+  final String? functionName;
+  const DartFunction(
+      {required this.id, required this.description, this.functionName});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['description'] = Variable<String>(description);
+    if (!nullToAbsent || functionName != null) {
+      map['function_name'] = Variable<String>(functionName);
+    }
     return map;
   }
 
@@ -2765,6 +2786,9 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
     return DartFunctionsCompanion(
       id: Value(id),
       description: Value(description),
+      functionName: functionName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(functionName),
     );
   }
 
@@ -2774,6 +2798,7 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
     return DartFunction(
       id: serializer.fromJson<int>(json['id']),
       description: serializer.fromJson<String>(json['description']),
+      functionName: serializer.fromJson<String?>(json['functionName']),
     );
   }
   @override
@@ -2782,58 +2807,75 @@ class DartFunction extends DataClass implements Insertable<DartFunction> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'description': serializer.toJson<String>(description),
+      'functionName': serializer.toJson<String?>(functionName),
     };
   }
 
-  DartFunction copyWith({int? id, String? description}) => DartFunction(
+  DartFunction copyWith(
+          {int? id,
+          String? description,
+          Value<String?> functionName = const Value.absent()}) =>
+      DartFunction(
         id: id ?? this.id,
         description: description ?? this.description,
+        functionName:
+            functionName.present ? functionName.value : this.functionName,
       );
   @override
   String toString() {
     return (StringBuffer('DartFunction(')
           ..write('id: $id, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('functionName: $functionName')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, description);
+  int get hashCode => Object.hash(id, description, functionName);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DartFunction &&
           other.id == this.id &&
-          other.description == this.description);
+          other.description == this.description &&
+          other.functionName == this.functionName);
 }
 
 class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
   final Value<int> id;
   final Value<String> description;
+  final Value<String?> functionName;
   const DartFunctionsCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
+    this.functionName = const Value.absent(),
   });
   DartFunctionsCompanion.insert({
     this.id = const Value.absent(),
     required String description,
+    this.functionName = const Value.absent(),
   }) : description = Value(description);
   static Insertable<DartFunction> custom({
     Expression<int>? id,
     Expression<String>? description,
+    Expression<String>? functionName,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (description != null) 'description': description,
+      if (functionName != null) 'function_name': functionName,
     });
   }
 
   DartFunctionsCompanion copyWith(
-      {Value<int>? id, Value<String>? description}) {
+      {Value<int>? id,
+      Value<String>? description,
+      Value<String?>? functionName}) {
     return DartFunctionsCompanion(
       id: id ?? this.id,
       description: description ?? this.description,
+      functionName: functionName ?? this.functionName,
     );
   }
 
@@ -2846,6 +2888,9 @@ class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
+    if (functionName.present) {
+      map['function_name'] = Variable<String>(functionName.value);
+    }
     return map;
   }
 
@@ -2853,7 +2898,8 @@ class DartFunctionsCompanion extends UpdateCompanion<DartFunction> {
   String toString() {
     return (StringBuffer('DartFunctionsCompanion(')
           ..write('id: $id, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('functionName: $functionName')
           ..write(')'))
         .toString();
   }

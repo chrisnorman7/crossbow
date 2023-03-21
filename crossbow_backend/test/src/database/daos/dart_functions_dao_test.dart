@@ -1,3 +1,4 @@
+import 'package:crossbow_backend/extensions.dart';
 import 'package:test/test.dart';
 
 import '../../../custom_database.dart';
@@ -67,6 +68,31 @@ void main() {
           expect(functions.length, 2);
           expect(functions.first.id, f1.id);
           expect(functions.last.id, f2.id);
+        },
+      );
+
+      test(
+        '.setName',
+        () async {
+          final f = await dartFunctionsDao.createDartFunction(
+            description: 'Testing.',
+          );
+          expect(f.functionName, null);
+          expect(f.name, 'function${f.id}');
+          const name = 'doSomething';
+          var updatedFunction = await dartFunctionsDao.setName(
+            dartFunctionId: f.id,
+            name: name,
+          );
+          expect(updatedFunction.id, f.id);
+          expect(updatedFunction.functionName, name);
+          expect(updatedFunction.name, name);
+          updatedFunction = await dartFunctionsDao.setName(
+            dartFunctionId: f.id,
+          );
+          expect(updatedFunction.id, f.id);
+          expect(updatedFunction.functionName, null);
+          expect(updatedFunction.name, 'function${f.id}');
         },
       );
     },
