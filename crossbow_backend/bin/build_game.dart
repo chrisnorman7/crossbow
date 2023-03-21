@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/extensions.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:jinja/jinja.dart';
 import 'package:path/path.dart' as path;
@@ -16,15 +17,10 @@ const code = '''
 /// Generated on {{ when }}.
 import 'dart:io';
 import 'package:crossbow_backend/crossbow_backend.dart';
-
-{% for dartFunction in dartFunctions %}
-/// {{ dartFunction.description }}
-Future<void> function{{ dartFunction.id }}(final ProjectRunner projectRunner) async {
-  // TODO(Whoever): Code this function.
-}
-{% endfor %}
+import 'package:{{ packageName }}/game_functions.dart';
 
 Future<void> main() async {
+  const gameFunctions = GameFunctions();
   final projectContext = ProjectContext.fromFile(
     File('{{ filename}}'),
     encryptionKey: '{{encryptionKey }}',
@@ -35,7 +31,7 @@ Future<void> main() async {
     },
     dartFunctionsMap: {
       {% for dartFunction in dartFunctions %}
-      {{ dartFunction.id }}: function{{ dartFunction.id }},
+      '{{ dartFunction.name }}': gameFunctions.{{ dartFunction.name }},
       {% endfor %}
     },
   );
@@ -56,17 +52,24 @@ Future<void> main(final List<String> args) async {
     'Importing project ${oldProjectFile.path} into '
     '${newProjectDirectory.path}.',
   );
-  if (newProjectDirectory.existsSync()) {
-    return print(
-      'The output directory ${newProjectDirectory.path} already exists.',
-    );
+  if (!newProjectDirectory.existsSync()) {
+    newProjectDirectory.createSync(recursive: true);
   }
-  newProjectDirectory.createSync(recursive: true);
-  final project =
-      Project.fromJson(jsonDecode(oldProjectFile.readAsStringSync()));
+  final project = Project.fromJson(
+    jsonDecode(oldProjectFile.readAsStringSync()),
+  );
   final assetsDirectory = Directory(
     path.join(newProjectDirectory.path, project.assetsDirectory),
-  )..createSync(recursive: true);
+  );
+  if (assetsDirectory.existsSync()) {
+    for (final entity in assetsDirectory.listSync()) {
+      print('Deleting ${entity.path}.');
+      entity.deleteSync(recursive: true);
+    }
+  } else {
+    print('Creating directory ${assetsDirectory.path}.');
+    assetsDirectory.createSync(recursive: true);
+  }
   print('Copying database...');
   final oldDatabaseFile = File(
     path.join(
@@ -162,41 +165,101 @@ Future<void> main(final List<String> args) async {
   final when = DateTime.now();
   final environment = Environment();
   final template = environment.fromString(code);
+  final packageName = project.projectName.snakeCase;
+  final pubspecFilename = path.join(newProjectDirectory.path, 'pubspec.yaml');
+  final pubspecFile = File(pubspecFilename);
+  if (!pubspecFile.existsSync()) {
+    final pubspec = PubspecYaml(
+      name: packageName,
+      description: const Optional(
+        'A game created with the Crossbow game engine.',
+      ),
+      dependencies: const [
+        PackageDependencySpec.git(
+          GitPackageDependencySpec(
+            package: 'crossbow_backend',
+            url: 'https://github.com/chrisnorman7/crossbow',
+            path: Optional('crossbow_backend'),
+          ),
+        )
+      ],
+      environment: const {'sdk': '>=2.19.0 <4.0.0'},
+    );
+    pubspecFile.writeAsStringSync(pubspec.toYamlString());
+    print('Written $pubspecFilename.');
+  }
+  final formatter = DartFormatter();
+  final libDirectory = Directory(path.join(newProjectDirectory.path, 'lib'));
+  if (!libDirectory.existsSync()) {
+    libDirectory.createSync();
+  }
+  final srcDirectory = Directory(path.join(libDirectory.path, 'src'));
+  if (!srcDirectory.existsSync()) {
+    srcDirectory.createSync();
+  }
+  const gameFunctionsBaseFilename = 'game_functions_base.dart';
+  final stringBuffer = StringBuffer();
+  final gameFunctionsBasePath = path.join(
+    srcDirectory.path,
+    gameFunctionsBaseFilename,
+  );
+  final gameFunctionsBaseFile = File(gameFunctionsBasePath);
+  stringBuffer
+    ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';")
+    ..writeln('/// Custom game functions.\n')
+    ..writeln('abstract class GameFunctionsBase {')
+    ..writeln('/// Allow subclasses to be constant.')
+    ..writeln('const GameFunctionsBase();');
+  for (final f in dartFunctions) {
+    stringBuffer
+      ..writeln('/// ${f.description}')
+      ..writeln(
+        'Future<void> ${f.name}(final ProjectRunner runner);',
+      );
+  }
+  stringBuffer.writeln('}');
+  final gameFunctionsBaseCode = formatter.format(stringBuffer.toString());
+  gameFunctionsBaseFile.writeAsStringSync(gameFunctionsBaseCode);
+  print('Written $gameFunctionsBasePath.');
+  const gameFunctionsFilename = 'game_functions.dart';
+  final gameFunctionsPath = path.join(libDirectory.path, gameFunctionsFilename);
+  final gameFunctionsFile = File(gameFunctionsPath);
+  stringBuffer.clear();
+  if (!gameFunctionsFile.existsSync()) {
+    stringBuffer
+      ..writeln("import 'src/$gameFunctionsBaseFilename';")
+      ..writeln('/// Provide all the game functions.')
+      ..writeln('class GameFunctions extends GameFunctionsBase {')
+      ..writeln('/// Make this class constant.')
+      ..writeln('const GameFunctions();')
+      ..writeln('}');
+    final gameFunctionsCode = formatter.format(stringBuffer.toString());
+    gameFunctionsFile.writeAsStringSync(gameFunctionsCode);
+    print('Written $gameFunctionsPath.');
+  } else {
+    print('Not overwriting ${gameFunctionsFile.path}.');
+  }
   final output = template.render({
     'when': when,
+    'packageName': packageName,
     'filename': path.basename(filename),
     'encryptionKey': encryptionKey,
     'assetReferenceEncryptionKeys': encryptionKeys,
-    'dartFunctions': dartFunctions.map((final e) => e.toJson()),
+    'dartFunctions': dartFunctions.map<Map<String, dynamic>>((final e) {
+      final data = e.toJson();
+      data['name'] = e.name;
+      return data;
+    }),
   });
-  final formatter = DartFormatter();
-  final packageName = project.projectName.snakeCase;
-  final binDirectory = Directory(path.join(newProjectDirectory.path, 'bin'))
-    ..createSync();
+  final binDirectory = Directory(path.join(newProjectDirectory.path, 'bin'));
+  if (!binDirectory.existsSync()) {
+    binDirectory.createSync();
+    print('Created directory ${binDirectory.path}.');
+  }
   final outputFilename = path.join(
     binDirectory.path,
     '$packageName.dart',
   );
   File(outputFilename).writeAsStringSync(formatter.format(output));
   print('Code written to $outputFilename.');
-  final pubspecFilename = path.join(newProjectDirectory.path, 'pubspec.yaml');
-  final pubspecFile = File(pubspecFilename);
-  final pubspec = PubspecYaml(
-    name: packageName,
-    description: const Optional(
-      'A game created with the Crossbow game engine.',
-    ),
-    dependencies: const [
-      PackageDependencySpec.git(
-        GitPackageDependencySpec(
-          package: 'crossbow_backend',
-          url: 'https://github.com/chrisnorman7/crossbow',
-          path: Optional('crossbow_backend'),
-        ),
-      )
-    ],
-    environment: const {'sdk': '>=2.19.0 <4.0.0'},
-  );
-  pubspecFile.writeAsStringSync(pubspec.toYamlString());
-  print('Written $pubspecFilename.');
 }

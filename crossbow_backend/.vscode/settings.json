@@ -16,7 +16,8 @@
     "sdl",
     "synthizer",
     "todos",
-    "unawaited"
+    "unawaited",
+    "writeln"
   ],
   "cmake.sourceDirectory": "c:\\Users\\chris\\src\\crossbow\\crossbow\\windows"
 }
