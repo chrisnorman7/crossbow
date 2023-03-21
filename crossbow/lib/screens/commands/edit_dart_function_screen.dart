@@ -1,6 +1,7 @@
 import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
+import '../../widgets/common_shortcuts.dart';
 
 /// A screen to edit the dart function with the given [dartFunctionId].
 class EditDartFunctionScreen extends ConsumerWidget {
@@ -48,6 +50,25 @@ class EditDartFunctionScreen extends ConsumerWidget {
     final dartFunctionsDao = projectContext.db.dartFunctionsDao;
     return ListView(
       children: [
+        CommonShortcuts(
+          deleteCallback: () async {
+            await dartFunctionsDao.setName(dartFunctionId: f.id);
+            invalidateDartFunctionProvider(ref);
+          },
+          copyText: f.name,
+          child: TextListTile(
+            autofocus: true,
+            value: f.name,
+            onChanged: (final value) async {
+              await dartFunctionsDao.setName(
+                dartFunctionId: f.id,
+                name: value.isEmpty ? null : value,
+              );
+              invalidateDartFunctionProvider(ref);
+            },
+            header: Intl.message('Function Name'),
+          ),
+        ),
         TextListTile(
           value: f.description,
           onChanged: (final value) async {
@@ -58,7 +79,6 @@ class EditDartFunctionScreen extends ConsumerWidget {
             invalidateDartFunctionProvider(ref);
           },
           header: descriptionMessage,
-          autofocus: true,
         )
       ],
     );

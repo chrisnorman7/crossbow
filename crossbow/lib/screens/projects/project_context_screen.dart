@@ -3,6 +3,7 @@ import 'package:backstreets_widgets/shortcuts.dart';
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
 import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:crossbow_backend/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -369,7 +370,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               return SearchableListTile(
                 searchString: f.description,
                 child: CommonShortcuts(
-                  copyText: f.id.toString(),
+                  copyText: f.name,
                   deleteCallback: () => intlConfirm(
                     context: context,
                     message: Intl.message(
@@ -390,7 +391,8 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                   ),
                   child: ListTile(
                     autofocus: index == 0,
-                    title: Text(f.description),
+                    title: Text(f.name),
+                    subtitle: Text(f.description),
                     onTap: () async {
                       await pushWidget(
                         context: context,
