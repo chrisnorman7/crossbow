@@ -155,9 +155,14 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     final menusDao = db.menusDao;
     final menu = menuContext.value;
     final menuItems = menuContext.menuItems;
-    return CommonShortcuts(
-      newCallback: newMenuItem,
-      child: ReorderableList(
+    final Widget child;
+    if (menuItems.isEmpty) {
+      child = CenterText(
+        text: nothingToShowMessage,
+        autofocus: true,
+      );
+    } else {
+      child = ReorderableList(
         itemBuilder: (final context, final index) {
           final menuItem = menuItems[index];
           return CommonShortcuts(
@@ -229,7 +234,11 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           oldIndex: oldIndex,
           newIndex: newIndex,
         ),
-      ),
+      );
+    }
+    return CommonShortcuts(
+      newCallback: newMenuItem,
+      child: child,
     );
   }
 
