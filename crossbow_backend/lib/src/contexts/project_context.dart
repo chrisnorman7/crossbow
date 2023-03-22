@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dart_sdl/dart_sdl.dart';
+import 'package:dart_sdl/init_flags.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -131,7 +132,15 @@ class ProjectContext {
   /// Get a project runner for this project context.
   @useResult
   ProjectRunner get projectRunner {
-    final sdl = Sdl()..init();
+    final sdl = Sdl()
+      ..init(
+        flags: const InitFlags(
+          joystick: true,
+          haptic: true,
+          gameController: true,
+          events: true,
+        ).flags,
+      );
     final synthizer = Synthizer()..initialize();
     final synthizerContext = synthizer.createContext();
     final random = Random();
