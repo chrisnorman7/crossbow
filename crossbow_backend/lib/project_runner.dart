@@ -103,6 +103,12 @@ class ProjectRunner {
     );
   }
 
+  /// Play a sound from the given [id].
+  Future<Sound> playSound(final int id) async {
+    final assetReference = await getAssetReferenceFromId(id);
+    return game.playSimpleSound(sound: assetReference);
+  }
+
   /// Run this game.
   Future<void> run() async {
     await setupGame();
