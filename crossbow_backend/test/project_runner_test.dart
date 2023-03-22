@@ -193,6 +193,91 @@ void main() async {
       );
 
       test(
+        '.getAssetReferenceFromId',
+        () async {
+          var assetReference = await projectRunner.getAssetReferenceFromId(
+            clink.id,
+          );
+          expect(assetReference.encryptionKey, null);
+          expect(assetReference.gain, clink.gain);
+          expect(
+            assetReference.name,
+            path.join(
+              projectContext.assetsDirectory.path,
+              clink.folderName,
+              clink.name,
+            ),
+          );
+          expect(assetReference.type, ziggurat.AssetType.file);
+          expect(assetReference.getFile(random).existsSync(), true);
+          assetReference = await projectRunner.getAssetReferenceFromId(
+            boots.id,
+          );
+          expect(
+            assetReference.name,
+            path.join(
+              projectContext.assetsDirectory.path,
+              boots.folderName,
+              boots.name,
+            ),
+          );
+          expect(assetReference.encryptionKey, 'asdf123');
+          expect(assetReference.gain, boots.gain);
+          expect(assetReference.type, ziggurat.AssetType.collection);
+          expect(
+            assetReference.getFile(random).path,
+            path.join(
+              projectContext.assetsDirectory.path,
+              boots.folderName,
+              boots.name,
+              'readme.txt',
+            ),
+          );
+        },
+      );
+
+      test(
+        '.getMusic',
+        () async {
+          var music = projectRunner.getMusic(clink);
+          expect(music.gain, clink.gain);
+          var actualSound = music.sound;
+          var expectedSound = projectRunner.getAssetReference(clink);
+          expect(actualSound.encryptionKey, expectedSound.encryptionKey);
+          expect(actualSound.gain, clink.gain);
+          expect(actualSound.name, expectedSound.name);
+          expect(actualSound.type, AssetType.file);
+          music = projectRunner.getMusic(boots);
+          expect(music.gain, boots.gain);
+          actualSound = music.sound;
+          expectedSound = projectRunner.getAssetReference(boots);
+          expect(actualSound.encryptionKey, expectedSound.encryptionKey);
+          expect(actualSound.gain, boots.gain);
+          expect(actualSound.name, expectedSound.name);
+          expect(actualSound.type, AssetType.collection);
+        },
+      );
+
+      test(
+        '.getMusicFromId',
+        () async {
+          var music = await projectRunner.getMusicFromId(clink.id);
+          expect(music.gain, clink.gain);
+          var expectedSound = projectRunner.getAssetReference(clink);
+          expect(music.sound.encryptionKey, expectedSound.encryptionKey);
+          expect(music.sound.gain, clink.gain);
+          expect(music.sound.name, expectedSound.name);
+          music = await projectRunner.getMusicFromId(boots.id);
+          expect(music.gain, boots.gain);
+          expectedSound = projectRunner.getAssetReference(boots);
+          expect(music.sound.encryptionKey, expectedSound.encryptionKey);
+          expect(music.sound.gain, boots.gain);
+          expect(music.sound.name, expectedSound.name);
+          expect(music.sound.type, AssetType.collection);
+        },
+      );
+
+      test(
         '.callCommandShouldRun',
         () async {
           final command = await commandsDao.createCommand();

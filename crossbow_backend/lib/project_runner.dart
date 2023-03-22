@@ -158,6 +158,14 @@ class ProjectRunner {
     throw FileSystemException('Cannot find the given path.', name);
   }
 
+  /// Get an asset reference from the given [id].
+  Future<ziggurat.AssetReference> getAssetReferenceFromId(final int id) async {
+    final assetReference = await db.assetReferencesDao.getAssetReference(
+      id: id,
+    );
+    return getAssetReference(assetReference);
+  }
+
   /// Get music from the given [assetReference].
   Music getMusic(final AssetReference assetReference) {
     final sound = getAssetReference(assetReference);
@@ -165,6 +173,13 @@ class ProjectRunner {
       sound: sound,
       gain: sound.gain,
     );
+  }
+
+  /// Get music from the given [id].
+  Future<Music> getMusicFromId(final int id) async {
+    final assetReference =
+        await db.assetReferencesDao.getAssetReference(id: id);
+    return getMusic(assetReference);
   }
 
   /// Run the given [command].
