@@ -962,9 +962,130 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES asset_references (id) ON DELETE SET NULL'));
+  static const VerificationMeta _upScanCodeMeta =
+      const VerificationMeta('upScanCode');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, musicId, selectItemSoundId, activateItemSoundId];
+  late final GeneratedColumnWithTypeConverter<ScanCode, int> upScanCode =
+      GeneratedColumn<int>('up_scan_code', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(ScanCode.up.index))
+          .withConverter<ScanCode>($MenusTable.$converterupScanCode);
+  static const VerificationMeta _upButtonMeta =
+      const VerificationMeta('upButton');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerButton, int>
+      upButton = GeneratedColumn<int>('up_button', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerButton.dpadUp.index))
+          .withConverter<GameControllerButton>($MenusTable.$converterupButton);
+  static const VerificationMeta _downScanCodeMeta =
+      const VerificationMeta('downScanCode');
+  @override
+  late final GeneratedColumnWithTypeConverter<ScanCode, int> downScanCode =
+      GeneratedColumn<int>('down_scan_code', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(ScanCode.down.index))
+          .withConverter<ScanCode>($MenusTable.$converterdownScanCode);
+  static const VerificationMeta _downButtonMeta =
+      const VerificationMeta('downButton');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerButton, int>
+      downButton = GeneratedColumn<int>('down_button', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerButton.dpadDown.index))
+          .withConverter<GameControllerButton>(
+              $MenusTable.$converterdownButton);
+  static const VerificationMeta _activateScanCodeMeta =
+      const VerificationMeta('activateScanCode');
+  @override
+  late final GeneratedColumnWithTypeConverter<ScanCode, int> activateScanCode =
+      GeneratedColumn<int>('activate_scan_code', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(ScanCode.space.index))
+          .withConverter<ScanCode>($MenusTable.$converteractivateScanCode);
+  static const VerificationMeta _activateButtonMeta =
+      const VerificationMeta('activateButton');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerButton, int>
+      activateButton = GeneratedColumn<int>(
+              'activate_button', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerButton.dpadRight.index))
+          .withConverter<GameControllerButton>(
+              $MenusTable.$converteractivateButton);
+  static const VerificationMeta _cancelScanCodeMeta =
+      const VerificationMeta('cancelScanCode');
+  @override
+  late final GeneratedColumnWithTypeConverter<ScanCode, int> cancelScanCode =
+      GeneratedColumn<int>('cancel_scan_code', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(ScanCode.escape.index))
+          .withConverter<ScanCode>($MenusTable.$convertercancelScanCode);
+  static const VerificationMeta _cancelButtonMeta =
+      const VerificationMeta('cancelButton');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerButton, int>
+      cancelButton = GeneratedColumn<int>('cancel_button', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerButton.dpadLeft.index))
+          .withConverter<GameControllerButton>(
+              $MenusTable.$convertercancelButton);
+  static const VerificationMeta _movementAxisMeta =
+      const VerificationMeta('movementAxis');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerAxis, int>
+      movementAxis = GeneratedColumn<int>('movement_axis', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerAxis.lefty.index))
+          .withConverter<GameControllerAxis>(
+              $MenusTable.$convertermovementAxis);
+  static const VerificationMeta _activateAxisMeta =
+      const VerificationMeta('activateAxis');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerAxis, int>
+      activateAxis = GeneratedColumn<int>('activate_axis', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerAxis.triggerright.index))
+          .withConverter<GameControllerAxis>(
+              $MenusTable.$converteractivateAxis);
+  static const VerificationMeta _cancelAxisMeta =
+      const VerificationMeta('cancelAxis');
+  @override
+  late final GeneratedColumnWithTypeConverter<GameControllerAxis, int>
+      cancelAxis = GeneratedColumn<int>('cancel_axis', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: false,
+              defaultValue: Constant(GameControllerAxis.triggerleft.index))
+          .withConverter<GameControllerAxis>($MenusTable.$convertercancelAxis);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        musicId,
+        selectItemSoundId,
+        activateItemSoundId,
+        upScanCode,
+        upButton,
+        downScanCode,
+        downButton,
+        activateScanCode,
+        activateButton,
+        cancelScanCode,
+        cancelButton,
+        movementAxis,
+        activateAxis,
+        cancelAxis
+      ];
   @override
   String get aliasedName => _alias ?? 'menus';
   @override
@@ -997,6 +1118,17 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
           activateItemSoundId.isAcceptableOrUnknown(
               data['activate_item_sound_id']!, _activateItemSoundIdMeta));
     }
+    context.handle(_upScanCodeMeta, const VerificationResult.success());
+    context.handle(_upButtonMeta, const VerificationResult.success());
+    context.handle(_downScanCodeMeta, const VerificationResult.success());
+    context.handle(_downButtonMeta, const VerificationResult.success());
+    context.handle(_activateScanCodeMeta, const VerificationResult.success());
+    context.handle(_activateButtonMeta, const VerificationResult.success());
+    context.handle(_cancelScanCodeMeta, const VerificationResult.success());
+    context.handle(_cancelButtonMeta, const VerificationResult.success());
+    context.handle(_movementAxisMeta, const VerificationResult.success());
+    context.handle(_activateAxisMeta, const VerificationResult.success());
+    context.handle(_cancelAxisMeta, const VerificationResult.success());
     return context;
   }
 
@@ -1016,6 +1148,39 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
           DriftSqlType.int, data['${effectivePrefix}select_item_sound_id']),
       activateItemSoundId: attachedDatabase.typeMapping.read(
           DriftSqlType.int, data['${effectivePrefix}activate_item_sound_id']),
+      upScanCode: $MenusTable.$converterupScanCode.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}up_scan_code'])!),
+      upButton: $MenusTable.$converterupButton.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}up_button'])!),
+      downScanCode: $MenusTable.$converterdownScanCode.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}down_scan_code'])!),
+      downButton: $MenusTable.$converterdownButton.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}down_button'])!),
+      activateScanCode: $MenusTable.$converteractivateScanCode.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.int, data['${effectivePrefix}activate_scan_code'])!),
+      activateButton: $MenusTable.$converteractivateButton.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.int, data['${effectivePrefix}activate_button'])!),
+      cancelScanCode: $MenusTable.$convertercancelScanCode.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.int, data['${effectivePrefix}cancel_scan_code'])!),
+      cancelButton: $MenusTable.$convertercancelButton.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}cancel_button'])!),
+      movementAxis: $MenusTable.$convertermovementAxis.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}movement_axis'])!),
+      activateAxis: $MenusTable.$converteractivateAxis.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}activate_axis'])!),
+      cancelAxis: $MenusTable.$convertercancelAxis.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}cancel_axis'])!),
     );
   }
 
@@ -1023,6 +1188,35 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
   $MenusTable createAlias(String alias) {
     return $MenusTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<ScanCode, int, int> $converterupScanCode =
+      const EnumIndexConverter<ScanCode>(ScanCode.values);
+  static JsonTypeConverter2<GameControllerButton, int, int> $converterupButton =
+      const EnumIndexConverter<GameControllerButton>(
+          GameControllerButton.values);
+  static JsonTypeConverter2<ScanCode, int, int> $converterdownScanCode =
+      const EnumIndexConverter<ScanCode>(ScanCode.values);
+  static JsonTypeConverter2<GameControllerButton, int, int>
+      $converterdownButton = const EnumIndexConverter<GameControllerButton>(
+          GameControllerButton.values);
+  static JsonTypeConverter2<ScanCode, int, int> $converteractivateScanCode =
+      const EnumIndexConverter<ScanCode>(ScanCode.values);
+  static JsonTypeConverter2<GameControllerButton, int, int>
+      $converteractivateButton = const EnumIndexConverter<GameControllerButton>(
+          GameControllerButton.values);
+  static JsonTypeConverter2<ScanCode, int, int> $convertercancelScanCode =
+      const EnumIndexConverter<ScanCode>(ScanCode.values);
+  static JsonTypeConverter2<GameControllerButton, int, int>
+      $convertercancelButton = const EnumIndexConverter<GameControllerButton>(
+          GameControllerButton.values);
+  static JsonTypeConverter2<GameControllerAxis, int, int>
+      $convertermovementAxis =
+      const EnumIndexConverter<GameControllerAxis>(GameControllerAxis.values);
+  static JsonTypeConverter2<GameControllerAxis, int, int>
+      $converteractivateAxis =
+      const EnumIndexConverter<GameControllerAxis>(GameControllerAxis.values);
+  static JsonTypeConverter2<GameControllerAxis, int, int> $convertercancelAxis =
+      const EnumIndexConverter<GameControllerAxis>(GameControllerAxis.values);
 }
 
 class Menu extends DataClass implements Insertable<Menu> {
@@ -1040,12 +1234,56 @@ class Menu extends DataClass implements Insertable<Menu> {
 
   /// The sound to use when selecting an item.
   final int? activateItemSoundId;
+
+  /// The scan code to use to move up this menu.
+  final ScanCode upScanCode;
+
+  /// The game controller button to use to move up in the menu.
+  final GameControllerButton upButton;
+
+  /// The scan code to use to move down this menu.
+  final ScanCode downScanCode;
+
+  /// The game controller button to use to move down in the menu.
+  final GameControllerButton downButton;
+
+  /// The scan code to use to activate items in this menu.
+  final ScanCode activateScanCode;
+
+  /// The game controller button to use to activate items in this menu.
+  final GameControllerButton activateButton;
+
+  /// The scan code to use to cancel this menu.
+  final ScanCode cancelScanCode;
+
+  /// The game controller button to use to cancel this menu.
+  final GameControllerButton cancelButton;
+
+  /// The game controller axis to use to move through this menu.
+  final GameControllerAxis movementAxis;
+
+  /// The game controller axis to use to activate menu items.
+  final GameControllerAxis activateAxis;
+
+  /// The game controller axis to use to cancel this menu.
+  final GameControllerAxis cancelAxis;
   const Menu(
       {required this.id,
       required this.name,
       this.musicId,
       this.selectItemSoundId,
-      this.activateItemSoundId});
+      this.activateItemSoundId,
+      required this.upScanCode,
+      required this.upButton,
+      required this.downScanCode,
+      required this.downButton,
+      required this.activateScanCode,
+      required this.activateButton,
+      required this.cancelScanCode,
+      required this.cancelButton,
+      required this.movementAxis,
+      required this.activateAxis,
+      required this.cancelAxis});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1059,6 +1297,51 @@ class Menu extends DataClass implements Insertable<Menu> {
     }
     if (!nullToAbsent || activateItemSoundId != null) {
       map['activate_item_sound_id'] = Variable<int>(activateItemSoundId);
+    }
+    {
+      final converter = $MenusTable.$converterupScanCode;
+      map['up_scan_code'] = Variable<int>(converter.toSql(upScanCode));
+    }
+    {
+      final converter = $MenusTable.$converterupButton;
+      map['up_button'] = Variable<int>(converter.toSql(upButton));
+    }
+    {
+      final converter = $MenusTable.$converterdownScanCode;
+      map['down_scan_code'] = Variable<int>(converter.toSql(downScanCode));
+    }
+    {
+      final converter = $MenusTable.$converterdownButton;
+      map['down_button'] = Variable<int>(converter.toSql(downButton));
+    }
+    {
+      final converter = $MenusTable.$converteractivateScanCode;
+      map['activate_scan_code'] =
+          Variable<int>(converter.toSql(activateScanCode));
+    }
+    {
+      final converter = $MenusTable.$converteractivateButton;
+      map['activate_button'] = Variable<int>(converter.toSql(activateButton));
+    }
+    {
+      final converter = $MenusTable.$convertercancelScanCode;
+      map['cancel_scan_code'] = Variable<int>(converter.toSql(cancelScanCode));
+    }
+    {
+      final converter = $MenusTable.$convertercancelButton;
+      map['cancel_button'] = Variable<int>(converter.toSql(cancelButton));
+    }
+    {
+      final converter = $MenusTable.$convertermovementAxis;
+      map['movement_axis'] = Variable<int>(converter.toSql(movementAxis));
+    }
+    {
+      final converter = $MenusTable.$converteractivateAxis;
+      map['activate_axis'] = Variable<int>(converter.toSql(activateAxis));
+    }
+    {
+      final converter = $MenusTable.$convertercancelAxis;
+      map['cancel_axis'] = Variable<int>(converter.toSql(cancelAxis));
     }
     return map;
   }
@@ -1076,6 +1359,17 @@ class Menu extends DataClass implements Insertable<Menu> {
       activateItemSoundId: activateItemSoundId == null && nullToAbsent
           ? const Value.absent()
           : Value(activateItemSoundId),
+      upScanCode: Value(upScanCode),
+      upButton: Value(upButton),
+      downScanCode: Value(downScanCode),
+      downButton: Value(downButton),
+      activateScanCode: Value(activateScanCode),
+      activateButton: Value(activateButton),
+      cancelScanCode: Value(cancelScanCode),
+      cancelButton: Value(cancelButton),
+      movementAxis: Value(movementAxis),
+      activateAxis: Value(activateAxis),
+      cancelAxis: Value(cancelAxis),
     );
   }
 
@@ -1089,6 +1383,28 @@ class Menu extends DataClass implements Insertable<Menu> {
       selectItemSoundId: serializer.fromJson<int?>(json['selectItemSoundId']),
       activateItemSoundId:
           serializer.fromJson<int?>(json['activateItemSoundId']),
+      upScanCode: $MenusTable.$converterupScanCode
+          .fromJson(serializer.fromJson<int>(json['upScanCode'])),
+      upButton: $MenusTable.$converterupButton
+          .fromJson(serializer.fromJson<int>(json['upButton'])),
+      downScanCode: $MenusTable.$converterdownScanCode
+          .fromJson(serializer.fromJson<int>(json['downScanCode'])),
+      downButton: $MenusTable.$converterdownButton
+          .fromJson(serializer.fromJson<int>(json['downButton'])),
+      activateScanCode: $MenusTable.$converteractivateScanCode
+          .fromJson(serializer.fromJson<int>(json['activateScanCode'])),
+      activateButton: $MenusTable.$converteractivateButton
+          .fromJson(serializer.fromJson<int>(json['activateButton'])),
+      cancelScanCode: $MenusTable.$convertercancelScanCode
+          .fromJson(serializer.fromJson<int>(json['cancelScanCode'])),
+      cancelButton: $MenusTable.$convertercancelButton
+          .fromJson(serializer.fromJson<int>(json['cancelButton'])),
+      movementAxis: $MenusTable.$convertermovementAxis
+          .fromJson(serializer.fromJson<int>(json['movementAxis'])),
+      activateAxis: $MenusTable.$converteractivateAxis
+          .fromJson(serializer.fromJson<int>(json['activateAxis'])),
+      cancelAxis: $MenusTable.$convertercancelAxis
+          .fromJson(serializer.fromJson<int>(json['cancelAxis'])),
     );
   }
   @override
@@ -1100,6 +1416,28 @@ class Menu extends DataClass implements Insertable<Menu> {
       'musicId': serializer.toJson<int?>(musicId),
       'selectItemSoundId': serializer.toJson<int?>(selectItemSoundId),
       'activateItemSoundId': serializer.toJson<int?>(activateItemSoundId),
+      'upScanCode': serializer
+          .toJson<int>($MenusTable.$converterupScanCode.toJson(upScanCode)),
+      'upButton': serializer
+          .toJson<int>($MenusTable.$converterupButton.toJson(upButton)),
+      'downScanCode': serializer
+          .toJson<int>($MenusTable.$converterdownScanCode.toJson(downScanCode)),
+      'downButton': serializer
+          .toJson<int>($MenusTable.$converterdownButton.toJson(downButton)),
+      'activateScanCode': serializer.toJson<int>(
+          $MenusTable.$converteractivateScanCode.toJson(activateScanCode)),
+      'activateButton': serializer.toJson<int>(
+          $MenusTable.$converteractivateButton.toJson(activateButton)),
+      'cancelScanCode': serializer.toJson<int>(
+          $MenusTable.$convertercancelScanCode.toJson(cancelScanCode)),
+      'cancelButton': serializer
+          .toJson<int>($MenusTable.$convertercancelButton.toJson(cancelButton)),
+      'movementAxis': serializer
+          .toJson<int>($MenusTable.$convertermovementAxis.toJson(movementAxis)),
+      'activateAxis': serializer
+          .toJson<int>($MenusTable.$converteractivateAxis.toJson(activateAxis)),
+      'cancelAxis': serializer
+          .toJson<int>($MenusTable.$convertercancelAxis.toJson(cancelAxis)),
     };
   }
 
@@ -1108,7 +1446,18 @@ class Menu extends DataClass implements Insertable<Menu> {
           String? name,
           Value<int?> musicId = const Value.absent(),
           Value<int?> selectItemSoundId = const Value.absent(),
-          Value<int?> activateItemSoundId = const Value.absent()}) =>
+          Value<int?> activateItemSoundId = const Value.absent(),
+          ScanCode? upScanCode,
+          GameControllerButton? upButton,
+          ScanCode? downScanCode,
+          GameControllerButton? downButton,
+          ScanCode? activateScanCode,
+          GameControllerButton? activateButton,
+          ScanCode? cancelScanCode,
+          GameControllerButton? cancelButton,
+          GameControllerAxis? movementAxis,
+          GameControllerAxis? activateAxis,
+          GameControllerAxis? cancelAxis}) =>
       Menu(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -1119,6 +1468,17 @@ class Menu extends DataClass implements Insertable<Menu> {
         activateItemSoundId: activateItemSoundId.present
             ? activateItemSoundId.value
             : this.activateItemSoundId,
+        upScanCode: upScanCode ?? this.upScanCode,
+        upButton: upButton ?? this.upButton,
+        downScanCode: downScanCode ?? this.downScanCode,
+        downButton: downButton ?? this.downButton,
+        activateScanCode: activateScanCode ?? this.activateScanCode,
+        activateButton: activateButton ?? this.activateButton,
+        cancelScanCode: cancelScanCode ?? this.cancelScanCode,
+        cancelButton: cancelButton ?? this.cancelButton,
+        movementAxis: movementAxis ?? this.movementAxis,
+        activateAxis: activateAxis ?? this.activateAxis,
+        cancelAxis: cancelAxis ?? this.cancelAxis,
       );
   @override
   String toString() {
@@ -1127,14 +1487,40 @@ class Menu extends DataClass implements Insertable<Menu> {
           ..write('name: $name, ')
           ..write('musicId: $musicId, ')
           ..write('selectItemSoundId: $selectItemSoundId, ')
-          ..write('activateItemSoundId: $activateItemSoundId')
+          ..write('activateItemSoundId: $activateItemSoundId, ')
+          ..write('upScanCode: $upScanCode, ')
+          ..write('upButton: $upButton, ')
+          ..write('downScanCode: $downScanCode, ')
+          ..write('downButton: $downButton, ')
+          ..write('activateScanCode: $activateScanCode, ')
+          ..write('activateButton: $activateButton, ')
+          ..write('cancelScanCode: $cancelScanCode, ')
+          ..write('cancelButton: $cancelButton, ')
+          ..write('movementAxis: $movementAxis, ')
+          ..write('activateAxis: $activateAxis, ')
+          ..write('cancelAxis: $cancelAxis')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, musicId, selectItemSoundId, activateItemSoundId);
+  int get hashCode => Object.hash(
+      id,
+      name,
+      musicId,
+      selectItemSoundId,
+      activateItemSoundId,
+      upScanCode,
+      upButton,
+      downScanCode,
+      downButton,
+      activateScanCode,
+      activateButton,
+      cancelScanCode,
+      cancelButton,
+      movementAxis,
+      activateAxis,
+      cancelAxis);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1143,7 +1529,18 @@ class Menu extends DataClass implements Insertable<Menu> {
           other.name == this.name &&
           other.musicId == this.musicId &&
           other.selectItemSoundId == this.selectItemSoundId &&
-          other.activateItemSoundId == this.activateItemSoundId);
+          other.activateItemSoundId == this.activateItemSoundId &&
+          other.upScanCode == this.upScanCode &&
+          other.upButton == this.upButton &&
+          other.downScanCode == this.downScanCode &&
+          other.downButton == this.downButton &&
+          other.activateScanCode == this.activateScanCode &&
+          other.activateButton == this.activateButton &&
+          other.cancelScanCode == this.cancelScanCode &&
+          other.cancelButton == this.cancelButton &&
+          other.movementAxis == this.movementAxis &&
+          other.activateAxis == this.activateAxis &&
+          other.cancelAxis == this.cancelAxis);
 }
 
 class MenusCompanion extends UpdateCompanion<Menu> {
@@ -1152,12 +1549,34 @@ class MenusCompanion extends UpdateCompanion<Menu> {
   final Value<int?> musicId;
   final Value<int?> selectItemSoundId;
   final Value<int?> activateItemSoundId;
+  final Value<ScanCode> upScanCode;
+  final Value<GameControllerButton> upButton;
+  final Value<ScanCode> downScanCode;
+  final Value<GameControllerButton> downButton;
+  final Value<ScanCode> activateScanCode;
+  final Value<GameControllerButton> activateButton;
+  final Value<ScanCode> cancelScanCode;
+  final Value<GameControllerButton> cancelButton;
+  final Value<GameControllerAxis> movementAxis;
+  final Value<GameControllerAxis> activateAxis;
+  final Value<GameControllerAxis> cancelAxis;
   const MenusCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.musicId = const Value.absent(),
     this.selectItemSoundId = const Value.absent(),
     this.activateItemSoundId = const Value.absent(),
+    this.upScanCode = const Value.absent(),
+    this.upButton = const Value.absent(),
+    this.downScanCode = const Value.absent(),
+    this.downButton = const Value.absent(),
+    this.activateScanCode = const Value.absent(),
+    this.activateButton = const Value.absent(),
+    this.cancelScanCode = const Value.absent(),
+    this.cancelButton = const Value.absent(),
+    this.movementAxis = const Value.absent(),
+    this.activateAxis = const Value.absent(),
+    this.cancelAxis = const Value.absent(),
   });
   MenusCompanion.insert({
     this.id = const Value.absent(),
@@ -1165,6 +1584,17 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     this.musicId = const Value.absent(),
     this.selectItemSoundId = const Value.absent(),
     this.activateItemSoundId = const Value.absent(),
+    this.upScanCode = const Value.absent(),
+    this.upButton = const Value.absent(),
+    this.downScanCode = const Value.absent(),
+    this.downButton = const Value.absent(),
+    this.activateScanCode = const Value.absent(),
+    this.activateButton = const Value.absent(),
+    this.cancelScanCode = const Value.absent(),
+    this.cancelButton = const Value.absent(),
+    this.movementAxis = const Value.absent(),
+    this.activateAxis = const Value.absent(),
+    this.cancelAxis = const Value.absent(),
   });
   static Insertable<Menu> custom({
     Expression<int>? id,
@@ -1172,6 +1602,17 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     Expression<int>? musicId,
     Expression<int>? selectItemSoundId,
     Expression<int>? activateItemSoundId,
+    Expression<int>? upScanCode,
+    Expression<int>? upButton,
+    Expression<int>? downScanCode,
+    Expression<int>? downButton,
+    Expression<int>? activateScanCode,
+    Expression<int>? activateButton,
+    Expression<int>? cancelScanCode,
+    Expression<int>? cancelButton,
+    Expression<int>? movementAxis,
+    Expression<int>? activateAxis,
+    Expression<int>? cancelAxis,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1180,6 +1621,17 @@ class MenusCompanion extends UpdateCompanion<Menu> {
       if (selectItemSoundId != null) 'select_item_sound_id': selectItemSoundId,
       if (activateItemSoundId != null)
         'activate_item_sound_id': activateItemSoundId,
+      if (upScanCode != null) 'up_scan_code': upScanCode,
+      if (upButton != null) 'up_button': upButton,
+      if (downScanCode != null) 'down_scan_code': downScanCode,
+      if (downButton != null) 'down_button': downButton,
+      if (activateScanCode != null) 'activate_scan_code': activateScanCode,
+      if (activateButton != null) 'activate_button': activateButton,
+      if (cancelScanCode != null) 'cancel_scan_code': cancelScanCode,
+      if (cancelButton != null) 'cancel_button': cancelButton,
+      if (movementAxis != null) 'movement_axis': movementAxis,
+      if (activateAxis != null) 'activate_axis': activateAxis,
+      if (cancelAxis != null) 'cancel_axis': cancelAxis,
     });
   }
 
@@ -1188,13 +1640,35 @@ class MenusCompanion extends UpdateCompanion<Menu> {
       Value<String>? name,
       Value<int?>? musicId,
       Value<int?>? selectItemSoundId,
-      Value<int?>? activateItemSoundId}) {
+      Value<int?>? activateItemSoundId,
+      Value<ScanCode>? upScanCode,
+      Value<GameControllerButton>? upButton,
+      Value<ScanCode>? downScanCode,
+      Value<GameControllerButton>? downButton,
+      Value<ScanCode>? activateScanCode,
+      Value<GameControllerButton>? activateButton,
+      Value<ScanCode>? cancelScanCode,
+      Value<GameControllerButton>? cancelButton,
+      Value<GameControllerAxis>? movementAxis,
+      Value<GameControllerAxis>? activateAxis,
+      Value<GameControllerAxis>? cancelAxis}) {
     return MenusCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       musicId: musicId ?? this.musicId,
       selectItemSoundId: selectItemSoundId ?? this.selectItemSoundId,
       activateItemSoundId: activateItemSoundId ?? this.activateItemSoundId,
+      upScanCode: upScanCode ?? this.upScanCode,
+      upButton: upButton ?? this.upButton,
+      downScanCode: downScanCode ?? this.downScanCode,
+      downButton: downButton ?? this.downButton,
+      activateScanCode: activateScanCode ?? this.activateScanCode,
+      activateButton: activateButton ?? this.activateButton,
+      cancelScanCode: cancelScanCode ?? this.cancelScanCode,
+      cancelButton: cancelButton ?? this.cancelButton,
+      movementAxis: movementAxis ?? this.movementAxis,
+      activateAxis: activateAxis ?? this.activateAxis,
+      cancelAxis: cancelAxis ?? this.cancelAxis,
     );
   }
 
@@ -1216,6 +1690,54 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     if (activateItemSoundId.present) {
       map['activate_item_sound_id'] = Variable<int>(activateItemSoundId.value);
     }
+    if (upScanCode.present) {
+      final converter = $MenusTable.$converterupScanCode;
+      map['up_scan_code'] = Variable<int>(converter.toSql(upScanCode.value));
+    }
+    if (upButton.present) {
+      final converter = $MenusTable.$converterupButton;
+      map['up_button'] = Variable<int>(converter.toSql(upButton.value));
+    }
+    if (downScanCode.present) {
+      final converter = $MenusTable.$converterdownScanCode;
+      map['down_scan_code'] =
+          Variable<int>(converter.toSql(downScanCode.value));
+    }
+    if (downButton.present) {
+      final converter = $MenusTable.$converterdownButton;
+      map['down_button'] = Variable<int>(converter.toSql(downButton.value));
+    }
+    if (activateScanCode.present) {
+      final converter = $MenusTable.$converteractivateScanCode;
+      map['activate_scan_code'] =
+          Variable<int>(converter.toSql(activateScanCode.value));
+    }
+    if (activateButton.present) {
+      final converter = $MenusTable.$converteractivateButton;
+      map['activate_button'] =
+          Variable<int>(converter.toSql(activateButton.value));
+    }
+    if (cancelScanCode.present) {
+      final converter = $MenusTable.$convertercancelScanCode;
+      map['cancel_scan_code'] =
+          Variable<int>(converter.toSql(cancelScanCode.value));
+    }
+    if (cancelButton.present) {
+      final converter = $MenusTable.$convertercancelButton;
+      map['cancel_button'] = Variable<int>(converter.toSql(cancelButton.value));
+    }
+    if (movementAxis.present) {
+      final converter = $MenusTable.$convertermovementAxis;
+      map['movement_axis'] = Variable<int>(converter.toSql(movementAxis.value));
+    }
+    if (activateAxis.present) {
+      final converter = $MenusTable.$converteractivateAxis;
+      map['activate_axis'] = Variable<int>(converter.toSql(activateAxis.value));
+    }
+    if (cancelAxis.present) {
+      final converter = $MenusTable.$convertercancelAxis;
+      map['cancel_axis'] = Variable<int>(converter.toSql(cancelAxis.value));
+    }
     return map;
   }
 
@@ -1226,7 +1748,18 @@ class MenusCompanion extends UpdateCompanion<Menu> {
           ..write('name: $name, ')
           ..write('musicId: $musicId, ')
           ..write('selectItemSoundId: $selectItemSoundId, ')
-          ..write('activateItemSoundId: $activateItemSoundId')
+          ..write('activateItemSoundId: $activateItemSoundId, ')
+          ..write('upScanCode: $upScanCode, ')
+          ..write('upButton: $upButton, ')
+          ..write('downScanCode: $downScanCode, ')
+          ..write('downButton: $downButton, ')
+          ..write('activateScanCode: $activateScanCode, ')
+          ..write('activateButton: $activateButton, ')
+          ..write('cancelScanCode: $cancelScanCode, ')
+          ..write('cancelButton: $cancelButton, ')
+          ..write('movementAxis: $movementAxis, ')
+          ..write('activateAxis: $activateAxis, ')
+          ..write('cancelAxis: $cancelAxis')
           ..write(')'))
         .toString();
   }

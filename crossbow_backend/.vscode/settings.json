@@ -16,6 +16,8 @@
     "sdl",
     "synthizer",
     "todos",
+    "triggerleft",
+    "triggerright",
     "unawaited",
     "writeln"
   ],
