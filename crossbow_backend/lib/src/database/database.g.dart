@@ -1232,7 +1232,7 @@ class Menu extends DataClass implements Insertable<Menu> {
   /// The sound to use when selecting an item.
   final int? selectItemSoundId;
 
-  /// The sound to use when selecting an item.
+  /// The sound to use when activating an item.
   final int? activateItemSoundId;
 
   /// The scan code to use to move up this menu.

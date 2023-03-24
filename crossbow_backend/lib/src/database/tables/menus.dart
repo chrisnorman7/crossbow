@@ -16,7 +16,7 @@ class Menus extends Table with WithPrimaryKey, WithName {
       .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
 
-  /// The sound to use when selecting an item.
+  /// The sound to use when activating an item.
   IntColumn get activateItemSoundId => integer()
       .references(AssetReferences, #id, onDelete: KeyAction.setNull)
       .nullable()();
