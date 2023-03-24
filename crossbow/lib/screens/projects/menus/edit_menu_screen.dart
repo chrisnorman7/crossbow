@@ -19,6 +19,7 @@ import '../../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../../widgets/call_commands_list_tile.dart';
 import '../../../widgets/common_shortcuts.dart';
 import 'edit_menu_item_screen.dart';
+import 'preview_menu_screen.dart';
 
 /// A screen for editing the menu with the given [menuId].
 class EditMenuScreen extends ConsumerStatefulWidget {
@@ -59,9 +60,24 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         TabbedScaffoldTab(
           title: Intl.message('Menu Settings'),
           icon: settingsIcon,
-          builder: (final context) => getSettingsPage(
-            context: context,
-            menu: menu,
+          actions: [
+            TextButton(
+              onPressed: () => pushWidget(
+                context: context,
+                builder: (final context) => PreviewMenuScreen(menuId: menu.id),
+              ),
+              child: Text(Intl.message('Test Menu')),
+            )
+          ],
+          builder: (final context) => CommonShortcuts(
+            testCallback: () => pushWidget(
+              context: context,
+              builder: (final context) => PreviewMenuScreen(menuId: menu.id),
+            ),
+            child: getSettingsPage(
+              context: context,
+              menu: menu,
+            ),
           ),
         ),
         TabbedScaffoldTab(
