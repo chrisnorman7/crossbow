@@ -177,20 +177,15 @@ final soundBackendProvider = Provider(
 );
 
 /// Provide a ziggurat game.
-final gameProvider = Provider(
-  (final ref) {
-    final sdl = ref.watch(sdlProvider);
-    final soundBackend = ref.watch(soundBackendProvider);
-    return ziggurat.Game(
-      sdl: sdl,
-      title: 'Game Provider',
-      soundBackend: soundBackend,
-    );
+final gameProvider = FutureProvider(
+  (final ref) async {
+    final projectRunner = await ref.watch(projectRunnerProvider.future);
+    return projectRunner!.game;
   },
 );
 
 /// Provide a project runner.
-final projectRunnerProvider = Provider((final ref) {
+final projectRunnerProvider = FutureProvider((final ref) async {
   final projectContext = ref.watch(projectContextNotifierProvider);
   if (projectContext == null) {
     return null;
@@ -199,13 +194,15 @@ final projectRunnerProvider = Provider((final ref) {
   final synthizerContext = ref.watch(synthizerContextProvider);
   final random = ref.watch(randomProvider);
   final soundBackend = ref.watch(soundBackendProvider);
-  return ProjectRunner(
+  final projectRunner = ProjectRunner(
     projectContext: projectContext,
     sdl: sdl,
     synthizerContext: synthizerContext,
     random: random,
     soundBackend: soundBackend,
   );
+  await projectRunner.setupGame();
+  return projectRunner;
 });
 
 /// Provide a single pop level.

@@ -57,14 +57,14 @@ class PlaySoundSemanticsState extends ConsumerState<PlaySoundSemantics> {
   }
 
   /// Play the sound.
-  void play() {
+  Future<void> play() async {
     stop();
     final assetReference = widget.assetReference;
-    final projectRunner = ref.watch(projectRunnerProvider);
+    final projectRunner = await ref.watch(projectRunnerProvider.future);
     if (projectRunner == null) {
       return;
     }
-    final game = ref.watch(gameProvider);
+    final game = projectRunner.game;
     final asset = projectRunner.getAssetReference(assetReference);
     try {
       _sound = game.interfaceSounds.playSound(
