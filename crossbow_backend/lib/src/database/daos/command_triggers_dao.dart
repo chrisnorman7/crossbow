@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 
 import '../../../crossbow_backend.dart';
+import '../../../extensions.dart';
 
 part 'command_triggers_dao.g.dart';
 
@@ -90,4 +91,14 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (delete(commandTriggers)
             ..where((final table) => table.id.equals(commandTriggerId)))
           .go();
+
+  /// Get the name of the command with the given [commandTriggerId].
+  Future<String> getCommandTriggerName({
+    required final int commandTriggerId,
+  }) async {
+    final query = select(commandTriggers)
+      ..where((final table) => table.id.equals(commandTriggerId));
+    final commandTrigger = await query.getSingle();
+    return commandTrigger.name;
+  }
 }

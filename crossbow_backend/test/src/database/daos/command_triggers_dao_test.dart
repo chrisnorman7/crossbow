@@ -146,6 +146,30 @@ void main() {
           );
         },
       );
+
+      test(
+        '.getCommandTriggerName',
+        () async {
+          final trigger1 = await commandTriggersDao.createCommandTrigger(
+            description: 'Test command trigger.',
+          );
+          expect(
+            await commandTriggersDao.getCommandTriggerName(
+              commandTriggerId: trigger1.id,
+            ),
+            'trigger${trigger1.id}',
+          );
+          final trigger2 = await commandTriggersDao.createCommandTrigger(
+            description: 'Another test command trigger.',
+          );
+          expect(
+            await commandTriggersDao.getCommandTriggerName(
+              commandTriggerId: trigger2.id,
+            ),
+            'trigger${trigger2.id}',
+          );
+        },
+      );
     },
   );
 }
