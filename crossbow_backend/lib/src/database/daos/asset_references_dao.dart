@@ -84,4 +84,13 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(id));
     return query.go();
   }
+
+  /// Get all the assets in [folderName].
+  Future<List<AssetReference>> getAssetReferencesInFolder(
+    final String folderName,
+  ) {
+    final query = select(assetReferences)
+      ..where((final table) => table.folderName.equals(folderName));
+    return query.get();
+  }
 }

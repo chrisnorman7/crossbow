@@ -132,6 +132,26 @@ Future<void> main() async {
           );
         },
       );
+
+      test(
+        '.getAssetReferencesInFolder',
+        () async {
+          const folderName = 'lovely_folder_with_a_hopefully_random_name';
+          final assets = [
+            for (var i = 0; i < 10; i++)
+              await assetReferences.createAssetReference(
+                folderName: folderName,
+                name: '$i.mp3',
+              )
+          ];
+          final retrievedAssets =
+              await assetReferences.getAssetReferencesInFolder(folderName);
+          expect(retrievedAssets.length, assets.length);
+          for (var i = 0; i < assets.length; i++) {
+            expect(assets[i], retrievedAssets[i]);
+          }
+        },
+      );
     },
   );
 }
