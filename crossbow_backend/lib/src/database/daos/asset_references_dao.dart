@@ -54,6 +54,7 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
     required final int assetReferenceId,
     required final String folderName,
     required final String name,
+    final String? comment,
   }) async {
     final query = update(assetReferences)
       ..where((final table) => table.id.equals(assetReferenceId));
@@ -61,6 +62,7 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
       AssetReferencesCompanion(
         folderName: Value(folderName),
         name: Value(name),
+        comment: Value(comment),
       ),
     ))
         .single;

@@ -52,8 +52,15 @@ class $AssetReferencesTable extends AssetReferences
             SqlDialect.postgres: '',
           }),
           defaultValue: const Constant(false));
+  static const VerificationMeta _commentMeta =
+      const VerificationMeta('comment');
   @override
-  List<GeneratedColumn> get $columns => [id, name, folderName, gain, detached];
+  late final GeneratedColumn<String> comment = GeneratedColumn<String>(
+      'comment', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, folderName, gain, detached, comment];
   @override
   String get aliasedName => _alias ?? 'asset_references';
   @override
@@ -86,6 +93,10 @@ class $AssetReferencesTable extends AssetReferences
       context.handle(_detachedMeta,
           detached.isAcceptableOrUnknown(data['detached']!, _detachedMeta));
     }
+    if (data.containsKey('comment')) {
+      context.handle(_commentMeta,
+          comment.isAcceptableOrUnknown(data['comment']!, _commentMeta));
+    }
     return context;
   }
 
@@ -105,6 +116,8 @@ class $AssetReferencesTable extends AssetReferences
           .read(DriftSqlType.double, data['${effectivePrefix}gain'])!,
       detached: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}detached'])!,
+      comment: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}comment']),
     );
   }
 
@@ -129,12 +142,18 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
 
   /// Whether or not this asset reference is detached from any other row.
   final bool detached;
+
+  /// The comment string for this asset.
+  ///
+  /// Used by the `build-game` script.
+  final String? comment;
   const AssetReference(
       {required this.id,
       required this.name,
       required this.folderName,
       required this.gain,
-      required this.detached});
+      required this.detached,
+      this.comment});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -143,6 +162,9 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     map['folder_name'] = Variable<String>(folderName);
     map['gain'] = Variable<double>(gain);
     map['detached'] = Variable<bool>(detached);
+    if (!nullToAbsent || comment != null) {
+      map['comment'] = Variable<String>(comment);
+    }
     return map;
   }
 
@@ -153,6 +175,9 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       folderName: Value(folderName),
       gain: Value(gain),
       detached: Value(detached),
+      comment: comment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(comment),
     );
   }
 
@@ -165,6 +190,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       folderName: serializer.fromJson<String>(json['folderName']),
       gain: serializer.fromJson<double>(json['gain']),
       detached: serializer.fromJson<bool>(json['detached']),
+      comment: serializer.fromJson<String?>(json['comment']),
     );
   }
   @override
@@ -176,6 +202,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       'folderName': serializer.toJson<String>(folderName),
       'gain': serializer.toJson<double>(gain),
       'detached': serializer.toJson<bool>(detached),
+      'comment': serializer.toJson<String?>(comment),
     };
   }
 
@@ -184,13 +211,15 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
           String? name,
           String? folderName,
           double? gain,
-          bool? detached}) =>
+          bool? detached,
+          Value<String?> comment = const Value.absent()}) =>
       AssetReference(
         id: id ?? this.id,
         name: name ?? this.name,
         folderName: folderName ?? this.folderName,
         gain: gain ?? this.gain,
         detached: detached ?? this.detached,
+        comment: comment.present ? comment.value : this.comment,
       );
   @override
   String toString() {
@@ -199,13 +228,15 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
           ..write('name: $name, ')
           ..write('folderName: $folderName, ')
           ..write('gain: $gain, ')
-          ..write('detached: $detached')
+          ..write('detached: $detached, ')
+          ..write('comment: $comment')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, folderName, gain, detached);
+  int get hashCode =>
+      Object.hash(id, name, folderName, gain, detached, comment);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -214,7 +245,8 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
           other.name == this.name &&
           other.folderName == this.folderName &&
           other.gain == this.gain &&
-          other.detached == this.detached);
+          other.detached == this.detached &&
+          other.comment == this.comment);
 }
 
 class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
@@ -223,12 +255,14 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   final Value<String> folderName;
   final Value<double> gain;
   final Value<bool> detached;
+  final Value<String?> comment;
   const AssetReferencesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.folderName = const Value.absent(),
     this.gain = const Value.absent(),
     this.detached = const Value.absent(),
+    this.comment = const Value.absent(),
   });
   AssetReferencesCompanion.insert({
     this.id = const Value.absent(),
@@ -236,6 +270,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     required String folderName,
     this.gain = const Value.absent(),
     this.detached = const Value.absent(),
+    this.comment = const Value.absent(),
   }) : folderName = Value(folderName);
   static Insertable<AssetReference> custom({
     Expression<int>? id,
@@ -243,6 +278,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     Expression<String>? folderName,
     Expression<double>? gain,
     Expression<bool>? detached,
+    Expression<String>? comment,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -250,6 +286,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
       if (folderName != null) 'folder_name': folderName,
       if (gain != null) 'gain': gain,
       if (detached != null) 'detached': detached,
+      if (comment != null) 'comment': comment,
     });
   }
 
@@ -258,13 +295,15 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
       Value<String>? name,
       Value<String>? folderName,
       Value<double>? gain,
-      Value<bool>? detached}) {
+      Value<bool>? detached,
+      Value<String?>? comment}) {
     return AssetReferencesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       folderName: folderName ?? this.folderName,
       gain: gain ?? this.gain,
       detached: detached ?? this.detached,
+      comment: comment ?? this.comment,
     );
   }
 
@@ -286,6 +325,9 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     if (detached.present) {
       map['detached'] = Variable<bool>(detached.value);
     }
+    if (comment.present) {
+      map['comment'] = Variable<String>(comment.value);
+    }
     return map;
   }
 
@@ -296,7 +338,8 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
           ..write('name: $name, ')
           ..write('folderName: $folderName, ')
           ..write('gain: $gain, ')
-          ..write('detached: $detached')
+          ..write('detached: $detached, ')
+          ..write('comment: $comment')
           ..write(')'))
         .toString();
   }

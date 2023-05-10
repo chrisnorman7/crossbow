@@ -12,4 +12,9 @@ class AssetReferences extends Table with WithPrimaryKey, WithName {
 
   /// Whether or not this asset reference is detached from any other row.
   BoolColumn get detached => boolean().withDefault(const Constant(false))();
+
+  /// The comment string for this asset.
+  ///
+  /// Used by the `build-game` script.
+  TextColumn get comment => text().nullable()();
 }

@@ -147,6 +147,7 @@ Future<void> main(final List<String> args) async {
         assetReferenceId: assetReference.id,
         folderName: folderName,
         name: path.basename(imported.reference.name),
+        comment: fullPath,
       );
     } else {
       final assetReferenceReference = existing.first;
