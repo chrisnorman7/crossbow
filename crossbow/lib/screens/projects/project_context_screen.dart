@@ -338,6 +338,18 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                       );
                       ref.invalidate(commandTriggersProvider);
                     },
+                    isThreeLine: true,
+                    trailing: TextButton(
+                      child: Text(Intl.message('Copy Code')),
+                      onPressed: () {
+                        final comment = '/// ${commandTrigger.description}';
+                        final name =
+                            // ignore: lines_longer_than_80_chars
+                            'await commandTriggersDao.getCommandTriggerName(commandTriggerId: ${commandTrigger.id},)';
+                        final code = 'registerCommand($name, Command(),);';
+                        setClipboardText('$comment\n$code\n');
+                      },
+                    ),
                   ),
                 ),
               );
