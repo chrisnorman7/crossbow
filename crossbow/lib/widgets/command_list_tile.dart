@@ -12,6 +12,7 @@ import '../util.dart';
 import 'asset_reference_play_sound_semantics.dart';
 import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
+import 'play_sound_semantics.dart';
 
 /// A list tile that allows editing a command.
 class CommandListTile extends ConsumerStatefulWidget {
@@ -122,16 +123,21 @@ class CommandListTileState extends ConsumerState<CommandListTile> {
             },
             child: AssetReferencePlaySoundSemantics(
               assetReferenceId: command.messageSoundId,
-              child: ListTile(
-                autofocus: widget.autofocus,
-                title: Text(widget.title),
-                subtitle: Text(setMessage),
-                onTap: () => pushWidget(
-                  context: context,
-                  builder: (final context) => EditCommandScreen(
-                    commandId: command.id,
-                    onChanged: widget.onChanged,
-                  ),
+              child: Builder(
+                builder: (final builderContext) => ListTile(
+                  autofocus: widget.autofocus,
+                  title: Text(widget.title),
+                  subtitle: Text(setMessage),
+                  onTap: () {
+                    PlaySoundSemantics.of(builderContext)?.stop();
+                    pushWidget(
+                      context: builderContext,
+                      builder: (final context) => EditCommandScreen(
+                        commandId: command.id,
+                        onChanged: widget.onChanged,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
