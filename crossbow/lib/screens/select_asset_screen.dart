@@ -19,18 +19,14 @@ class SelectAssetScreen extends ConsumerStatefulWidget {
   const SelectAssetScreen({
     required this.onChanged,
     this.assetContext,
-    this.nullable = true,
     super.key,
   });
 
   /// The current asset.
   final AssetContext? assetContext;
 
-  /// Whether or not the [assetContext] can be set to `null`.
-  final bool nullable;
-
   /// The function to call when the [assetContext] has changed.
-  final ValueChanged<AssetContext?> onChanged;
+  final ValueChanged<AssetContext> onChanged;
 
   /// Create state for this widget.
   @override
@@ -60,29 +56,18 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
           .map<String>(
             (final e) => path.basename(e.path),
           );
-      return SelectItem<String?>(
-        values: [null, ...directories],
+      return SelectItem(
+        values: directories.toList(),
         onDone: (final value) {
-          if (value == null) {
-            Navigator.of(context).pop();
-            widget.onChanged(null);
-          } else {
-            setState(
-              () {
-                _folderName = value;
-              },
-            );
-          }
+          setState(
+            () {
+              _folderName = value;
+            },
+          );
         },
-        getWidget: (final value) {
-          if (value == null) {
-            return Text(clearMessage);
-          }
-          return Text(value);
-        },
+        getWidget: Text.new,
         shouldPop: false,
         title: Intl.message('Select Folder'),
-        value: widget.assetContext?.folderName,
       );
     }
     final directory = Directory(
@@ -94,12 +79,9 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
       backspaceCallback: () => setState(() {
         _folderName = null;
       }),
-      child: SelectItem<String?>(
-        values: [null, ...items],
+      child: SelectItem(
+        values: items.toList(),
         getWidget: (final value) {
-          if (value == null) {
-            return Text(upMessage);
-          }
           final fullPath = path.join(
             projectContext.assetsDirectory.path,
             folderName,
@@ -126,19 +108,12 @@ class SelectAssetScreenState extends ConsumerState<SelectAssetScreen> {
             child: Text('$value ($type)'),
           );
         },
-        onDone: (final value) {
-          if (value == null) {
-            setState(() {
-              _folderName = null;
-            });
-          } else {
-            Navigator.of(context).pop();
-            widget.onChanged(
-              AssetContext(folderName: folderName, name: value),
-            );
-          }
-        },
-        shouldPop: false,
+        onDone: (final value) => widget.onChanged(
+          AssetContext(
+            folderName: folderName,
+            name: value,
+          ),
+        ),
         title: Intl.message('Select Asset'),
         value: folderName == widget.assetContext?.folderName
             ? widget.assetContext?.name

@@ -10,7 +10,6 @@ import 'package:path/path.dart' as path;
 import '../messages.dart';
 import '../screens/edit_asset_reference_screen.dart';
 import '../screens/select_asset_screen.dart';
-import '../src/contexts/asset_context.dart';
 import '../src/contexts/value_context.dart';
 import '../src/providers.dart';
 import 'asset_reference_play_sound_semantics.dart';
@@ -137,44 +136,18 @@ class AssetReferenceListTile extends ConsumerWidget {
                     context: context,
                     builder: (final context) => SelectAssetScreen(
                       onChanged: (final value) async {
-                        if (value == null) {
-                          if (assetReference != null) {
-                            await projectContext.db.assetReferencesDao
-                                .deleteAssetReference(
-                              id: assetReference.id,
-                            );
-                          }
-                          onChanged(null);
-                        } else {
-                          final AssetReference newAssetReference;
-                          if (assetReference == null) {
-                            newAssetReference =
-                                await assetReferencesDao.createAssetReference(
-                              folderName: value.folderName,
-                              name: value.name,
-                            );
-                          } else {
-                            newAssetReference =
-                                await assetReferencesDao.editAssetReference(
-                              assetReferenceId: assetReference.id,
-                              folderName: value.folderName,
-                              name: value.name,
-                            );
-                          }
-                          onChanged(
-                            newAssetReference.id,
-                          );
-                          ref.invalidate(
-                            assetReferenceProvider.call(newAssetReference.id),
-                          );
-                        }
+                        final newAssetReference =
+                            await assetReferencesDao.createAssetReference(
+                          folderName: value.folderName,
+                          name: value.name,
+                        );
+                        onChanged(
+                          newAssetReference.id,
+                        );
+                        ref.invalidate(
+                          assetReferenceProvider.call(newAssetReference.id),
+                        );
                       },
-                      assetContext: assetReference == null
-                          ? null
-                          : AssetContext(
-                              folderName: assetReference.folderName,
-                              name: assetReference.name,
-                            ),
                     ),
                   );
                 } else {

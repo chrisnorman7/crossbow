@@ -48,9 +48,8 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                       onChanged: (final value) async {
                         await assetReferencesDao.editAssetReference(
                           assetReferenceId: assetReferenceId,
-                          folderName:
-                              value?.folderName ?? assetReference.folderName,
-                          name: value?.name ?? assetReference.name,
+                          folderName: value.folderName,
+                          name: value.name,
                         );
                         invalidateAssetReferenceProvider(ref);
                       },
@@ -58,7 +57,6 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                         folderName: assetReference.folderName,
                         name: assetReference.name,
                       ),
-                      nullable: false,
                     ),
                   ),
                 ),
