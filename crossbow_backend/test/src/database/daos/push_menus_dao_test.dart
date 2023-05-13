@@ -7,15 +7,15 @@ void main() {
     'PushMenusDao',
     () {
       final db = getDatabase();
-      final menus = db.menusDao;
-      final pushMenus = db.pushMenusDao;
+      final menusDao = db.menusDao;
+      final pushMenusDao = db.pushMenusDao;
       final commands = db.commandsDao;
 
       test(
         '.createPushMenu',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
           expect(pushMenu.after, null);
           expect(pushMenu.fadeLength, null);
           expect(pushMenu.id, isNonZero);
@@ -26,10 +26,10 @@ void main() {
       test(
         '.getPushMenu',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
           expect(
-            (await pushMenus.getPushMenu(id: pushMenu.id)).id,
+            (await pushMenusDao.getPushMenu(id: pushMenu.id)).id,
             pushMenu.id,
           );
         },
@@ -38,16 +38,16 @@ void main() {
       test(
         '.deletePushMenu',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
-          var pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          expect(await pushMenus.deletePushMenu(id: pushMenu.id), 1);
-          pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          var pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
+          expect(await pushMenusDao.deletePushMenu(id: pushMenu.id), 1);
+          pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
           final command = await commands.setPushMenuId(
             commandId: (await commands.createCommand()).id,
             pushMenuId: pushMenu.id,
           );
           expect(command.pushMenuId, pushMenu.id);
-          await pushMenus.deletePushMenu(id: pushMenu.id);
+          await pushMenusDao.deletePushMenu(id: pushMenu.id);
           expect((await commands.getCommand(id: command.id)).pushMenuId, null);
         },
       );
@@ -55,17 +55,17 @@ void main() {
       test(
         '.setMenuId',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
           expect(pushMenu.menuId, menu.id);
-          final menu2 = await menus.createMenu(name: 'Other Menu');
-          var updatedPushMenu = await pushMenus.setMenuId(
+          final menu2 = await menusDao.createMenu(name: 'Other Menu');
+          var updatedPushMenu = await pushMenusDao.setMenuId(
             pushMenuId: pushMenu.id,
             menuId: menu2.id,
           );
           expect(updatedPushMenu.id, pushMenu.id);
           expect(updatedPushMenu.menuId, menu2.id);
-          updatedPushMenu = await pushMenus.setMenuId(
+          updatedPushMenu = await pushMenusDao.setMenuId(
             pushMenuId: pushMenu.id,
             menuId: menu.id,
           );
@@ -77,17 +77,17 @@ void main() {
       test(
         '.setAfter',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
+          final menu = await menusDao.createMenu(name: 'Test Menu');
           final pushMenu =
-              await pushMenus.createPushMenu(menuId: menu.id, after: 1234);
+              await pushMenusDao.createPushMenu(menuId: menu.id, after: 1234);
           expect(pushMenu.menuId, menu.id);
           expect(pushMenu.after, 1234);
           var updatedPushMenu =
-              await pushMenus.setAfter(pushMenuId: pushMenu.id);
+              await pushMenusDao.setAfter(pushMenuId: pushMenu.id);
           expect(updatedPushMenu.id, pushMenu.id);
           expect(updatedPushMenu.after, null);
           updatedPushMenu =
-              await pushMenus.setAfter(pushMenuId: pushMenu.id, after: 4321);
+              await pushMenusDao.setAfter(pushMenuId: pushMenu.id, after: 4321);
           expect(updatedPushMenu.id, pushMenu.id);
           expect(updatedPushMenu.after, 4321);
         },
@@ -96,24 +96,53 @@ void main() {
       test(
         '.setFadeLength',
         () async {
-          final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final pushMenu = await pushMenusDao.createPushMenu(
             menuId: menu.id,
             fadeLength: 5.0,
           );
           expect(pushMenu.menuId, menu.id);
           expect(pushMenu.fadeLength, 5.0);
-          var updatedPushMenu = await pushMenus.setFadeLength(
+          var updatedPushMenu = await pushMenusDao.setFadeLength(
             pushMenuId: pushMenu.id,
           );
           expect(updatedPushMenu.id, pushMenu.id);
           expect(updatedPushMenu.fadeLength, null);
-          updatedPushMenu = await pushMenus.setFadeLength(
+          updatedPushMenu = await pushMenusDao.setFadeLength(
             pushMenuId: pushMenu.id,
             fadeLength: 2.0,
           );
           expect(updatedPushMenu.id, pushMenu.id);
           expect(updatedPushMenu.fadeLength, 2.0);
+        },
+      );
+
+      test(
+        '.setVariableName',
+        () async {
+          final menu = await menusDao.createMenu(name: 'Something');
+          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
+          expect(pushMenu.variableName, null);
+          final updatedPushMenu = await pushMenusDao.setVariableName(
+            pushMenuId: pushMenu.id,
+            variableName: 'pushMenu',
+          );
+          expect(updatedPushMenu.id, pushMenu.id);
+          expect(updatedPushMenu.variableName, 'pushMenu');
+        },
+      );
+
+      test(
+        '.getPushMenus',
+        () async {
+          await db.delete(db.pushMenus).go();
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          expect(await pushMenusDao.getPushMenus(), isEmpty);
+          final pushMenus = [
+            for (var i = 0; i < 10; i++)
+              await pushMenusDao.createPushMenu(menuId: menu.id)
+          ];
+          expect(await pushMenusDao.getPushMenus(), pushMenus);
         },
       );
     },

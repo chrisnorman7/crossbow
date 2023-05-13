@@ -101,4 +101,14 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final commandTrigger = await query.getSingle();
     return commandTrigger.name;
   }
+
+  /// Set the [variableName] for the command with the given [commandTriggerId].
+  Future<CommandTrigger> setVariableName({
+    required final int commandTriggerId,
+    final String? variableName,
+  }) async =>
+      (await getUpdateQuery(commandTriggerId).writeReturning(
+        CommandTriggersCompanion(variableName: Value(variableName)),
+      ))
+          .single;
 }

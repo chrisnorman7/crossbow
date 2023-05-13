@@ -12,6 +12,7 @@ import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/asset_reference_list_tile.dart';
 import '../../widgets/common_shortcuts.dart';
+import '../../widgets/variable_name_list_tile.dart';
 import '../command_triggers/select_command_trigger_screen.dart';
 import 'edit_custom_level_command_screen.dart';
 
@@ -98,6 +99,22 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               nullable: true,
               title: Intl.message('Music'),
               looping: true,
+            ),
+            VariableNameListTile(
+              variableName: level.variableName,
+              getOtherVariableNames: () async {
+                final levels = await customLevelsDao.getCustomLevels();
+                return levels
+                    .map((final e) => e.variableName ?? unsetMessage)
+                    .toList();
+              },
+              onChanged: (final value) async {
+                await customLevelsDao.setVariableName(
+                  customLevelId: level.id,
+                  variableName: value,
+                );
+                invalidateCustomLevelProvider();
+              },
             )
           ],
         );

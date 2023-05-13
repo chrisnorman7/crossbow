@@ -19,6 +19,7 @@ import '../../widgets/push_custom_level_list_tile.dart';
 import '../../widgets/push_menu_list_tile.dart';
 import '../../widgets/stop_game_list_tile.dart';
 import '../../widgets/url_list_tile.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A widget for editing a command.
 class EditCommandScreen extends ConsumerStatefulWidget {
@@ -61,7 +62,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
     final pinnedCommandsDao = projectContext.db.pinnedCommandsDao;
     final command = commandContext.value;
     final pinnedCommand = commandContext.pinnedCommand;
-    final commands = commandContext.projectContext.db.commandsDao;
+    final commandsDao = commandContext.projectContext.db.commandsDao;
     return SimpleScaffold(
       actions: [
         if (pinnedCommand != null)
@@ -93,7 +94,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
                 commandId: command.id,
                 name: Intl.message('Untitled Command'),
               );
-            } else if (await commands.isCalled(commandId: command.id)) {
+            } else if (await commandsDao.isCalled(commandId: command.id)) {
               if (mounted) {
                 await intlShowMessage(
                   context: context,
@@ -121,7 +122,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           TextListTile(
             value: command.messageText ?? '',
             onChanged: (final value) async {
-              await commands.setMessageText(
+              await commandsDao.setMessageText(
                 commandId: command.id,
                 text: value.isEmpty ? null : value,
               );
@@ -135,7 +136,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           AssetReferenceListTile(
             assetReferenceId: command.messageSoundId,
             onChanged: (final value) async {
-              await commands.setMessageSoundId(
+              await commandsDao.setMessageSoundId(
                 commandId: command.id,
                 assetReferenceId: value,
               );
@@ -157,7 +158,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           PushMenuListTile(
             pushMenuId: command.pushMenuId,
             onChanged: (final value) async {
-              await commands.setPushMenuId(
+              await commandsDao.setPushMenuId(
                 commandId: command.id,
                 pushMenuId: value,
               );
@@ -167,7 +168,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           PushCustomLevelListTile(
             pushCustomLevelId: command.pushCustomLevelId,
             onChanged: (final value) async {
-              await commands.setPushCustomLevelId(
+              await commandsDao.setPushCustomLevelId(
                 commandId: command.id,
                 pushCustomLevelId: value,
               );
@@ -177,7 +178,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           PopLevelListTile(
             popLevelId: command.popLevelId,
             onChanged: (final value) async {
-              await commands.setPopLevelId(
+              await commandsDao.setPopLevelId(
                 commandId: command.id,
                 popLevelId: value,
               );
@@ -188,7 +189,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           StopGameListTile(
             stopGameId: command.stopGameId,
             onChanged: (final value) async {
-              await commands.setStopGameId(
+              await commandsDao.setStopGameId(
                 commandId: command.id,
                 stopGameId: value,
               );
@@ -198,7 +199,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           UrlListTile(
             url: command.url,
             onChanged: (final value) async {
-              await commands.setUrl(
+              await commandsDao.setUrl(
                 commandId: command.id,
                 url: value,
               );
@@ -208,13 +209,29 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           DartFunctionListTile(
             dartFunctionId: command.dartFunctionId,
             onChanged: (final value) async {
-              await commands.setDartFunctionId(
+              await commandsDao.setDartFunctionId(
                 commandId: command.id,
                 dartFunctionId: value,
               );
               invalidateCommandProvider();
             },
-          )
+          ),
+          VariableNameListTile(
+            variableName: command.variableName,
+            getOtherVariableNames: () async {
+              final commands = await commandsDao.getCommands();
+              return commands
+                  .map((final e) => e.variableName ?? unsetMessage)
+                  .toList();
+            },
+            onChanged: (final value) async {
+              await commandsDao.setVariableName(
+                commandId: command.id,
+                variableName: value,
+              );
+              invalidateCommandProvider();
+            },
+          ),
         ],
       ),
     );

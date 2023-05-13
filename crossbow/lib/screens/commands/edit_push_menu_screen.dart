@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../messages.dart';
 import '../../src/contexts/push_menu_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/after_list_tile.dart';
 import '../../widgets/fade_length_list_tile.dart';
 import '../../widgets/menu_list_tile.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A screen for editing a push menu with the given [pushMenuId].
 class EditPushMenuScreen extends ConsumerWidget {
@@ -81,6 +83,22 @@ class EditPushMenuScreen extends ConsumerWidget {
             await pushMenusDao.setFadeLength(
               pushMenuId: pushMenuId,
               fadeLength: value,
+            );
+            invalidatePushMenuProvider(ref);
+          },
+        ),
+        VariableNameListTile(
+          variableName: pushMenu.variableName,
+          getOtherVariableNames: () async {
+            final pushMenus = await pushMenusDao.getPushMenus();
+            return pushMenus
+                .map((final e) => e.variableName ?? unsetMessage)
+                .toList();
+          },
+          onChanged: (final value) async {
+            await pushMenusDao.setVariableName(
+              pushMenuId: pushMenu.id,
+              variableName: value,
             );
             invalidatePushMenuProvider(ref);
           },

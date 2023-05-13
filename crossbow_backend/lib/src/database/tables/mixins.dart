@@ -37,3 +37,9 @@ mixin WithInterval on Table {
   /// How often something should happen.
   IntColumn get interval => integer().nullable()();
 }
+
+/// Add a [variableName] column.
+mixin WithVariableName on Table {
+  /// The variable name associated with a row.
+  TextColumn get variableName => text().nullable()();
+}

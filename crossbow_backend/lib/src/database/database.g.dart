@@ -26,6 +26,12 @@ class $AssetReferencesTable extends AssetReferences
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _folderNameMeta =
       const VerificationMeta('folderName');
   @override
@@ -60,7 +66,7 @@ class $AssetReferencesTable extends AssetReferences
       type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, folderName, gain, detached, comment];
+      [id, name, variableName, folderName, gain, detached, comment];
   @override
   String get aliasedName => _alias ?? 'asset_references';
   @override
@@ -76,6 +82,12 @@ class $AssetReferencesTable extends AssetReferences
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('folder_name')) {
       context.handle(
@@ -110,6 +122,8 @@ class $AssetReferencesTable extends AssetReferences
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       folderName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}folder_name'])!,
       gain: attachedDatabase.typeMapping
@@ -134,6 +148,9 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
   /// The name of this object.
   final String name;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The folder that contains the asset with the given [name].
   final String folderName;
 
@@ -150,6 +167,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
   const AssetReference(
       {required this.id,
       required this.name,
+      this.variableName,
       required this.folderName,
       required this.gain,
       required this.detached,
@@ -159,6 +177,9 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     map['folder_name'] = Variable<String>(folderName);
     map['gain'] = Variable<double>(gain);
     map['detached'] = Variable<bool>(detached);
@@ -172,6 +193,9 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     return AssetReferencesCompanion(
       id: Value(id),
       name: Value(name),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       folderName: Value(folderName),
       gain: Value(gain),
       detached: Value(detached),
@@ -187,6 +211,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     return AssetReference(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       folderName: serializer.fromJson<String>(json['folderName']),
       gain: serializer.fromJson<double>(json['gain']),
       detached: serializer.fromJson<bool>(json['detached']),
@@ -199,6 +224,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'variableName': serializer.toJson<String?>(variableName),
       'folderName': serializer.toJson<String>(folderName),
       'gain': serializer.toJson<double>(gain),
       'detached': serializer.toJson<bool>(detached),
@@ -209,6 +235,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
   AssetReference copyWith(
           {int? id,
           String? name,
+          Value<String?> variableName = const Value.absent(),
           String? folderName,
           double? gain,
           bool? detached,
@@ -216,6 +243,8 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
       AssetReference(
         id: id ?? this.id,
         name: name ?? this.name,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         folderName: folderName ?? this.folderName,
         gain: gain ?? this.gain,
         detached: detached ?? this.detached,
@@ -226,6 +255,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
     return (StringBuffer('AssetReference(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('folderName: $folderName, ')
           ..write('gain: $gain, ')
           ..write('detached: $detached, ')
@@ -236,13 +266,14 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
 
   @override
   int get hashCode =>
-      Object.hash(id, name, folderName, gain, detached, comment);
+      Object.hash(id, name, variableName, folderName, gain, detached, comment);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AssetReference &&
           other.id == this.id &&
           other.name == this.name &&
+          other.variableName == this.variableName &&
           other.folderName == this.folderName &&
           other.gain == this.gain &&
           other.detached == this.detached &&
@@ -252,6 +283,7 @@ class AssetReference extends DataClass implements Insertable<AssetReference> {
 class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> variableName;
   final Value<String> folderName;
   final Value<double> gain;
   final Value<bool> detached;
@@ -259,6 +291,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   const AssetReferencesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.folderName = const Value.absent(),
     this.gain = const Value.absent(),
     this.detached = const Value.absent(),
@@ -267,6 +300,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   AssetReferencesCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     required String folderName,
     this.gain = const Value.absent(),
     this.detached = const Value.absent(),
@@ -275,6 +309,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   static Insertable<AssetReference> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? variableName,
     Expression<String>? folderName,
     Expression<double>? gain,
     Expression<bool>? detached,
@@ -283,6 +318,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (variableName != null) 'variable_name': variableName,
       if (folderName != null) 'folder_name': folderName,
       if (gain != null) 'gain': gain,
       if (detached != null) 'detached': detached,
@@ -293,6 +329,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
   AssetReferencesCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
+      Value<String?>? variableName,
       Value<String>? folderName,
       Value<double>? gain,
       Value<bool>? detached,
@@ -300,6 +337,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     return AssetReferencesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      variableName: variableName ?? this.variableName,
       folderName: folderName ?? this.folderName,
       gain: gain ?? this.gain,
       detached: detached ?? this.detached,
@@ -315,6 +353,9 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
     }
     if (folderName.present) {
       map['folder_name'] = Variable<String>(folderName.value);
@@ -336,6 +377,7 @@ class AssetReferencesCompanion extends UpdateCompanion<AssetReference> {
     return (StringBuffer('AssetReferencesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('folderName: $folderName, ')
           ..write('gain: $gain, ')
           ..write('detached: $detached, ')
@@ -684,6 +726,12 @@ class $CommandTriggersTable extends CommandTriggers
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _gameControllerButtonMeta =
       const VerificationMeta('gameControllerButton');
   @override
@@ -704,7 +752,7 @@ class $CommandTriggersTable extends CommandTriggers
           'REFERENCES command_trigger_keyboard_keys (id) ON DELETE SET NULL'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, description, gameControllerButton, keyboardKeyId];
+      [id, description, variableName, gameControllerButton, keyboardKeyId];
   @override
   String get aliasedName => _alias ?? 'command_triggers';
   @override
@@ -724,6 +772,12 @@ class $CommandTriggersTable extends CommandTriggers
               data['description']!, _descriptionMeta));
     } else if (isInserting) {
       context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     context.handle(
         _gameControllerButtonMeta, const VerificationResult.success());
@@ -746,6 +800,8 @@ class $CommandTriggersTable extends CommandTriggers
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       gameControllerButton: $CommandTriggersTable
           .$convertergameControllerButtonn
           .fromSql(attachedDatabase.typeMapping.read(DriftSqlType.int,
@@ -776,6 +832,9 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
   /// The description of this object.
   final String description;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The game controller button that will trigger this command.
   final GameControllerButton? gameControllerButton;
 
@@ -784,6 +843,7 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
   const CommandTrigger(
       {required this.id,
       required this.description,
+      this.variableName,
       this.gameControllerButton,
       this.keyboardKeyId});
   @override
@@ -791,6 +851,9 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['description'] = Variable<String>(description);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     if (!nullToAbsent || gameControllerButton != null) {
       final converter = $CommandTriggersTable.$convertergameControllerButtonn;
       map['game_controller_button'] =
@@ -806,6 +869,9 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
     return CommandTriggersCompanion(
       id: Value(id),
       description: Value(description),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       gameControllerButton: gameControllerButton == null && nullToAbsent
           ? const Value.absent()
           : Value(gameControllerButton),
@@ -821,6 +887,7 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
     return CommandTrigger(
       id: serializer.fromJson<int>(json['id']),
       description: serializer.fromJson<String>(json['description']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       gameControllerButton: $CommandTriggersTable
           .$convertergameControllerButtonn
           .fromJson(serializer.fromJson<int?>(json['gameControllerButton'])),
@@ -833,6 +900,7 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'description': serializer.toJson<String>(description),
+      'variableName': serializer.toJson<String?>(variableName),
       'gameControllerButton': serializer.toJson<int?>($CommandTriggersTable
           .$convertergameControllerButtonn
           .toJson(gameControllerButton)),
@@ -843,12 +911,15 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
   CommandTrigger copyWith(
           {int? id,
           String? description,
+          Value<String?> variableName = const Value.absent(),
           Value<GameControllerButton?> gameControllerButton =
               const Value.absent(),
           Value<int?> keyboardKeyId = const Value.absent()}) =>
       CommandTrigger(
         id: id ?? this.id,
         description: description ?? this.description,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         gameControllerButton: gameControllerButton.present
             ? gameControllerButton.value
             : this.gameControllerButton,
@@ -860,6 +931,7 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
     return (StringBuffer('CommandTrigger(')
           ..write('id: $id, ')
           ..write('description: $description, ')
+          ..write('variableName: $variableName, ')
           ..write('gameControllerButton: $gameControllerButton, ')
           ..write('keyboardKeyId: $keyboardKeyId')
           ..write(')'))
@@ -867,14 +939,15 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, description, gameControllerButton, keyboardKeyId);
+  int get hashCode => Object.hash(
+      id, description, variableName, gameControllerButton, keyboardKeyId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CommandTrigger &&
           other.id == this.id &&
           other.description == this.description &&
+          other.variableName == this.variableName &&
           other.gameControllerButton == this.gameControllerButton &&
           other.keyboardKeyId == this.keyboardKeyId);
 }
@@ -882,29 +955,34 @@ class CommandTrigger extends DataClass implements Insertable<CommandTrigger> {
 class CommandTriggersCompanion extends UpdateCompanion<CommandTrigger> {
   final Value<int> id;
   final Value<String> description;
+  final Value<String?> variableName;
   final Value<GameControllerButton?> gameControllerButton;
   final Value<int?> keyboardKeyId;
   const CommandTriggersCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.gameControllerButton = const Value.absent(),
     this.keyboardKeyId = const Value.absent(),
   });
   CommandTriggersCompanion.insert({
     this.id = const Value.absent(),
     required String description,
+    this.variableName = const Value.absent(),
     this.gameControllerButton = const Value.absent(),
     this.keyboardKeyId = const Value.absent(),
   }) : description = Value(description);
   static Insertable<CommandTrigger> custom({
     Expression<int>? id,
     Expression<String>? description,
+    Expression<String>? variableName,
     Expression<int>? gameControllerButton,
     Expression<int>? keyboardKeyId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (description != null) 'description': description,
+      if (variableName != null) 'variable_name': variableName,
       if (gameControllerButton != null)
         'game_controller_button': gameControllerButton,
       if (keyboardKeyId != null) 'keyboard_key_id': keyboardKeyId,
@@ -914,11 +992,13 @@ class CommandTriggersCompanion extends UpdateCompanion<CommandTrigger> {
   CommandTriggersCompanion copyWith(
       {Value<int>? id,
       Value<String>? description,
+      Value<String?>? variableName,
       Value<GameControllerButton?>? gameControllerButton,
       Value<int?>? keyboardKeyId}) {
     return CommandTriggersCompanion(
       id: id ?? this.id,
       description: description ?? this.description,
+      variableName: variableName ?? this.variableName,
       gameControllerButton: gameControllerButton ?? this.gameControllerButton,
       keyboardKeyId: keyboardKeyId ?? this.keyboardKeyId,
     );
@@ -932,6 +1012,9 @@ class CommandTriggersCompanion extends UpdateCompanion<CommandTrigger> {
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
     }
     if (gameControllerButton.present) {
       final converter = $CommandTriggersTable.$convertergameControllerButtonn;
@@ -949,6 +1032,7 @@ class CommandTriggersCompanion extends UpdateCompanion<CommandTrigger> {
     return (StringBuffer('CommandTriggersCompanion(')
           ..write('id: $id, ')
           ..write('description: $description, ')
+          ..write('variableName: $variableName, ')
           ..write('gameControllerButton: $gameControllerButton, ')
           ..write('keyboardKeyId: $keyboardKeyId')
           ..write(')'))
@@ -978,6 +1062,12 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _musicIdMeta =
       const VerificationMeta('musicId');
   @override
@@ -1114,6 +1204,7 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
   List<GeneratedColumn> get $columns => [
         id,
         name,
+        variableName,
         musicId,
         selectItemSoundId,
         activateItemSoundId,
@@ -1144,6 +1235,12 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('music_id')) {
       context.handle(_musicIdMeta,
@@ -1185,6 +1282,8 @@ class $MenusTable extends Menus with TableInfo<$MenusTable, Menu> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       musicId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}music_id']),
       selectItemSoundId: attachedDatabase.typeMapping.read(
@@ -1269,6 +1368,9 @@ class Menu extends DataClass implements Insertable<Menu> {
   /// The name of this object.
   final String name;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The music to use for this menu.
   final int? musicId;
 
@@ -1313,6 +1415,7 @@ class Menu extends DataClass implements Insertable<Menu> {
   const Menu(
       {required this.id,
       required this.name,
+      this.variableName,
       this.musicId,
       this.selectItemSoundId,
       this.activateItemSoundId,
@@ -1332,6 +1435,9 @@ class Menu extends DataClass implements Insertable<Menu> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     if (!nullToAbsent || musicId != null) {
       map['music_id'] = Variable<int>(musicId);
     }
@@ -1393,6 +1499,9 @@ class Menu extends DataClass implements Insertable<Menu> {
     return MenusCompanion(
       id: Value(id),
       name: Value(name),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       musicId: musicId == null && nullToAbsent
           ? const Value.absent()
           : Value(musicId),
@@ -1422,6 +1531,7 @@ class Menu extends DataClass implements Insertable<Menu> {
     return Menu(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       musicId: serializer.fromJson<int?>(json['musicId']),
       selectItemSoundId: serializer.fromJson<int?>(json['selectItemSoundId']),
       activateItemSoundId:
@@ -1456,6 +1566,7 @@ class Menu extends DataClass implements Insertable<Menu> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'variableName': serializer.toJson<String?>(variableName),
       'musicId': serializer.toJson<int?>(musicId),
       'selectItemSoundId': serializer.toJson<int?>(selectItemSoundId),
       'activateItemSoundId': serializer.toJson<int?>(activateItemSoundId),
@@ -1487,6 +1598,7 @@ class Menu extends DataClass implements Insertable<Menu> {
   Menu copyWith(
           {int? id,
           String? name,
+          Value<String?> variableName = const Value.absent(),
           Value<int?> musicId = const Value.absent(),
           Value<int?> selectItemSoundId = const Value.absent(),
           Value<int?> activateItemSoundId = const Value.absent(),
@@ -1504,6 +1616,8 @@ class Menu extends DataClass implements Insertable<Menu> {
       Menu(
         id: id ?? this.id,
         name: name ?? this.name,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         musicId: musicId.present ? musicId.value : this.musicId,
         selectItemSoundId: selectItemSoundId.present
             ? selectItemSoundId.value
@@ -1528,6 +1642,7 @@ class Menu extends DataClass implements Insertable<Menu> {
     return (StringBuffer('Menu(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('musicId: $musicId, ')
           ..write('selectItemSoundId: $selectItemSoundId, ')
           ..write('activateItemSoundId: $activateItemSoundId, ')
@@ -1550,6 +1665,7 @@ class Menu extends DataClass implements Insertable<Menu> {
   int get hashCode => Object.hash(
       id,
       name,
+      variableName,
       musicId,
       selectItemSoundId,
       activateItemSoundId,
@@ -1570,6 +1686,7 @@ class Menu extends DataClass implements Insertable<Menu> {
       (other is Menu &&
           other.id == this.id &&
           other.name == this.name &&
+          other.variableName == this.variableName &&
           other.musicId == this.musicId &&
           other.selectItemSoundId == this.selectItemSoundId &&
           other.activateItemSoundId == this.activateItemSoundId &&
@@ -1589,6 +1706,7 @@ class Menu extends DataClass implements Insertable<Menu> {
 class MenusCompanion extends UpdateCompanion<Menu> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> variableName;
   final Value<int?> musicId;
   final Value<int?> selectItemSoundId;
   final Value<int?> activateItemSoundId;
@@ -1606,6 +1724,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
   const MenusCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.musicId = const Value.absent(),
     this.selectItemSoundId = const Value.absent(),
     this.activateItemSoundId = const Value.absent(),
@@ -1624,6 +1743,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
   MenusCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.musicId = const Value.absent(),
     this.selectItemSoundId = const Value.absent(),
     this.activateItemSoundId = const Value.absent(),
@@ -1642,6 +1762,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
   static Insertable<Menu> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? variableName,
     Expression<int>? musicId,
     Expression<int>? selectItemSoundId,
     Expression<int>? activateItemSoundId,
@@ -1660,6 +1781,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (variableName != null) 'variable_name': variableName,
       if (musicId != null) 'music_id': musicId,
       if (selectItemSoundId != null) 'select_item_sound_id': selectItemSoundId,
       if (activateItemSoundId != null)
@@ -1681,6 +1803,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
   MenusCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
+      Value<String?>? variableName,
       Value<int?>? musicId,
       Value<int?>? selectItemSoundId,
       Value<int?>? activateItemSoundId,
@@ -1698,6 +1821,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     return MenusCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      variableName: variableName ?? this.variableName,
       musicId: musicId ?? this.musicId,
       selectItemSoundId: selectItemSoundId ?? this.selectItemSoundId,
       activateItemSoundId: activateItemSoundId ?? this.activateItemSoundId,
@@ -1723,6 +1847,9 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
     }
     if (musicId.present) {
       map['music_id'] = Variable<int>(musicId.value);
@@ -1789,6 +1916,7 @@ class MenusCompanion extends UpdateCompanion<Menu> {
     return (StringBuffer('MenusCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('musicId: $musicId, ')
           ..write('selectItemSoundId: $selectItemSoundId, ')
           ..write('activateItemSoundId: $activateItemSoundId, ')
@@ -1831,6 +1959,12 @@ class $MenuItemsTable extends MenuItems
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _menuIdMeta = const VerificationMeta('menuId');
   @override
   late final GeneratedColumn<int> menuId = GeneratedColumn<int>(
@@ -1866,8 +2000,15 @@ class $MenuItemsTable extends MenuItems
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, menuId, selectSoundId, activateSoundId, position];
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        variableName,
+        menuId,
+        selectSoundId,
+        activateSoundId,
+        position
+      ];
   @override
   String get aliasedName => _alias ?? 'menu_items';
   @override
@@ -1883,6 +2024,12 @@ class $MenuItemsTable extends MenuItems
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('menu_id')) {
       context.handle(_menuIdMeta,
@@ -1919,6 +2066,8 @@ class $MenuItemsTable extends MenuItems
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       menuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}menu_id'])!,
       selectSoundId: attachedDatabase.typeMapping
@@ -1943,6 +2092,9 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
   /// The name of this object.
   final String name;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The menu this menu item belongs to.
   final int menuId;
 
@@ -1957,6 +2109,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
   const MenuItem(
       {required this.id,
       required this.name,
+      this.variableName,
       required this.menuId,
       this.selectSoundId,
       this.activateSoundId,
@@ -1966,6 +2119,9 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     map['menu_id'] = Variable<int>(menuId);
     if (!nullToAbsent || selectSoundId != null) {
       map['select_sound_id'] = Variable<int>(selectSoundId);
@@ -1981,6 +2137,9 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     return MenuItemsCompanion(
       id: Value(id),
       name: Value(name),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       menuId: Value(menuId),
       selectSoundId: selectSoundId == null && nullToAbsent
           ? const Value.absent()
@@ -1998,6 +2157,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     return MenuItem(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       menuId: serializer.fromJson<int>(json['menuId']),
       selectSoundId: serializer.fromJson<int?>(json['selectSoundId']),
       activateSoundId: serializer.fromJson<int?>(json['activateSoundId']),
@@ -2010,6 +2170,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'variableName': serializer.toJson<String?>(variableName),
       'menuId': serializer.toJson<int>(menuId),
       'selectSoundId': serializer.toJson<int?>(selectSoundId),
       'activateSoundId': serializer.toJson<int?>(activateSoundId),
@@ -2020,6 +2181,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
   MenuItem copyWith(
           {int? id,
           String? name,
+          Value<String?> variableName = const Value.absent(),
           int? menuId,
           Value<int?> selectSoundId = const Value.absent(),
           Value<int?> activateSoundId = const Value.absent(),
@@ -2027,6 +2189,8 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
       MenuItem(
         id: id ?? this.id,
         name: name ?? this.name,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         menuId: menuId ?? this.menuId,
         selectSoundId:
             selectSoundId.present ? selectSoundId.value : this.selectSoundId,
@@ -2040,6 +2204,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
     return (StringBuffer('MenuItem(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('menuId: $menuId, ')
           ..write('selectSoundId: $selectSoundId, ')
           ..write('activateSoundId: $activateSoundId, ')
@@ -2049,14 +2214,15 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, menuId, selectSoundId, activateSoundId, position);
+  int get hashCode => Object.hash(
+      id, name, variableName, menuId, selectSoundId, activateSoundId, position);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MenuItem &&
           other.id == this.id &&
           other.name == this.name &&
+          other.variableName == this.variableName &&
           other.menuId == this.menuId &&
           other.selectSoundId == this.selectSoundId &&
           other.activateSoundId == this.activateSoundId &&
@@ -2066,6 +2232,7 @@ class MenuItem extends DataClass implements Insertable<MenuItem> {
 class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> variableName;
   final Value<int> menuId;
   final Value<int?> selectSoundId;
   final Value<int?> activateSoundId;
@@ -2073,6 +2240,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   const MenuItemsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.menuId = const Value.absent(),
     this.selectSoundId = const Value.absent(),
     this.activateSoundId = const Value.absent(),
@@ -2081,6 +2249,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   MenuItemsCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     required int menuId,
     this.selectSoundId = const Value.absent(),
     this.activateSoundId = const Value.absent(),
@@ -2089,6 +2258,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   static Insertable<MenuItem> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? variableName,
     Expression<int>? menuId,
     Expression<int>? selectSoundId,
     Expression<int>? activateSoundId,
@@ -2097,6 +2267,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (variableName != null) 'variable_name': variableName,
       if (menuId != null) 'menu_id': menuId,
       if (selectSoundId != null) 'select_sound_id': selectSoundId,
       if (activateSoundId != null) 'activate_sound_id': activateSoundId,
@@ -2107,6 +2278,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
   MenuItemsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
+      Value<String?>? variableName,
       Value<int>? menuId,
       Value<int?>? selectSoundId,
       Value<int?>? activateSoundId,
@@ -2114,6 +2286,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     return MenuItemsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      variableName: variableName ?? this.variableName,
       menuId: menuId ?? this.menuId,
       selectSoundId: selectSoundId ?? this.selectSoundId,
       activateSoundId: activateSoundId ?? this.activateSoundId,
@@ -2129,6 +2302,9 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
     }
     if (menuId.present) {
       map['menu_id'] = Variable<int>(menuId.value);
@@ -2150,6 +2326,7 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItem> {
     return (StringBuffer('MenuItemsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('menuId: $menuId, ')
           ..write('selectSoundId: $selectSoundId, ')
           ..write('activateSoundId: $activateSoundId, ')
@@ -2185,6 +2362,12 @@ class $PushMenusTable extends PushMenus
   late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
       'fade_length', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _menuIdMeta = const VerificationMeta('menuId');
   @override
   late final GeneratedColumn<int> menuId = GeneratedColumn<int>(
@@ -2194,7 +2377,8 @@ class $PushMenusTable extends PushMenus
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES menus (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns => [id, after, fadeLength, menuId];
+  List<GeneratedColumn> get $columns =>
+      [id, after, fadeLength, variableName, menuId];
   @override
   String get aliasedName => _alias ?? 'push_menus';
   @override
@@ -2217,6 +2401,12 @@ class $PushMenusTable extends PushMenus
           fadeLength.isAcceptableOrUnknown(
               data['fade_length']!, _fadeLengthMeta));
     }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
+    }
     if (data.containsKey('menu_id')) {
       context.handle(_menuIdMeta,
           menuId.isAcceptableOrUnknown(data['menu_id']!, _menuIdMeta));
@@ -2238,6 +2428,8 @@ class $PushMenusTable extends PushMenus
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
       fadeLength: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       menuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}menu_id'])!,
     );
@@ -2259,10 +2451,17 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
   /// The fade length to use when pushing a level.
   final double? fadeLength;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The ID of the menu to push.
   final int menuId;
   const PushMenu(
-      {required this.id, this.after, this.fadeLength, required this.menuId});
+      {required this.id,
+      this.after,
+      this.fadeLength,
+      this.variableName,
+      required this.menuId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2272,6 +2471,9 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
     }
     if (!nullToAbsent || fadeLength != null) {
       map['fade_length'] = Variable<double>(fadeLength);
+    }
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
     }
     map['menu_id'] = Variable<int>(menuId);
     return map;
@@ -2285,6 +2487,9 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
       fadeLength: fadeLength == null && nullToAbsent
           ? const Value.absent()
           : Value(fadeLength),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       menuId: Value(menuId),
     );
   }
@@ -2296,6 +2501,7 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
       fadeLength: serializer.fromJson<double?>(json['fadeLength']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       menuId: serializer.fromJson<int>(json['menuId']),
     );
   }
@@ -2306,6 +2512,7 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
       'fadeLength': serializer.toJson<double?>(fadeLength),
+      'variableName': serializer.toJson<String?>(variableName),
       'menuId': serializer.toJson<int>(menuId),
     };
   }
@@ -2314,11 +2521,14 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
           {int? id,
           Value<int?> after = const Value.absent(),
           Value<double?> fadeLength = const Value.absent(),
+          Value<String?> variableName = const Value.absent(),
           int? menuId}) =>
       PushMenu(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
         fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         menuId: menuId ?? this.menuId,
       );
   @override
@@ -2327,13 +2537,14 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName, ')
           ..write('menuId: $menuId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after, fadeLength, menuId);
+  int get hashCode => Object.hash(id, after, fadeLength, variableName, menuId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2341,6 +2552,7 @@ class PushMenu extends DataClass implements Insertable<PushMenu> {
           other.id == this.id &&
           other.after == this.after &&
           other.fadeLength == this.fadeLength &&
+          other.variableName == this.variableName &&
           other.menuId == this.menuId);
 }
 
@@ -2348,29 +2560,34 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
   final Value<int> id;
   final Value<int?> after;
   final Value<double?> fadeLength;
+  final Value<String?> variableName;
   final Value<int> menuId;
   const PushMenusCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.menuId = const Value.absent(),
   });
   PushMenusCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
     required int menuId,
   }) : menuId = Value(menuId);
   static Insertable<PushMenu> custom({
     Expression<int>? id,
     Expression<int>? after,
     Expression<double>? fadeLength,
+    Expression<String>? variableName,
     Expression<int>? menuId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
       if (fadeLength != null) 'fade_length': fadeLength,
+      if (variableName != null) 'variable_name': variableName,
       if (menuId != null) 'menu_id': menuId,
     });
   }
@@ -2379,11 +2596,13 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
       {Value<int>? id,
       Value<int?>? after,
       Value<double?>? fadeLength,
+      Value<String?>? variableName,
       Value<int>? menuId}) {
     return PushMenusCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
       fadeLength: fadeLength ?? this.fadeLength,
+      variableName: variableName ?? this.variableName,
       menuId: menuId ?? this.menuId,
     );
   }
@@ -2400,6 +2619,9 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
     if (fadeLength.present) {
       map['fade_length'] = Variable<double>(fadeLength.value);
     }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
     if (menuId.present) {
       map['menu_id'] = Variable<int>(menuId.value);
     }
@@ -2412,6 +2634,7 @@ class PushMenusCompanion extends UpdateCompanion<PushMenu> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName, ')
           ..write('menuId: $menuId')
           ..write(')'))
         .toString();
@@ -2439,8 +2662,14 @@ class $PopLevelsTable extends PopLevels
   late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
       'fade_length', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
   @override
-  List<GeneratedColumn> get $columns => [id, fadeLength];
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [id, fadeLength, variableName];
   @override
   String get aliasedName => _alias ?? 'pop_levels';
   @override
@@ -2459,6 +2688,12 @@ class $PopLevelsTable extends PopLevels
           fadeLength.isAcceptableOrUnknown(
               data['fade_length']!, _fadeLengthMeta));
     }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
+    }
     return context;
   }
 
@@ -2472,6 +2707,8 @@ class $PopLevelsTable extends PopLevels
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       fadeLength: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
     );
   }
 
@@ -2487,13 +2724,19 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
 
   /// The fade length to use when pushing a level.
   final double? fadeLength;
-  const PopLevel({required this.id, this.fadeLength});
+
+  /// The variable name associated with a row.
+  final String? variableName;
+  const PopLevel({required this.id, this.fadeLength, this.variableName});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     if (!nullToAbsent || fadeLength != null) {
       map['fade_length'] = Variable<double>(fadeLength);
+    }
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
     }
     return map;
   }
@@ -2504,6 +2747,9 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
       fadeLength: fadeLength == null && nullToAbsent
           ? const Value.absent()
           : Value(fadeLength),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
     );
   }
 
@@ -2513,6 +2759,7 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
     return PopLevel(
       id: serializer.fromJson<int>(json['id']),
       fadeLength: serializer.fromJson<double?>(json['fadeLength']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
     );
   }
   @override
@@ -2521,59 +2768,75 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'fadeLength': serializer.toJson<double?>(fadeLength),
+      'variableName': serializer.toJson<String?>(variableName),
     };
   }
 
   PopLevel copyWith(
-          {int? id, Value<double?> fadeLength = const Value.absent()}) =>
+          {int? id,
+          Value<double?> fadeLength = const Value.absent(),
+          Value<String?> variableName = const Value.absent()}) =>
       PopLevel(
         id: id ?? this.id,
         fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
       );
   @override
   String toString() {
     return (StringBuffer('PopLevel(')
           ..write('id: $id, ')
-          ..write('fadeLength: $fadeLength')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fadeLength);
+  int get hashCode => Object.hash(id, fadeLength, variableName);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PopLevel &&
           other.id == this.id &&
-          other.fadeLength == this.fadeLength);
+          other.fadeLength == this.fadeLength &&
+          other.variableName == this.variableName);
 }
 
 class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
   final Value<int> id;
   final Value<double?> fadeLength;
+  final Value<String?> variableName;
   const PopLevelsCompanion({
     this.id = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
   });
   PopLevelsCompanion.insert({
     this.id = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
   });
   static Insertable<PopLevel> custom({
     Expression<int>? id,
     Expression<double>? fadeLength,
+    Expression<String>? variableName,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (fadeLength != null) 'fade_length': fadeLength,
+      if (variableName != null) 'variable_name': variableName,
     });
   }
 
-  PopLevelsCompanion copyWith({Value<int>? id, Value<double?>? fadeLength}) {
+  PopLevelsCompanion copyWith(
+      {Value<int>? id,
+      Value<double?>? fadeLength,
+      Value<String?>? variableName}) {
     return PopLevelsCompanion(
       id: id ?? this.id,
       fadeLength: fadeLength ?? this.fadeLength,
+      variableName: variableName ?? this.variableName,
     );
   }
 
@@ -2586,6 +2849,9 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
     if (fadeLength.present) {
       map['fade_length'] = Variable<double>(fadeLength.value);
     }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
     return map;
   }
 
@@ -2593,7 +2859,8 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
   String toString() {
     return (StringBuffer('PopLevelsCompanion(')
           ..write('id: $id, ')
-          ..write('fadeLength: $fadeLength')
+          ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName')
           ..write(')'))
         .toString();
   }
@@ -2619,8 +2886,14 @@ class $StopGamesTable extends StopGames
   late final GeneratedColumn<int> after = GeneratedColumn<int>(
       'after', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
   @override
-  List<GeneratedColumn> get $columns => [id, after];
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [id, after, variableName];
   @override
   String get aliasedName => _alias ?? 'stop_games';
   @override
@@ -2637,6 +2910,12 @@ class $StopGamesTable extends StopGames
       context.handle(
           _afterMeta, after.isAcceptableOrUnknown(data['after']!, _afterMeta));
     }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
+    }
     return context;
   }
 
@@ -2650,6 +2929,8 @@ class $StopGamesTable extends StopGames
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       after: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
     );
   }
 
@@ -2665,13 +2946,19 @@ class StopGame extends DataClass implements Insertable<StopGame> {
 
   /// How many milliseconds to wait before doing something.
   final int? after;
-  const StopGame({required this.id, this.after});
+
+  /// The variable name associated with a row.
+  final String? variableName;
+  const StopGame({required this.id, this.after, this.variableName});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     if (!nullToAbsent || after != null) {
       map['after'] = Variable<int>(after);
+    }
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
     }
     return map;
   }
@@ -2681,6 +2968,9 @@ class StopGame extends DataClass implements Insertable<StopGame> {
       id: Value(id),
       after:
           after == null && nullToAbsent ? const Value.absent() : Value(after),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
     );
   }
 
@@ -2690,6 +2980,7 @@ class StopGame extends DataClass implements Insertable<StopGame> {
     return StopGame(
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
     );
   }
   @override
@@ -2698,56 +2989,73 @@ class StopGame extends DataClass implements Insertable<StopGame> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
+      'variableName': serializer.toJson<String?>(variableName),
     };
   }
 
-  StopGame copyWith({int? id, Value<int?> after = const Value.absent()}) =>
+  StopGame copyWith(
+          {int? id,
+          Value<int?> after = const Value.absent(),
+          Value<String?> variableName = const Value.absent()}) =>
       StopGame(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
       );
   @override
   String toString() {
     return (StringBuffer('StopGame(')
           ..write('id: $id, ')
-          ..write('after: $after')
+          ..write('after: $after, ')
+          ..write('variableName: $variableName')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after);
+  int get hashCode => Object.hash(id, after, variableName);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is StopGame && other.id == this.id && other.after == this.after);
+      (other is StopGame &&
+          other.id == this.id &&
+          other.after == this.after &&
+          other.variableName == this.variableName);
 }
 
 class StopGamesCompanion extends UpdateCompanion<StopGame> {
   final Value<int> id;
   final Value<int?> after;
+  final Value<String?> variableName;
   const StopGamesCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
+    this.variableName = const Value.absent(),
   });
   StopGamesCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
+    this.variableName = const Value.absent(),
   });
   static Insertable<StopGame> custom({
     Expression<int>? id,
     Expression<int>? after,
+    Expression<String>? variableName,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
+      if (variableName != null) 'variable_name': variableName,
     });
   }
 
-  StopGamesCompanion copyWith({Value<int>? id, Value<int?>? after}) {
+  StopGamesCompanion copyWith(
+      {Value<int>? id, Value<int?>? after, Value<String?>? variableName}) {
     return StopGamesCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
+      variableName: variableName ?? this.variableName,
     );
   }
 
@@ -2760,6 +3068,9 @@ class StopGamesCompanion extends UpdateCompanion<StopGame> {
     if (after.present) {
       map['after'] = Variable<int>(after.value);
     }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
     return map;
   }
 
@@ -2767,7 +3078,8 @@ class StopGamesCompanion extends UpdateCompanion<StopGame> {
   String toString() {
     return (StringBuffer('StopGamesCompanion(')
           ..write('id: $id, ')
-          ..write('after: $after')
+          ..write('after: $after, ')
+          ..write('variableName: $variableName')
           ..write(')'))
         .toString();
   }
@@ -2796,6 +3108,12 @@ class $CustomLevelsTable extends CustomLevels
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _musicIdMeta =
       const VerificationMeta('musicId');
   @override
@@ -2806,7 +3124,7 @@ class $CustomLevelsTable extends CustomLevels
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES asset_references (id) ON DELETE SET NULL'));
   @override
-  List<GeneratedColumn> get $columns => [id, name, musicId];
+  List<GeneratedColumn> get $columns => [id, name, variableName, musicId];
   @override
   String get aliasedName => _alias ?? 'custom_levels';
   @override
@@ -2822,6 +3140,12 @@ class $CustomLevelsTable extends CustomLevels
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('music_id')) {
       context.handle(_musicIdMeta,
@@ -2840,6 +3164,8 @@ class $CustomLevelsTable extends CustomLevels
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       musicId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}music_id']),
     );
@@ -2858,14 +3184,21 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
   /// The name of this object.
   final String name;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The ID of the music to play.
   final int? musicId;
-  const CustomLevel({required this.id, required this.name, this.musicId});
+  const CustomLevel(
+      {required this.id, required this.name, this.variableName, this.musicId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     if (!nullToAbsent || musicId != null) {
       map['music_id'] = Variable<int>(musicId);
     }
@@ -2876,6 +3209,9 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return CustomLevelsCompanion(
       id: Value(id),
       name: Value(name),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       musicId: musicId == null && nullToAbsent
           ? const Value.absent()
           : Value(musicId),
@@ -2888,6 +3224,7 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return CustomLevel(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       musicId: serializer.fromJson<int?>(json['musicId']),
     );
   }
@@ -2897,6 +3234,7 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'variableName': serializer.toJson<String?>(variableName),
       'musicId': serializer.toJson<int?>(musicId),
     };
   }
@@ -2904,10 +3242,13 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
   CustomLevel copyWith(
           {int? id,
           String? name,
+          Value<String?> variableName = const Value.absent(),
           Value<int?> musicId = const Value.absent()}) =>
       CustomLevel(
         id: id ?? this.id,
         name: name ?? this.name,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         musicId: musicId.present ? musicId.value : this.musicId,
       );
   @override
@@ -2915,53 +3256,64 @@ class CustomLevel extends DataClass implements Insertable<CustomLevel> {
     return (StringBuffer('CustomLevel(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('musicId: $musicId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, musicId);
+  int get hashCode => Object.hash(id, name, variableName, musicId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CustomLevel &&
           other.id == this.id &&
           other.name == this.name &&
+          other.variableName == this.variableName &&
           other.musicId == this.musicId);
 }
 
 class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> variableName;
   final Value<int?> musicId;
   const CustomLevelsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.musicId = const Value.absent(),
   });
   CustomLevelsCompanion.insert({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.musicId = const Value.absent(),
   });
   static Insertable<CustomLevel> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? variableName,
     Expression<int>? musicId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (variableName != null) 'variable_name': variableName,
       if (musicId != null) 'music_id': musicId,
     });
   }
 
   CustomLevelsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<int?>? musicId}) {
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String?>? variableName,
+      Value<int?>? musicId}) {
     return CustomLevelsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      variableName: variableName ?? this.variableName,
       musicId: musicId ?? this.musicId,
     );
   }
@@ -2975,6 +3327,9 @@ class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
     if (musicId.present) {
       map['music_id'] = Variable<int>(musicId.value);
     }
@@ -2986,6 +3341,7 @@ class CustomLevelsCompanion extends UpdateCompanion<CustomLevel> {
     return (StringBuffer('CustomLevelsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
           ..write('musicId: $musicId')
           ..write(')'))
         .toString();
@@ -3018,6 +3374,12 @@ class $PushCustomLevelsTable extends PushCustomLevels
   late final GeneratedColumn<double> fadeLength = GeneratedColumn<double>(
       'fade_length', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _customLevelIdMeta =
       const VerificationMeta('customLevelId');
   @override
@@ -3028,7 +3390,8 @@ class $PushCustomLevelsTable extends PushCustomLevels
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES custom_levels (id) ON DELETE CASCADE'));
   @override
-  List<GeneratedColumn> get $columns => [id, after, fadeLength, customLevelId];
+  List<GeneratedColumn> get $columns =>
+      [id, after, fadeLength, variableName, customLevelId];
   @override
   String get aliasedName => _alias ?? 'push_custom_levels';
   @override
@@ -3050,6 +3413,12 @@ class $PushCustomLevelsTable extends PushCustomLevels
           _fadeLengthMeta,
           fadeLength.isAcceptableOrUnknown(
               data['fade_length']!, _fadeLengthMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('custom_level_id')) {
       context.handle(
@@ -3074,6 +3443,8 @@ class $PushCustomLevelsTable extends PushCustomLevels
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
       fadeLength: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       customLevelId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}custom_level_id'])!,
     );
@@ -3095,12 +3466,16 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
   /// The fade length to use when pushing a level.
   final double? fadeLength;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The ID of the custom level to push.
   final int customLevelId;
   const PushCustomLevel(
       {required this.id,
       this.after,
       this.fadeLength,
+      this.variableName,
       required this.customLevelId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3111,6 +3486,9 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
     }
     if (!nullToAbsent || fadeLength != null) {
       map['fade_length'] = Variable<double>(fadeLength);
+    }
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
     }
     map['custom_level_id'] = Variable<int>(customLevelId);
     return map;
@@ -3124,6 +3502,9 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
       fadeLength: fadeLength == null && nullToAbsent
           ? const Value.absent()
           : Value(fadeLength),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       customLevelId: Value(customLevelId),
     );
   }
@@ -3135,6 +3516,7 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
       fadeLength: serializer.fromJson<double?>(json['fadeLength']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       customLevelId: serializer.fromJson<int>(json['customLevelId']),
     );
   }
@@ -3145,6 +3527,7 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
       'fadeLength': serializer.toJson<double?>(fadeLength),
+      'variableName': serializer.toJson<String?>(variableName),
       'customLevelId': serializer.toJson<int>(customLevelId),
     };
   }
@@ -3153,11 +3536,14 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
           {int? id,
           Value<int?> after = const Value.absent(),
           Value<double?> fadeLength = const Value.absent(),
+          Value<String?> variableName = const Value.absent(),
           int? customLevelId}) =>
       PushCustomLevel(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
         fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         customLevelId: customLevelId ?? this.customLevelId,
       );
   @override
@@ -3166,13 +3552,15 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName, ')
           ..write('customLevelId: $customLevelId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after, fadeLength, customLevelId);
+  int get hashCode =>
+      Object.hash(id, after, fadeLength, variableName, customLevelId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3180,6 +3568,7 @@ class PushCustomLevel extends DataClass implements Insertable<PushCustomLevel> {
           other.id == this.id &&
           other.after == this.after &&
           other.fadeLength == this.fadeLength &&
+          other.variableName == this.variableName &&
           other.customLevelId == this.customLevelId);
 }
 
@@ -3187,29 +3576,34 @@ class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
   final Value<int> id;
   final Value<int?> after;
   final Value<double?> fadeLength;
+  final Value<String?> variableName;
   final Value<int> customLevelId;
   const PushCustomLevelsCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.customLevelId = const Value.absent(),
   });
   PushCustomLevelsCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.fadeLength = const Value.absent(),
+    this.variableName = const Value.absent(),
     required int customLevelId,
   }) : customLevelId = Value(customLevelId);
   static Insertable<PushCustomLevel> custom({
     Expression<int>? id,
     Expression<int>? after,
     Expression<double>? fadeLength,
+    Expression<String>? variableName,
     Expression<int>? customLevelId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
       if (fadeLength != null) 'fade_length': fadeLength,
+      if (variableName != null) 'variable_name': variableName,
       if (customLevelId != null) 'custom_level_id': customLevelId,
     });
   }
@@ -3218,11 +3612,13 @@ class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
       {Value<int>? id,
       Value<int?>? after,
       Value<double?>? fadeLength,
+      Value<String?>? variableName,
       Value<int>? customLevelId}) {
     return PushCustomLevelsCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
       fadeLength: fadeLength ?? this.fadeLength,
+      variableName: variableName ?? this.variableName,
       customLevelId: customLevelId ?? this.customLevelId,
     );
   }
@@ -3239,6 +3635,9 @@ class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
     if (fadeLength.present) {
       map['fade_length'] = Variable<double>(fadeLength.value);
     }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
     if (customLevelId.present) {
       map['custom_level_id'] = Variable<int>(customLevelId.value);
     }
@@ -3251,6 +3650,7 @@ class PushCustomLevelsCompanion extends UpdateCompanion<PushCustomLevel> {
           ..write('id: $id, ')
           ..write('after: $after, ')
           ..write('fadeLength: $fadeLength, ')
+          ..write('variableName: $variableName, ')
           ..write('customLevelId: $customLevelId')
           ..write(')'))
         .toString();
@@ -3495,6 +3895,12 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _pushMenuIdMeta =
       const VerificationMeta('pushMenuId');
   @override
@@ -3563,6 +3969,7 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        variableName,
         pushMenuId,
         messageText,
         messageSoundId,
@@ -3583,6 +3990,12 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
     }
     if (data.containsKey('push_menu_id')) {
       context.handle(
@@ -3641,6 +4054,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
     return Command(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
       pushMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}push_menu_id']),
       messageText: attachedDatabase.typeMapping
@@ -3670,6 +4085,9 @@ class Command extends DataClass implements Insertable<Command> {
   /// The primary key.
   final int id;
 
+  /// The variable name associated with a row.
+  final String? variableName;
+
   /// The ID of a menu to push.
   final int? pushMenuId;
 
@@ -3695,6 +4113,7 @@ class Command extends DataClass implements Insertable<Command> {
   final int? dartFunctionId;
   const Command(
       {required this.id,
+      this.variableName,
       this.pushMenuId,
       this.messageText,
       this.messageSoundId,
@@ -3707,6 +4126,9 @@ class Command extends DataClass implements Insertable<Command> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
     if (!nullToAbsent || pushMenuId != null) {
       map['push_menu_id'] = Variable<int>(pushMenuId);
     }
@@ -3737,6 +4159,9 @@ class Command extends DataClass implements Insertable<Command> {
   CommandsCompanion toCompanion(bool nullToAbsent) {
     return CommandsCompanion(
       id: Value(id),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
       pushMenuId: pushMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(pushMenuId),
@@ -3767,6 +4192,7 @@ class Command extends DataClass implements Insertable<Command> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Command(
       id: serializer.fromJson<int>(json['id']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
       pushMenuId: serializer.fromJson<int?>(json['pushMenuId']),
       messageText: serializer.fromJson<String?>(json['messageText']),
       messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
@@ -3782,6 +4208,7 @@ class Command extends DataClass implements Insertable<Command> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'variableName': serializer.toJson<String?>(variableName),
       'pushMenuId': serializer.toJson<int?>(pushMenuId),
       'messageText': serializer.toJson<String?>(messageText),
       'messageSoundId': serializer.toJson<int?>(messageSoundId),
@@ -3795,6 +4222,7 @@ class Command extends DataClass implements Insertable<Command> {
 
   Command copyWith(
           {int? id,
+          Value<String?> variableName = const Value.absent(),
           Value<int?> pushMenuId = const Value.absent(),
           Value<String?> messageText = const Value.absent(),
           Value<int?> messageSoundId = const Value.absent(),
@@ -3805,6 +4233,8 @@ class Command extends DataClass implements Insertable<Command> {
           Value<int?> dartFunctionId = const Value.absent()}) =>
       Command(
         id: id ?? this.id,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
         pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
         messageText: messageText.present ? messageText.value : this.messageText,
         messageSoundId:
@@ -3822,6 +4252,7 @@ class Command extends DataClass implements Insertable<Command> {
   String toString() {
     return (StringBuffer('Command(')
           ..write('id: $id, ')
+          ..write('variableName: $variableName, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
@@ -3835,13 +4266,23 @@ class Command extends DataClass implements Insertable<Command> {
   }
 
   @override
-  int get hashCode => Object.hash(id, pushMenuId, messageText, messageSoundId,
-      popLevelId, stopGameId, url, pushCustomLevelId, dartFunctionId);
+  int get hashCode => Object.hash(
+      id,
+      variableName,
+      pushMenuId,
+      messageText,
+      messageSoundId,
+      popLevelId,
+      stopGameId,
+      url,
+      pushCustomLevelId,
+      dartFunctionId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Command &&
           other.id == this.id &&
+          other.variableName == this.variableName &&
           other.pushMenuId == this.pushMenuId &&
           other.messageText == this.messageText &&
           other.messageSoundId == this.messageSoundId &&
@@ -3854,6 +4295,7 @@ class Command extends DataClass implements Insertable<Command> {
 
 class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int> id;
+  final Value<String?> variableName;
   final Value<int?> pushMenuId;
   final Value<String?> messageText;
   final Value<int?> messageSoundId;
@@ -3864,6 +4306,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int?> dartFunctionId;
   const CommandsCompanion({
     this.id = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -3875,6 +4318,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   });
   CommandsCompanion.insert({
     this.id = const Value.absent(),
+    this.variableName = const Value.absent(),
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -3886,6 +4330,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   });
   static Insertable<Command> custom({
     Expression<int>? id,
+    Expression<String>? variableName,
     Expression<int>? pushMenuId,
     Expression<String>? messageText,
     Expression<int>? messageSoundId,
@@ -3897,6 +4342,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (variableName != null) 'variable_name': variableName,
       if (pushMenuId != null) 'push_menu_id': pushMenuId,
       if (messageText != null) 'message_text': messageText,
       if (messageSoundId != null) 'message_sound_id': messageSoundId,
@@ -3910,6 +4356,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
 
   CommandsCompanion copyWith(
       {Value<int>? id,
+      Value<String?>? variableName,
       Value<int?>? pushMenuId,
       Value<String?>? messageText,
       Value<int?>? messageSoundId,
@@ -3920,6 +4367,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       Value<int?>? dartFunctionId}) {
     return CommandsCompanion(
       id: id ?? this.id,
+      variableName: variableName ?? this.variableName,
       pushMenuId: pushMenuId ?? this.pushMenuId,
       messageText: messageText ?? this.messageText,
       messageSoundId: messageSoundId ?? this.messageSoundId,
@@ -3936,6 +4384,9 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
     }
     if (pushMenuId.present) {
       map['push_menu_id'] = Variable<int>(pushMenuId.value);
@@ -3968,6 +4419,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   String toString() {
     return (StringBuffer('CommandsCompanion(')
           ..write('id: $id, ')
+          ..write('variableName: $variableName, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')

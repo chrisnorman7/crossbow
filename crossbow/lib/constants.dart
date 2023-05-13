@@ -12,3 +12,6 @@ final intlNewIcon = Icon(
 
 /// How much `after` values should be changed by.
 const afterModifier = 100;
+
+/// The regular expression to use for variable names.
+final variableNameRegExp = RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$');

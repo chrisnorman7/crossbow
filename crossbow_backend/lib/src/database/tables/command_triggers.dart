@@ -5,7 +5,8 @@ import 'command_trigger_keyboard_keys.dart';
 import 'mixins.dart';
 
 /// The command triggers table.
-class CommandTriggers extends Table with WithPrimaryKey, WithDescription {
+class CommandTriggers extends Table
+    with WithPrimaryKey, WithDescription, WithVariableName {
   /// The game controller button that will trigger this command.
   IntColumn get gameControllerButton =>
       intEnum<GameControllerButton>().nullable()();

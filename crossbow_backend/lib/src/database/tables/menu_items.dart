@@ -5,7 +5,7 @@ import 'menus.dart';
 import 'mixins.dart';
 
 /// The menu items table.
-class MenuItems extends Table with WithPrimaryKey, WithName {
+class MenuItems extends Table with WithPrimaryKey, WithName, WithVariableName {
   /// The menu this menu item belongs to.
   IntColumn get menuId =>
       integer().references(Menus, #id, onDelete: KeyAction.cascade)();

@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../messages.dart';
 import '../../src/contexts/push_custom_level_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/after_list_tile.dart';
 import '../../widgets/custom_level_list_tile.dart';
 import '../../widgets/error_list_tile.dart';
 import '../../widgets/fade_length_list_tile.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A screen for editing a push menu with the given [pushCustomLevelId].
 class EditPushCustomLevelScreen extends ConsumerWidget {
@@ -82,6 +84,23 @@ class EditPushCustomLevelScreen extends ConsumerWidget {
             await pushCustomLevelsDao.setFadeLength(
               pushCustomLevelId: pushCustomLevelId,
               fadeLength: value,
+            );
+            invalidatePushCustomLevelProvider(ref);
+          },
+        ),
+        VariableNameListTile(
+          variableName: pushCustomLevel.variableName,
+          getOtherVariableNames: () async {
+            final pushCustomLevels =
+                await pushCustomLevelsDao.getPushCustomLevels();
+            return pushCustomLevels
+                .map((final e) => e.variableName ?? unsetMessage)
+                .toList();
+          },
+          onChanged: (final value) async {
+            await pushCustomLevelsDao.setVariableName(
+              pushCustomLevelId: pushCustomLevel.id,
+              variableName: value,
             );
             invalidatePushCustomLevelProvider(ref);
           },

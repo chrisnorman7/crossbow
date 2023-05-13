@@ -148,6 +148,31 @@ void main() {
           expect(updatedPushCustomLevel.customLevelId, level1.id);
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final level = await customLevelsDao.createCustomLevel(name: 'Test');
+          final pushCustomLevel = await pushCustomLevelsDao
+              .createPushCustomLevel(customLevelId: level.id);
+          expect(pushCustomLevel.variableName, null);
+          final updatedPushCustomLevel =
+              await pushCustomLevelsDao.setVariableName(
+            pushCustomLevelId: pushCustomLevel.id,
+            variableName: 'push',
+          );
+          expect(updatedPushCustomLevel.id, pushCustomLevel.id);
+          expect(updatedPushCustomLevel.variableName, 'push');
+        },
+      );
+
+      test(
+        '.getPushCustomLevels',
+        () async {
+          final levels = await pushCustomLevelsDao.getPushCustomLevels();
+          expect(levels, await db.select(db.pushCustomLevels).get());
+        },
+      );
     },
   );
 }

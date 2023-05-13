@@ -275,6 +275,22 @@ void main() {
           }
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          final menuItem =
+              await menuItemsDao.createMenuItem(menuId: menu.id, name: 'First');
+          expect(menuItem.variableName, null);
+          final updatedMenuItem = await menuItemsDao.setVariableName(
+            menuItemId: menuItem.id,
+            variableName: 'first',
+          );
+          expect(updatedMenuItem.id, menuItem.id);
+          expect(updatedMenuItem.variableName, 'first');
+        },
+      );
     },
   );
 }

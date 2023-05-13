@@ -176,4 +176,17 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         CommandsCompanion(dartFunctionId: Value(dartFunctionId)),
       ))
           .single;
+
+  /// Set the [variableName] for the command with the given [commandId].
+  Future<Command> setVariableName({
+    required final int commandId,
+    final String? variableName,
+  }) async =>
+      (await getUpdateQuery(commandId).writeReturning(
+        CommandsCompanion(variableName: Value(variableName)),
+      ))
+          .single;
+
+  /// Get all the commands in the database.
+  Future<List<Command>> getCommands() => select(commands).get();
 }

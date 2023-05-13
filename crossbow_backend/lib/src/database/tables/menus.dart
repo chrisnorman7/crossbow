@@ -5,7 +5,7 @@ import 'asset_references.dart';
 import 'mixins.dart';
 
 /// The menus table.
-class Menus extends Table with WithPrimaryKey, WithName {
+class Menus extends Table with WithPrimaryKey, WithName, WithVariableName {
   /// The music to use for this menu.
   IntColumn get musicId => integer()
       .references(AssetReferences, #id, onDelete: KeyAction.setNull)

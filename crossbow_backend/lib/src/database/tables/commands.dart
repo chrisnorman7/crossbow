@@ -9,7 +9,7 @@ import 'push_menus.dart';
 import 'stop_games.dart';
 
 /// The commands table.
-class Commands extends Table with WithPrimaryKey {
+class Commands extends Table with WithPrimaryKey, WithVariableName {
   /// The ID of a menu to push.
   IntColumn get pushMenuId => integer()
       .references(PushMenus, #id, onDelete: KeyAction.setNull)

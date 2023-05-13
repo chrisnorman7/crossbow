@@ -10,6 +10,7 @@ import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/common_shortcuts.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A screen to edit the dart function with the given [dartFunctionId].
 class EditDartFunctionScreen extends ConsumerWidget {
@@ -56,17 +57,21 @@ class EditDartFunctionScreen extends ConsumerWidget {
             invalidateDartFunctionProvider(ref);
           },
           copyText: f.name,
-          child: TextListTile(
+          child: VariableNameListTile(
             autofocus: true,
-            value: f.name,
+            variableName: f.name,
             onChanged: (final value) async {
               await dartFunctionsDao.setName(
                 dartFunctionId: f.id,
-                name: value.isEmpty ? null : value,
+                name: value,
               );
               invalidateDartFunctionProvider(ref);
             },
-            header: Intl.message('Function Name'),
+            title: Intl.message('Function Name'),
+            getOtherVariableNames: () async {
+              final functions = await dartFunctionsDao.getDartFunctions();
+              return functions.map((final e) => e.name).toList();
+            },
           ),
         ),
         TextListTile(

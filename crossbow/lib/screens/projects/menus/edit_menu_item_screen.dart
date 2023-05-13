@@ -12,6 +12,7 @@ import '../../../src/contexts/menu_item_context.dart';
 import '../../../src/providers.dart';
 import '../../../widgets/asset_reference_list_tile.dart';
 import '../../../widgets/call_commands_list_tile.dart';
+import '../../../widgets/variable_name_list_tile.dart';
 
 /// A screen to edit the [MenuItem] with the given [menuItemId].
 class EditMenuItemScreen extends ConsumerWidget {
@@ -98,6 +99,23 @@ class EditMenuItemScreen extends ConsumerWidget {
             },
             nullable: true,
             title: Intl.message('Activate Sound'),
+          ),
+          VariableNameListTile(
+            variableName: menuItem.variableName,
+            getOtherVariableNames: () async {
+              final menuItems =
+                  await menuItemsDao.getMenuItems(menuId: menu.id);
+              return menuItems
+                  .map((final e) => e.variableName ?? unsetMessage)
+                  .toList();
+            },
+            onChanged: (final value) async {
+              await menuItemsDao.setVariableName(
+                menuItemId: menuItem.id,
+                variableName: value,
+              );
+              invalidateMenuProvider(ref);
+            },
           )
         ],
       ),

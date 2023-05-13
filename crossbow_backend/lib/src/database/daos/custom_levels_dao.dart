@@ -77,4 +77,14 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..orderBy([(final table) => OrderingTerm.asc(table.name)]);
     return query.get();
   }
+
+  /// Set the [variableName] for the the row with the given [customLevelId].
+  Future<CustomLevel> setVariableName({
+    required final int customLevelId,
+    final String? variableName,
+  }) async =>
+      (await getUpdateQuery(customLevelId).writeReturning(
+        CustomLevelsCompanion(variableName: Value(variableName)),
+      ))
+          .single;
 }

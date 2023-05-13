@@ -1,0 +1,12 @@
+{
+	"Create `getUpdateQuery` method": {
+		"body": [
+			"/// Get an [update] query that matches [id].",
+			"UpdateStatement<$${1}sTable, ${1:ClassName}> getUpdateQuery(final int id) => update(${2:tableName})",
+			"      ..where((final table) => table.id.equals(id));"
+		],
+		"description": "Create a new `getUpdateQuery` method, with a suitable comment",
+		"prefix": "cguq",
+		"scope": "dart"
+	}
+}

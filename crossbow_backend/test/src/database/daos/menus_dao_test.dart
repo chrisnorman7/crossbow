@@ -159,6 +159,20 @@ void main() {
           }
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final menu = await menusDao.createMenu(name: 'Test Menu');
+          expect(menu.variableName, null);
+          final updatedMenu = await menusDao.setVariableName(
+            menuId: menu.id,
+            variableName: 'testMenu',
+          );
+          expect(updatedMenu.id, menu.id);
+          expect(updatedMenu.variableName, 'testMenu');
+        },
+      );
     },
   );
 }

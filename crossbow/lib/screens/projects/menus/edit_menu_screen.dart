@@ -18,6 +18,7 @@ import '../../../widgets/asset_reference_list_tile.dart';
 import '../../../widgets/asset_reference_play_sound_semantics.dart';
 import '../../../widgets/call_commands_list_tile.dart';
 import '../../../widgets/common_shortcuts.dart';
+import '../../../widgets/variable_name_list_tile.dart';
 import 'edit_menu_item_screen.dart';
 import 'preview_menu_screen.dart';
 
@@ -103,13 +104,13 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
     required final Menu menu,
   }) {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final menus = projectContext.db.menusDao;
+    final menusDao = projectContext.db.menusDao;
     return ListView(
       children: [
         TextListTile(
           value: menu.name,
           onChanged: (final value) async {
-            await menus.setName(menuId: menu.id, name: value);
+            await menusDao.setName(menuId: menu.id, name: value);
             invalidateMenuProvider();
           },
           header: menuNameLabel,
@@ -119,7 +120,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         AssetReferenceListTile(
           assetReferenceId: menu.musicId,
           onChanged: (final value) async {
-            await menus.setMusicId(menuId: menu.id, musicId: value);
+            await menusDao.setMusicId(menuId: menu.id, musicId: value);
             invalidateMenuProvider();
           },
           nullable: true,
@@ -129,7 +130,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         AssetReferenceListTile(
           assetReferenceId: menu.activateItemSoundId,
           onChanged: (final value) async {
-            await menus.setActivateItemSoundId(
+            await menusDao.setActivateItemSoundId(
               menuId: menu.id,
               activateItemSoundId: value,
             );
@@ -141,7 +142,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         AssetReferenceListTile(
           assetReferenceId: menu.selectItemSoundId,
           onChanged: (final value) async {
-            await menus.setSelectItemSoundId(
+            await menusDao.setSelectItemSoundId(
               menuId: menu.id,
               selectItemSoundId: value,
             );
@@ -156,7 +157,23 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
             id: menu.id,
           ),
           title: Intl.message('Cancel Commands'),
-        )
+        ),
+        VariableNameListTile(
+          variableName: menu.variableName,
+          getOtherVariableNames: () async {
+            final menus = await menusDao.getMenus();
+            return menus
+                .map((final e) => e.variableName ?? unsetMessage)
+                .toList();
+          },
+          onChanged: (final value) async {
+            await menusDao.setVariableName(
+              menuId: menu.id,
+              variableName: value,
+            );
+            invalidateMenuProvider();
+          },
+        ),
       ],
     );
   }

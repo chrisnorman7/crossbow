@@ -51,17 +51,18 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
+  /// Get an [update] query that matches [id].
+  UpdateStatement<$MenuItemsTable, MenuItem> getUpdateQuery(final int id) =>
+      update(menuItems)..where((final table) => table.id.equals(id));
+
   /// Move the [MenuItem] with the given [menuItemId] to the new [position].
   Future<MenuItem> moveMenuItem({
     required final int menuItemId,
     required final int position,
-  }) async {
-    final query = update(menuItems)
-      ..where((final table) => table.id.equals(menuItemId));
-    return (await query
-            .writeReturning(MenuItemsCompanion(position: Value(position))))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(menuItemId)
+              .writeReturning(MenuItemsCompanion(position: Value(position))))
+          .single;
 
   /// Delete the menu item with the given [id].
   @internal
@@ -75,38 +76,30 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<MenuItem> setName({
     required final int menuItemId,
     required final String name,
-  }) async {
-    final query = update(menuItems)
-      ..where((final table) => table.id.equals(menuItemId));
-    return (await query.writeReturning(MenuItemsCompanion(name: Value(name))))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(menuItemId)
+              .writeReturning(MenuItemsCompanion(name: Value(name))))
+          .single;
 
   /// Set the select sound for the menu item with the given [menuItemId].
   Future<MenuItem> setSelectSoundId({
     required final int menuItemId,
     final int? selectSoundId,
-  }) async {
-    final query = update(menuItems)
-      ..where((final table) => table.id.equals(menuItemId));
-    return (await query.writeReturning(
-      MenuItemsCompanion(selectSoundId: Value(selectSoundId)),
-    ))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(menuItemId).writeReturning(
+        MenuItemsCompanion(selectSoundId: Value(selectSoundId)),
+      ))
+          .single;
 
   /// Set the select sound for the menu item with the given [menuItemId].
   Future<MenuItem> setActivateSoundId({
     required final int menuItemId,
     final int? activateSoundId,
-  }) async {
-    final query = update(menuItems)
-      ..where((final table) => table.id.equals(menuItemId));
-    return (await query.writeReturning(
-      MenuItemsCompanion(activateSoundId: Value(activateSoundId)),
-    ))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(menuItemId).writeReturning(
+        MenuItemsCompanion(activateSoundId: Value(activateSoundId)),
+      ))
+          .single;
 
   /// Get the calling commands for the menu item with the given [menuItemId].
   Future<List<CallCommand>> getCallCommands({required final int menuItemId}) =>
@@ -115,4 +108,14 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
               (final table) => table.callingMenuItemId.equals(menuItemId),
             ))
           .get();
+
+  /// Set the [variableName] for the menu item with the given [menuItemId].
+  Future<MenuItem> setVariableName({
+    required final int menuItemId,
+    final String? variableName,
+  }) async =>
+      (await getUpdateQuery(menuItemId).writeReturning(
+        MenuItemsCompanion(variableName: Value(variableName)),
+      ))
+          .single;
 }

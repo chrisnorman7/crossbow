@@ -3,7 +3,8 @@ import 'package:drift/drift.dart';
 import 'mixins.dart';
 
 /// The asset references table.
-class AssetReferences extends Table with WithPrimaryKey, WithName {
+class AssetReferences extends Table
+    with WithPrimaryKey, WithName, WithVariableName {
   /// The folder that contains the asset with the given [name].
   TextColumn get folderName => text()();
 

@@ -136,6 +136,21 @@ void main() {
           expect(levels.last.id, level2.id);
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final customLevel = await customLevelsDao.createCustomLevel(
+            name: 'Test Custom Level',
+          );
+          expect(customLevel.variableName, null);
+          final updatedCustomLevel = await customLevelsDao.setVariableName(
+            customLevelId: customLevel.id,
+            variableName: 'testCustomLevel',
+          );
+          expect(updatedCustomLevel.variableName, 'testCustomLevel');
+        },
+      );
     },
   );
 }

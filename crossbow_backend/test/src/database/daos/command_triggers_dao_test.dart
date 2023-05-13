@@ -170,6 +170,22 @@ void main() {
           );
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final trigger = await commandTriggersDao.createCommandTrigger(
+            description: 'Do something',
+          );
+          expect(trigger.variableName, null);
+          final updatedTrigger = await commandTriggersDao.setVariableName(
+            commandTriggerId: trigger.id,
+            variableName: 'trigger',
+          );
+          expect(updatedTrigger.id, trigger.id);
+          expect(updatedTrigger.variableName, 'trigger');
+        },
+      );
     },
   );
 }
