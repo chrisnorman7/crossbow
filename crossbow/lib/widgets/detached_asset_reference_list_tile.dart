@@ -11,6 +11,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 import '../messages.dart';
 import '../src/contexts/asset_context.dart';
 import '../src/providers.dart';
+import 'asset_reference_list_tile.dart';
 import 'common_shortcuts.dart';
 import 'error_list_tile.dart';
 import 'play_sound_semantics.dart';
@@ -78,48 +79,51 @@ class DetachedAssetReferenceListTile extends ConsumerWidget {
           assetReference = null;
           size = unknownMessage;
         }
-        // We can't use `PlaySoundSemantics` here, because of a bug in
-        // `CheckboxListTile`.
-        final title = Text(path.join(folderName, name));
-        return CommonShortcuts(
-          copyText: detachedAssetReference?.id.toString() ?? getAssetCode(ref),
-          deleteCallback: detachedAssetReference == null
-              ? null
-              : () async {
-                  await assetReferencesDao.deleteAssetReference(
-                    id: detachedAssetReference.id,
-                  );
-                  ref.invalidate(
-                    detachedAssetReferenceProvider.call(assetContext),
-                  );
-                },
-          child: CheckboxListTile(
-            autofocus: autofocus,
-            value: detachedAssetReference != null,
-            onChanged: (final value) async {
-              if (detachedAssetReference == null) {
+        final valueKey = ValueKey(fullPath);
+        if (detachedAssetReference == null) {
+          final child = CommonShortcuts(
+            copyText: getAssetCode(ref),
+            key: valueKey,
+            child: ListTile(
+              autofocus: autofocus,
+              onTap: () async {
                 await assetReferencesDao.createAssetReference(
                   folderName: folderName,
                   name: name,
                   detached: true,
                 );
-              } else {
-                await assetReferencesDao.deleteAssetReference(
-                  id: detachedAssetReference.id,
+                ref.invalidate(
+                  detachedAssetReferenceProvider.call(assetContext),
                 );
-              }
-              ref.invalidate(
-                detachedAssetReferenceProvider.call(assetContext),
-              );
-            },
-            key: ValueKey(fullPath),
-            title: assetReference == null
-                ? title
-                : PlaySoundSemantics(
-                    assetReference: assetReference,
-                    child: title,
-                  ),
-            subtitle: Text(size),
+              },
+              subtitle: Text(size),
+              title: Text(path.join(folderName, name)),
+            ),
+          );
+          if (assetReference == null) {
+            return child;
+          }
+          return PlaySoundSemantics(
+            assetReference: assetReference,
+            child: child,
+          );
+        }
+        return CommonShortcuts(
+          deleteCallback: () async {
+            await assetReferencesDao.deleteAssetReference(
+              id: detachedAssetReference.id,
+            );
+            ref.invalidate(
+              detachedAssetReferenceProvider.call(assetContext),
+            );
+          },
+          child: AssetReferenceListTile(
+            assetReferenceId: detachedAssetReference.id,
+            onChanged: (final value) => ref.invalidate(
+              detachedAssetReferenceProvider.call(assetContext),
+            ),
+            nullable: false,
+            title: 'Detached',
           ),
         );
       },
