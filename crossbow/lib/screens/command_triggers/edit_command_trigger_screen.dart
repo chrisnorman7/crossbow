@@ -12,6 +12,7 @@ import '../../src/contexts/command_trigger_context.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
 import '../../widgets/common_shortcuts.dart';
+import '../../widgets/variable_name_list_tile.dart';
 import 'edit_command_trigger_keyboard_key_screen.dart';
 
 /// A screen for editing a [CommandTrigger] with the given [commandTriggerId].
@@ -54,7 +55,7 @@ class EditCommandTriggerScreenState
   /// Get the body for this widget.
   Widget getBody(final CommandTriggerContext commandTriggerContext) {
     final projectContext = commandTriggerContext.projectContext;
-    final dao = projectContext.db.commandTriggersDao;
+    final commandTriggersDao = projectContext.db.commandTriggersDao;
     final commandTrigger = commandTriggerContext.value;
     final button = commandTrigger.gameControllerButton;
     final keyboardKey = commandTriggerContext.commandTriggerKeyboardKey;
@@ -63,7 +64,7 @@ class EditCommandTriggerScreenState
         TextListTile(
           value: commandTrigger.description,
           onChanged: (final value) async {
-            await dao.setDescription(
+            await commandTriggersDao.setDescription(
               commandTriggerId: commandTrigger.id,
               description: value,
             );
@@ -80,7 +81,7 @@ class EditCommandTriggerScreenState
             builder: (final context) => SelectItem<GameControllerButton?>(
               values: const [null, ...GameControllerButton.values],
               onDone: (final value) async {
-                await dao.setGameControllerButton(
+                await commandTriggersDao.setGameControllerButton(
                   commandTriggerId: commandTrigger.id,
                   gameControllerButton: value,
                 );
@@ -118,7 +119,7 @@ class EditCommandTriggerScreenState
                   scanCode: ScanCode.space,
                 ))
                     .id;
-                await dao.setKeyboardKeyId(
+                await commandTriggersDao.setKeyboardKeyId(
                   commandTriggerId: commandTrigger.id,
                   keyboardKeyId: keyboardKeyId,
                 );
@@ -137,6 +138,22 @@ class EditCommandTriggerScreenState
               invalidateCommandTriggerProvider();
             },
           ),
+        ),
+        VariableNameListTile(
+          variableName: commandTrigger.variableName,
+          getOtherVariableNames: () async {
+            final commandTriggers =
+                await commandTriggersDao.getCommandTriggers();
+            return commandTriggers
+                .map((final e) => e.variableName ?? unsetMessage)
+                .toList();
+          },
+          onChanged: (final value) async {
+            await commandTriggersDao.setVariableName(
+              commandTriggerId: commandTrigger.id,
+              variableName: value,
+            );
+          },
         )
       ],
     );
