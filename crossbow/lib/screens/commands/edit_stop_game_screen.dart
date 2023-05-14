@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/after_list_tile.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A widget for editing the stop game with the given [stopGameId].
 class EditStopGameScreen extends ConsumerWidget {
@@ -42,10 +44,23 @@ class EditStopGameScreen extends ConsumerWidget {
     required final ValueContext<StopGame> valueContext,
   }) {
     final projectContext = valueContext.projectContext;
-    final stopGamesDao = projectContext.db.stopGamesDao;
+    final db = projectContext.db;
+    final stopGamesDao = db.stopGamesDao;
     final stopGame = valueContext.value;
     return ListView(
       children: [
+        TextListTile(
+          value: stopGame.description,
+          onChanged: (final value) async {
+            await stopGamesDao.setDescription(
+              stopGameId: stopGame.id,
+              description: value,
+            );
+            invalidateStopGameProvider(ref);
+          },
+          header: descriptionMessage,
+          autofocus: true,
+        ),
         AfterListTile(
           after: stopGame.after,
           onChanged: (final value) async {
@@ -56,7 +71,22 @@ class EditStopGameScreen extends ConsumerWidget {
             invalidateStopGameProvider(ref);
           },
           title: Intl.message('Stop After'),
-          autofocus: true,
+        ),
+        VariableNameListTile(
+          variableName: stopGame.variableName,
+          getOtherVariableNames: () async {
+            final stopGames = await db.select(db.stopGames).get();
+            return stopGames
+                .map((final e) => e.variableName ?? unsetMessage)
+                .toList();
+          },
+          onChanged: (final value) async {
+            await stopGamesDao.setVariableName(
+              stopGameId: stopGame.id,
+              variableName: value,
+            );
+            invalidateStopGameProvider(ref);
+          },
         )
       ],
     );

@@ -2935,8 +2935,16 @@ class $StopGamesTable extends StopGames
   late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
       'variable_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
   @override
-  List<GeneratedColumn> get $columns => [id, after, variableName];
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Stop the game.'));
+  @override
+  List<GeneratedColumn> get $columns => [id, after, variableName, description];
   @override
   String get aliasedName => _alias ?? 'stop_games';
   @override
@@ -2959,6 +2967,12 @@ class $StopGamesTable extends StopGames
           variableName.isAcceptableOrUnknown(
               data['variable_name']!, _variableNameMeta));
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
     return context;
   }
 
@@ -2974,6 +2988,8 @@ class $StopGamesTable extends StopGames
           .read(DriftSqlType.int, data['${effectivePrefix}after']),
       variableName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
   }
 
@@ -2992,7 +3008,14 @@ class StopGame extends DataClass implements Insertable<StopGame> {
 
   /// The variable name associated with a row.
   final String? variableName;
-  const StopGame({required this.id, this.after, this.variableName});
+
+  /// The description of this stop game.
+  final String description;
+  const StopGame(
+      {required this.id,
+      this.after,
+      this.variableName,
+      required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3003,6 +3026,7 @@ class StopGame extends DataClass implements Insertable<StopGame> {
     if (!nullToAbsent || variableName != null) {
       map['variable_name'] = Variable<String>(variableName);
     }
+    map['description'] = Variable<String>(description);
     return map;
   }
 
@@ -3014,6 +3038,7 @@ class StopGame extends DataClass implements Insertable<StopGame> {
       variableName: variableName == null && nullToAbsent
           ? const Value.absent()
           : Value(variableName),
+      description: Value(description),
     );
   }
 
@@ -3024,6 +3049,7 @@ class StopGame extends DataClass implements Insertable<StopGame> {
       id: serializer.fromJson<int>(json['id']),
       after: serializer.fromJson<int?>(json['after']),
       variableName: serializer.fromJson<String?>(json['variableName']),
+      description: serializer.fromJson<String>(json['description']),
     );
   }
   @override
@@ -3033,72 +3059,86 @@ class StopGame extends DataClass implements Insertable<StopGame> {
       'id': serializer.toJson<int>(id),
       'after': serializer.toJson<int?>(after),
       'variableName': serializer.toJson<String?>(variableName),
+      'description': serializer.toJson<String>(description),
     };
   }
 
   StopGame copyWith(
           {int? id,
           Value<int?> after = const Value.absent(),
-          Value<String?> variableName = const Value.absent()}) =>
+          Value<String?> variableName = const Value.absent(),
+          String? description}) =>
       StopGame(
         id: id ?? this.id,
         after: after.present ? after.value : this.after,
         variableName:
             variableName.present ? variableName.value : this.variableName,
+        description: description ?? this.description,
       );
   @override
   String toString() {
     return (StringBuffer('StopGame(')
           ..write('id: $id, ')
           ..write('after: $after, ')
-          ..write('variableName: $variableName')
+          ..write('variableName: $variableName, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, after, variableName);
+  int get hashCode => Object.hash(id, after, variableName, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is StopGame &&
           other.id == this.id &&
           other.after == this.after &&
-          other.variableName == this.variableName);
+          other.variableName == this.variableName &&
+          other.description == this.description);
 }
 
 class StopGamesCompanion extends UpdateCompanion<StopGame> {
   final Value<int> id;
   final Value<int?> after;
   final Value<String?> variableName;
+  final Value<String> description;
   const StopGamesCompanion({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.variableName = const Value.absent(),
+    this.description = const Value.absent(),
   });
   StopGamesCompanion.insert({
     this.id = const Value.absent(),
     this.after = const Value.absent(),
     this.variableName = const Value.absent(),
+    this.description = const Value.absent(),
   });
   static Insertable<StopGame> custom({
     Expression<int>? id,
     Expression<int>? after,
     Expression<String>? variableName,
+    Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (after != null) 'after': after,
       if (variableName != null) 'variable_name': variableName,
+      if (description != null) 'description': description,
     });
   }
 
   StopGamesCompanion copyWith(
-      {Value<int>? id, Value<int?>? after, Value<String?>? variableName}) {
+      {Value<int>? id,
+      Value<int?>? after,
+      Value<String?>? variableName,
+      Value<String>? description}) {
     return StopGamesCompanion(
       id: id ?? this.id,
       after: after ?? this.after,
       variableName: variableName ?? this.variableName,
+      description: description ?? this.description,
     );
   }
 
@@ -3114,6 +3154,9 @@ class StopGamesCompanion extends UpdateCompanion<StopGame> {
     if (variableName.present) {
       map['variable_name'] = Variable<String>(variableName.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     return map;
   }
 
@@ -3122,7 +3165,8 @@ class StopGamesCompanion extends UpdateCompanion<StopGame> {
     return (StringBuffer('StopGamesCompanion(')
           ..write('id: $id, ')
           ..write('after: $after, ')
-          ..write('variableName: $variableName')
+          ..write('variableName: $variableName, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }

@@ -108,6 +108,14 @@ class ProjectCode {
   File get popLevelsFile =>
       File(path.join(libDirectory.path, 'pop_levels.dart'));
 
+  /// The file where source code for push custom levels will be stored.
+  File get pushCustomLevelsFile =>
+      File(path.join(libDirectory.path, 'push_custom_levels.dart'));
+
+  /// The file where source code for stop games will be stored.
+  File get stopGamesFile =>
+      File(path.join(libDirectory.path, 'stop_games.dart'));
+
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
 
@@ -457,6 +465,53 @@ class ProjectCode {
     popLevelsFile.writeAsStringSync(code);
   }
 
+  /// Write all push custom levels.
+  Future<void> writePushCustomLevels(final CrossbowBackendDatabase db) async {
+    final pushCustomLevels = await db.pushCustomLevelsDao.getPushCustomLevels();
+    if (pushCustomLevels.isEmpty) {
+      ensureDelete(pushCustomLevelsFile);
+      return;
+    }
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
+    for (final pushCustomLevel in pushCustomLevels) {
+      final variableName = pushCustomLevel.variableName ??
+          'getPushCustomLevel${pushCustomLevel.id}';
+      final customLevel = await db.customLevelsDao.getCustomLevel(
+        id: pushCustomLevel.customLevelId,
+      );
+      stringBuffer
+        ..writeln('/// Push ${customLevel.name}.')
+        ..writeln('Future<PushCustomLevel> $variableName')
+        ..writeln('(final ProjectRunner runner) =>')
+        ..writeln('runner.db.pushCustomLevelsDao.getPushCustomLevel(')
+        ..writeln('id: ${pushCustomLevel.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    pushCustomLevelsFile.writeAsStringSync(code);
+  }
+
+  /// Write stop games.
+  Future<void> writeStopGames(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.stopGames);
+    final stopGames = await query.get();
+    if (stopGames.isEmpty) {
+      ensureDelete(stopGamesFile);
+      return;
+    }
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
+    for (final stopGame in stopGames) {
+      final variableName = stopGame.variableName ?? 'getStopGame${stopGame.id}';
+      stringBuffer
+        ..writeln('/// ${stopGame.description}')
+        ..writeln(
+          'Future<StopGame> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln('runner.db.stopGamesDao.getStopGame(id: ${stopGame.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    stopGamesFile.writeAsStringSync(code);
+  }
+
   /// Write all menus.
   Future<void> writeMenus(final CrossbowBackendDatabase db) async {
     final query = db.select(db.menus);
@@ -588,6 +643,8 @@ class ProjectCode {
     await writeCommands(db);
     await writeCustomLevels(db);
     await writePopLevels(db);
+    await writePushCustomLevels(db);
+    await writeStopGames(db);
     ensureClearDirectory(menusDirectory);
     await writeMenus(db);
     ensureClearDirectory(menuItemsDirectory);
