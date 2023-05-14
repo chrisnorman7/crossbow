@@ -17,6 +17,10 @@ import 'main_dart_code.dart';
 /// The ziggurat import to use.
 const zigguratImport = "import 'package:ziggurat/ziggurat.dart';";
 
+/// The import for `crossbow_backend`.
+const crossbowBackendImport =
+    "import 'package:crossbow_backend/crossbow_backend.dart';";
+
 /// The type of the encryption keys map.
 typedef EncryptionKeys = Map<int, String>;
 
@@ -75,7 +79,7 @@ class ProjectCode {
       Directory(path.join(srcDirectory.path, 'assets_stores'));
 
   /// The file where command trigger source code will be written.
-  File get commandTriggerFile =>
+  File get commandTriggersFile =>
       File(path.join(libDirectory.path, 'command_triggers.dart'));
 
   /// The directory where menu-related source code will be written.
@@ -92,6 +96,9 @@ class ProjectCode {
   /// The file where the source code for push menus will be stored.
   File get pushMenusFile =>
       File(path.join(menusDirectory.path, 'push_menus.dart'));
+
+  /// The file where source code for commands will be stored.
+  File get commandsFile => File(path.join(libDirectory.path, 'commands.dart'));
 
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
@@ -127,6 +134,13 @@ class ProjectCode {
       clearDirectory(directory);
     } else {
       directory.createSync(recursive: true);
+    }
+  }
+
+  /// Ensure the given [entity] is deleted.
+  void ensureDelete(final FileSystemEntity entity) {
+    if (entity.existsSync()) {
+      entity.deleteSync(recursive: true);
     }
   }
 
@@ -209,13 +223,14 @@ class ProjectCode {
   Future<void> writeGameFunctionsBase({
     required final CrossbowBackendDatabase db,
   }) async {
+    final dartFunctions = await db.dartFunctionsDao.getDartFunctions();
     final stringBuffer = StringBuffer()
-      ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';")
+      ..writeln(crossbowBackendImport)
       ..writeln('/// Custom game functions.\n')
       ..writeln('abstract class GameFunctionsBase {')
       ..writeln('/// Allow subclasses to be constant.')
       ..writeln('const GameFunctionsBase();');
-    for (final f in await db.dartFunctionsDao.getDartFunctions()) {
+    for (final f in dartFunctions) {
       stringBuffer
         ..writeln('/// ${f.description}')
         ..writeln(
@@ -266,9 +281,14 @@ class ProjectCode {
     required final CrossbowBackendDatabase db,
     required final Map<int, String> encryptionKeys,
   }) async {
-    final assetReferenceStringBuffers = <String, StringBuffer>{};
     final query = db.select(db.assetReferences);
-    for (final assetReference in await query.get()) {
+    final assetReferences = await query.get();
+    if (assetReferences.isEmpty) {
+      ensureDelete(assetSourcesDirectory);
+      return;
+    }
+    final assetReferenceStringBuffers = <String, StringBuffer>{};
+    for (final assetReference in assetReferences) {
       final folderName = assetReference.folderName.snakeCase;
       final encryptionKey = encryptionKeys[assetReference.id]!;
       final fullPath = path.join(
@@ -317,11 +337,12 @@ class ProjectCode {
     }
   }
 
-  /// Write command triggers to [commandTriggerFile].
+  /// Write command triggers to [commandTriggersFile].
   Future<void> writeCommandTriggers(final CrossbowBackendDatabase db) async {
     final query = db.select(db.commandTriggers);
     final commandTriggers = await query.get();
     if (commandTriggers.isEmpty) {
+      ensureDelete(commandTriggersFile);
       return;
     }
     final imports = {zigguratImport};
@@ -361,7 +382,29 @@ class ProjectCode {
     }
     final snippet = CodeSnippet(imports: imports, stringBuffer: stringBuffer);
     final code = formatter.format(snippet.code);
-    commandTriggerFile.writeAsStringSync(code);
+    commandTriggersFile.writeAsStringSync(code);
+  }
+
+  /// Write all commands.
+  Future<void> writeCommands(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.commands);
+    final commands = await query.get();
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
+    for (final command in commands) {
+      final variableName = command.variableName ?? 'getCommand${command.id}';
+      if (command.id == oldProject.initialCommandId) {
+        stringBuffer.writeln('/// Initial command.');
+      } else {
+        stringBuffer.writeln('/// Command ${command.id}.');
+      }
+      stringBuffer
+        ..writeln(
+          'Future<Command> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln('runner.db.commandsDao.getCommand(id: ${command.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    commandsFile.writeAsStringSync(code);
   }
 
   /// Write all menus.
@@ -369,10 +412,10 @@ class ProjectCode {
     final query = db.select(db.menus);
     final menus = await query.get();
     if (menus.isEmpty) {
+      ensureDelete(menusFile);
       return;
     }
-    final stringBuffer = StringBuffer()
-      ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';");
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
     for (final menu in menus) {
       final variableName = menu.variableName ?? 'getMenu${menu.id}';
       stringBuffer
@@ -423,6 +466,7 @@ class ProjectCode {
     final query = db.select(db.pushMenus);
     final pushMenus = await query.get();
     if (pushMenus.isEmpty) {
+      ensureDelete(pushMenusFile);
       return;
     }
     final stringBuffer = StringBuffer()
@@ -491,6 +535,7 @@ class ProjectCode {
     }
     final encryptionKey = writeProjectFile();
     await writeCommandTriggers(db);
+    await writeCommands(db);
     ensureClearDirectory(menusDirectory);
     await writeMenus(db);
     ensureClearDirectory(menuItemsDirectory);
