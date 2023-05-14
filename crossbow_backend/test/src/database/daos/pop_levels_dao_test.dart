@@ -7,7 +7,7 @@ import '../../../custom_database.dart';
 
 void main() {
   final db = getDatabase();
-  final popLevels = db.popLevelsDao;
+  final popLevelsDao = db.popLevelsDao;
 
   group(
     'PopLevelsDao',
@@ -15,9 +15,9 @@ void main() {
       test(
         '.createPopLevel',
         () async {
-          var popLevel = await popLevels.createPopLevel();
+          var popLevel = await popLevelsDao.createPopLevel();
           expect(popLevel.fadeLength, null);
-          popLevel = await popLevels.createPopLevel(fadeLength: pi);
+          popLevel = await popLevelsDao.createPopLevel(fadeLength: pi);
           expect(popLevel.fadeLength, pi);
         },
       );
@@ -25,9 +25,9 @@ void main() {
       test(
         '.getPopLevel',
         () async {
-          final popLevel = await popLevels.createPopLevel(fadeLength: pi);
+          final popLevel = await popLevelsDao.createPopLevel(fadeLength: pi);
           expect(
-            await popLevels.getPopLevel(id: popLevel.id),
+            await popLevelsDao.getPopLevel(id: popLevel.id),
             predicate<PopLevel>(
               (final value) =>
                   value.id == popLevel.id &&
@@ -40,13 +40,13 @@ void main() {
       test(
         '.setFadeLength',
         () async {
-          final popLevel = await popLevels.createPopLevel();
+          final popLevel = await popLevelsDao.createPopLevel();
           expect(popLevel.fadeLength, null);
           var updatedPopLevel =
-              await popLevels.setFadeLength(id: popLevel.id, fadeLength: pi);
+              await popLevelsDao.setFadeLength(id: popLevel.id, fadeLength: pi);
           expect(updatedPopLevel.id, popLevel.id);
           expect(updatedPopLevel.fadeLength, pi);
-          updatedPopLevel = await popLevels.setFadeLength(id: popLevel.id);
+          updatedPopLevel = await popLevelsDao.setFadeLength(id: popLevel.id);
           expect(updatedPopLevel.id, popLevel.id);
           expect(updatedPopLevel.fadeLength, null);
         },
@@ -55,26 +55,40 @@ void main() {
       test(
         '.deletePopLevel',
         () async {
-          var popLevel = await popLevels.createPopLevel();
-          await popLevels.deletePopLevel(id: popLevel.id);
+          var popLevel = await popLevelsDao.createPopLevel();
+          await popLevelsDao.deletePopLevel(id: popLevel.id);
           await expectLater(
-            popLevels.getPopLevel(id: popLevel.id),
+            popLevelsDao.getPopLevel(id: popLevel.id),
             throwsStateError,
           );
-          popLevel = await popLevels.createPopLevel(fadeLength: 5.2);
+          popLevel = await popLevelsDao.createPopLevel(fadeLength: 5.2);
           final command = await db.commandsDao.createCommand(
             popLevelId: popLevel.id,
           );
           expect(command.popLevelId, popLevel.id);
-          await popLevels.deletePopLevel(id: popLevel.id);
+          await popLevelsDao.deletePopLevel(id: popLevel.id);
           await expectLater(
-            popLevels.getPopLevel(id: popLevel.id),
+            popLevelsDao.getPopLevel(id: popLevel.id),
             throwsStateError,
           );
           expect(
             (await db.commandsDao.getCommand(id: command.id)).popLevelId,
             null,
           );
+        },
+      );
+
+      test(
+        '.setDescription',
+        () async {
+          final popLevel = await popLevelsDao.createPopLevel();
+          expect(popLevel.description, 'Pop a level.');
+          final updatedPopLevel = await popLevelsDao.setDescription(
+            popLevelId: popLevel.id,
+            description: 'Pop',
+          );
+          expect(updatedPopLevel.id, popLevel.id);
+          expect(updatedPopLevel.description, 'Pop');
         },
       );
     },

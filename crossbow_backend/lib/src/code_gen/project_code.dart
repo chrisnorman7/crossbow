@@ -100,6 +100,14 @@ class ProjectCode {
   /// The file where source code for commands will be stored.
   File get commandsFile => File(path.join(libDirectory.path, 'commands.dart'));
 
+  /// The file where source code for custom levels will be stored.
+  File get customLevelsFile =>
+      File(path.join(libDirectory.path, 'custom_levels.dart'));
+
+  /// The file where source code for pop levels will be stored
+  File get popLevelsFile =>
+      File(path.join(libDirectory.path, 'pop_levels.dart'));
+
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
 
@@ -403,6 +411,52 @@ class ProjectCode {
     commandsFile.writeAsStringSync(code);
   }
 
+  /// Write all custom levels.
+  Future<void> writeCustomLevels(final CrossbowBackendDatabase db) async {
+    final customLevels = await db.customLevelsDao.getCustomLevels();
+    if (customLevels.isEmpty) {
+      ensureDelete(customLevelsFile);
+      return;
+    }
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
+    for (final customLevel in customLevels) {
+      final variableName =
+          customLevel.variableName ?? 'getCustomLevel${customLevel.id}';
+      stringBuffer
+        ..writeln('/// ${customLevel.name}.')
+        ..writeln(
+          'Future<CustomLevel> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln(
+          'runner.db.customLevelsDao.getCustomLevel(id: ${customLevel.id});',
+        );
+    }
+    final code = formatter.format(stringBuffer.toString());
+    customLevelsFile.writeAsStringSync(code);
+  }
+
+  /// Write pop levels.
+  Future<void> writePopLevels(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.popLevels);
+    final popLevels = await query.get();
+    if (popLevels.isEmpty) {
+      ensureDelete(popLevelsFile);
+      return;
+    }
+    final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
+    for (final popLevel in popLevels) {
+      final variableName = popLevel.variableName ?? 'getPopLevel${popLevel.id}';
+      stringBuffer
+        ..writeln('/// ${popLevel.description}')
+        ..writeln(
+          'Future<PopLevel> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln('runner.db.popLevelsDao.getPopLevel(id: ${popLevel.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    popLevelsFile.writeAsStringSync(code);
+  }
+
   /// Write all menus.
   Future<void> writeMenus(final CrossbowBackendDatabase db) async {
     final query = db.select(db.menus);
@@ -532,6 +586,8 @@ class ProjectCode {
     final encryptionKey = writeProjectFile();
     await writeCommandTriggers(db);
     await writeCommands(db);
+    await writeCustomLevels(db);
+    await writePopLevels(db);
     ensureClearDirectory(menusDirectory);
     await writeMenus(db);
     ensureClearDirectory(menuItemsDirectory);

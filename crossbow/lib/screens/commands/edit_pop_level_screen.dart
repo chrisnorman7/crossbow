@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/fade_length_list_tile.dart';
@@ -45,19 +46,33 @@ class EditPopLevelScreen extends ConsumerWidget {
     required final WidgetRef ref,
     required final ValueContext<PopLevel> popLevelContext,
   }) {
-    final popLevels = popLevelContext.projectContext.db.popLevelsDao;
+    final popLevelsDao = popLevelContext.projectContext.db.popLevelsDao;
     final popLevel = popLevelContext.value;
     return SimpleScaffold(
       title: Intl.message('Edit Pop Level'),
       body: ListView(
         children: [
+          TextListTile(
+            value: popLevel.description,
+            onChanged: (final value) async {
+              await popLevelsDao.setDescription(
+                popLevelId: popLevel.id,
+                description: value,
+              );
+              invalidatePopLevelProvider(ref);
+            },
+            header: descriptionMessage,
+            autofocus: true,
+          ),
           FadeLengthListTile(
             fadeLength: popLevel.fadeLength,
             onChanged: (final value) async {
-              await popLevels.setFadeLength(id: popLevelId, fadeLength: value);
+              await popLevelsDao.setFadeLength(
+                id: popLevelId,
+                fadeLength: value,
+              );
               invalidatePopLevelProvider(ref);
             },
-            autofocus: true,
           )
         ],
       ),

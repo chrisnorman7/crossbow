@@ -23,17 +23,19 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
+  /// Get an [update] query that matches on the given [id].
+  UpdateStatement<$PopLevelsTable, PopLevel> getUpdateQuery(final int id) =>
+      update(popLevels)..where((final table) => table.id.equals(id));
+
   /// Set the [fadeLength] for the pop level with the given [id].
   Future<PopLevel> setFadeLength({
     required final int id,
     final double? fadeLength,
-  }) async {
-    final query = update(popLevels)
-      ..where((final table) => table.id.equals(id));
-    return (await query
-            .writeReturning(PopLevelsCompanion(fadeLength: Value(fadeLength))))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(id).writeReturning(
+        PopLevelsCompanion(fadeLength: Value(fadeLength)),
+      ))
+          .single;
 
   /// Delete the pop level with the given [id].
   Future<int> deletePopLevel({required final int id}) async {
@@ -41,4 +43,14 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       ..where((final table) => table.id.equals(id));
     return query.go();
   }
+
+  /// Set the [description] for the pop level with the given [popLevelId].
+  Future<PopLevel> setDescription({
+    required final int popLevelId,
+    required final String description,
+  }) async =>
+      (await getUpdateQuery(popLevelId).writeReturning(
+        PopLevelsCompanion(description: Value(description)),
+      ))
+          .single;
 }

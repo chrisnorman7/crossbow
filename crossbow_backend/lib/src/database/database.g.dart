@@ -2668,8 +2668,17 @@ class $PopLevelsTable extends PopLevels
   late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
       'variable_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
   @override
-  List<GeneratedColumn> get $columns => [id, fadeLength, variableName];
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Pop a level.'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, fadeLength, variableName, description];
   @override
   String get aliasedName => _alias ?? 'pop_levels';
   @override
@@ -2694,6 +2703,12 @@ class $PopLevelsTable extends PopLevels
           variableName.isAcceptableOrUnknown(
               data['variable_name']!, _variableNameMeta));
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
     return context;
   }
 
@@ -2709,6 +2724,8 @@ class $PopLevelsTable extends PopLevels
           .read(DriftSqlType.double, data['${effectivePrefix}fade_length']),
       variableName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
   }
 
@@ -2727,7 +2744,14 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
 
   /// The variable name associated with a row.
   final String? variableName;
-  const PopLevel({required this.id, this.fadeLength, this.variableName});
+
+  /// The description for this pop level.
+  final String description;
+  const PopLevel(
+      {required this.id,
+      this.fadeLength,
+      this.variableName,
+      required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2738,6 +2762,7 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
     if (!nullToAbsent || variableName != null) {
       map['variable_name'] = Variable<String>(variableName);
     }
+    map['description'] = Variable<String>(description);
     return map;
   }
 
@@ -2750,6 +2775,7 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
       variableName: variableName == null && nullToAbsent
           ? const Value.absent()
           : Value(variableName),
+      description: Value(description),
     );
   }
 
@@ -2760,6 +2786,7 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
       id: serializer.fromJson<int>(json['id']),
       fadeLength: serializer.fromJson<double?>(json['fadeLength']),
       variableName: serializer.fromJson<String?>(json['variableName']),
+      description: serializer.fromJson<String>(json['description']),
     );
   }
   @override
@@ -2769,74 +2796,86 @@ class PopLevel extends DataClass implements Insertable<PopLevel> {
       'id': serializer.toJson<int>(id),
       'fadeLength': serializer.toJson<double?>(fadeLength),
       'variableName': serializer.toJson<String?>(variableName),
+      'description': serializer.toJson<String>(description),
     };
   }
 
   PopLevel copyWith(
           {int? id,
           Value<double?> fadeLength = const Value.absent(),
-          Value<String?> variableName = const Value.absent()}) =>
+          Value<String?> variableName = const Value.absent(),
+          String? description}) =>
       PopLevel(
         id: id ?? this.id,
         fadeLength: fadeLength.present ? fadeLength.value : this.fadeLength,
         variableName:
             variableName.present ? variableName.value : this.variableName,
+        description: description ?? this.description,
       );
   @override
   String toString() {
     return (StringBuffer('PopLevel(')
           ..write('id: $id, ')
           ..write('fadeLength: $fadeLength, ')
-          ..write('variableName: $variableName')
+          ..write('variableName: $variableName, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fadeLength, variableName);
+  int get hashCode => Object.hash(id, fadeLength, variableName, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PopLevel &&
           other.id == this.id &&
           other.fadeLength == this.fadeLength &&
-          other.variableName == this.variableName);
+          other.variableName == this.variableName &&
+          other.description == this.description);
 }
 
 class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
   final Value<int> id;
   final Value<double?> fadeLength;
   final Value<String?> variableName;
+  final Value<String> description;
   const PopLevelsCompanion({
     this.id = const Value.absent(),
     this.fadeLength = const Value.absent(),
     this.variableName = const Value.absent(),
+    this.description = const Value.absent(),
   });
   PopLevelsCompanion.insert({
     this.id = const Value.absent(),
     this.fadeLength = const Value.absent(),
     this.variableName = const Value.absent(),
+    this.description = const Value.absent(),
   });
   static Insertable<PopLevel> custom({
     Expression<int>? id,
     Expression<double>? fadeLength,
     Expression<String>? variableName,
+    Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (fadeLength != null) 'fade_length': fadeLength,
       if (variableName != null) 'variable_name': variableName,
+      if (description != null) 'description': description,
     });
   }
 
   PopLevelsCompanion copyWith(
       {Value<int>? id,
       Value<double?>? fadeLength,
-      Value<String?>? variableName}) {
+      Value<String?>? variableName,
+      Value<String>? description}) {
     return PopLevelsCompanion(
       id: id ?? this.id,
       fadeLength: fadeLength ?? this.fadeLength,
       variableName: variableName ?? this.variableName,
+      description: description ?? this.description,
     );
   }
 
@@ -2852,6 +2891,9 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
     if (variableName.present) {
       map['variable_name'] = Variable<String>(variableName.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     return map;
   }
 
@@ -2860,7 +2902,8 @@ class PopLevelsCompanion extends UpdateCompanion<PopLevel> {
     return (StringBuffer('PopLevelsCompanion(')
           ..write('id: $id, ')
           ..write('fadeLength: $fadeLength, ')
-          ..write('variableName: $variableName')
+          ..write('variableName: $variableName, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
