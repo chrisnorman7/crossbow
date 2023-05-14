@@ -61,7 +61,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   /// Migrate the database.
   @override
@@ -164,6 +164,9 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           }
           if (from < 18) {
             await m.addColumn(commands, commands.description);
+          }
+          if (from < 19) {
+            await m.addColumn(customLevels, customLevels.variableName);
           }
         },
       );
