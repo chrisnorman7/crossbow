@@ -3901,6 +3901,12 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
       'variable_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _pushMenuIdMeta =
       const VerificationMeta('pushMenuId');
   @override
@@ -3970,6 +3976,7 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   List<GeneratedColumn> get $columns => [
         id,
         variableName,
+        description,
         pushMenuId,
         messageText,
         messageSoundId,
@@ -3996,6 +4003,14 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           _variableNameMeta,
           variableName.isAcceptableOrUnknown(
               data['variable_name']!, _variableNameMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
     }
     if (data.containsKey('push_menu_id')) {
       context.handle(
@@ -4056,6 +4071,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       variableName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       pushMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}push_menu_id']),
       messageText: attachedDatabase.typeMapping
@@ -4088,6 +4105,9 @@ class Command extends DataClass implements Insertable<Command> {
   /// The variable name associated with a row.
   final String? variableName;
 
+  /// The description of this object.
+  final String description;
+
   /// The ID of a menu to push.
   final int? pushMenuId;
 
@@ -4114,6 +4134,7 @@ class Command extends DataClass implements Insertable<Command> {
   const Command(
       {required this.id,
       this.variableName,
+      required this.description,
       this.pushMenuId,
       this.messageText,
       this.messageSoundId,
@@ -4129,6 +4150,7 @@ class Command extends DataClass implements Insertable<Command> {
     if (!nullToAbsent || variableName != null) {
       map['variable_name'] = Variable<String>(variableName);
     }
+    map['description'] = Variable<String>(description);
     if (!nullToAbsent || pushMenuId != null) {
       map['push_menu_id'] = Variable<int>(pushMenuId);
     }
@@ -4162,6 +4184,7 @@ class Command extends DataClass implements Insertable<Command> {
       variableName: variableName == null && nullToAbsent
           ? const Value.absent()
           : Value(variableName),
+      description: Value(description),
       pushMenuId: pushMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(pushMenuId),
@@ -4193,6 +4216,7 @@ class Command extends DataClass implements Insertable<Command> {
     return Command(
       id: serializer.fromJson<int>(json['id']),
       variableName: serializer.fromJson<String?>(json['variableName']),
+      description: serializer.fromJson<String>(json['description']),
       pushMenuId: serializer.fromJson<int?>(json['pushMenuId']),
       messageText: serializer.fromJson<String?>(json['messageText']),
       messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
@@ -4209,6 +4233,7 @@ class Command extends DataClass implements Insertable<Command> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'variableName': serializer.toJson<String?>(variableName),
+      'description': serializer.toJson<String>(description),
       'pushMenuId': serializer.toJson<int?>(pushMenuId),
       'messageText': serializer.toJson<String?>(messageText),
       'messageSoundId': serializer.toJson<int?>(messageSoundId),
@@ -4223,6 +4248,7 @@ class Command extends DataClass implements Insertable<Command> {
   Command copyWith(
           {int? id,
           Value<String?> variableName = const Value.absent(),
+          String? description,
           Value<int?> pushMenuId = const Value.absent(),
           Value<String?> messageText = const Value.absent(),
           Value<int?> messageSoundId = const Value.absent(),
@@ -4235,6 +4261,7 @@ class Command extends DataClass implements Insertable<Command> {
         id: id ?? this.id,
         variableName:
             variableName.present ? variableName.value : this.variableName,
+        description: description ?? this.description,
         pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
         messageText: messageText.present ? messageText.value : this.messageText,
         messageSoundId:
@@ -4253,6 +4280,7 @@ class Command extends DataClass implements Insertable<Command> {
     return (StringBuffer('Command(')
           ..write('id: $id, ')
           ..write('variableName: $variableName, ')
+          ..write('description: $description, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
@@ -4269,6 +4297,7 @@ class Command extends DataClass implements Insertable<Command> {
   int get hashCode => Object.hash(
       id,
       variableName,
+      description,
       pushMenuId,
       messageText,
       messageSoundId,
@@ -4283,6 +4312,7 @@ class Command extends DataClass implements Insertable<Command> {
       (other is Command &&
           other.id == this.id &&
           other.variableName == this.variableName &&
+          other.description == this.description &&
           other.pushMenuId == this.pushMenuId &&
           other.messageText == this.messageText &&
           other.messageSoundId == this.messageSoundId &&
@@ -4296,6 +4326,7 @@ class Command extends DataClass implements Insertable<Command> {
 class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int> id;
   final Value<String?> variableName;
+  final Value<String> description;
   final Value<int?> pushMenuId;
   final Value<String?> messageText;
   final Value<int?> messageSoundId;
@@ -4307,6 +4338,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   const CommandsCompanion({
     this.id = const Value.absent(),
     this.variableName = const Value.absent(),
+    this.description = const Value.absent(),
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -4319,6 +4351,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   CommandsCompanion.insert({
     this.id = const Value.absent(),
     this.variableName = const Value.absent(),
+    required String description,
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -4327,10 +4360,11 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.url = const Value.absent(),
     this.pushCustomLevelId = const Value.absent(),
     this.dartFunctionId = const Value.absent(),
-  });
+  }) : description = Value(description);
   static Insertable<Command> custom({
     Expression<int>? id,
     Expression<String>? variableName,
+    Expression<String>? description,
     Expression<int>? pushMenuId,
     Expression<String>? messageText,
     Expression<int>? messageSoundId,
@@ -4343,6 +4377,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (variableName != null) 'variable_name': variableName,
+      if (description != null) 'description': description,
       if (pushMenuId != null) 'push_menu_id': pushMenuId,
       if (messageText != null) 'message_text': messageText,
       if (messageSoundId != null) 'message_sound_id': messageSoundId,
@@ -4357,6 +4392,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   CommandsCompanion copyWith(
       {Value<int>? id,
       Value<String?>? variableName,
+      Value<String>? description,
       Value<int?>? pushMenuId,
       Value<String?>? messageText,
       Value<int?>? messageSoundId,
@@ -4368,6 +4404,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     return CommandsCompanion(
       id: id ?? this.id,
       variableName: variableName ?? this.variableName,
+      description: description ?? this.description,
       pushMenuId: pushMenuId ?? this.pushMenuId,
       messageText: messageText ?? this.messageText,
       messageSoundId: messageSoundId ?? this.messageSoundId,
@@ -4387,6 +4424,9 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     }
     if (variableName.present) {
       map['variable_name'] = Variable<String>(variableName.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (pushMenuId.present) {
       map['push_menu_id'] = Variable<int>(pushMenuId.value);
@@ -4420,6 +4460,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     return (StringBuffer('CommandsCompanion(')
           ..write('id: $id, ')
           ..write('variableName: $variableName, ')
+          ..write('description: $description, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
