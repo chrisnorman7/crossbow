@@ -82,6 +82,10 @@ class ProjectCode {
   Directory get menusDirectory =>
       Directory(path.join(srcDirectory.path, 'menus'));
 
+  /// The directory where the source code for menu items will be stored.
+  Directory get menuItemsDirectory =>
+      Directory(path.join(menusDirectory.path, 'menu_items'));
+
   /// The file where menus source code will be stored.
   File get menusFile => File(path.join(menusDirectory.path, 'menus.dart'));
 
@@ -380,6 +384,40 @@ class ProjectCode {
     menusFile.writeAsStringSync(code);
   }
 
+  /// Write code for menu items.
+  Future<void> writeMenuItems(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.menuItems);
+    final menuItems = await query.get();
+    if (menuItems.isEmpty) {
+      return;
+    }
+    final menuItemsBuffers = <int, StringBuffer>{};
+    for (final menuItem in menuItems) {
+      final variableName = menuItem.variableName ?? 'getMenuItem${menuItem.id}';
+      menuItemsBuffers.putIfAbsent(
+        menuItem.menuId,
+        () => StringBuffer()
+          ..writeln(
+            "import 'package:crossbow_backend/crossbow_backend.dart';",
+          ),
+      )
+        ..writeln('/// ${menuItem.name}.')
+        ..writeln(
+          'Future<MenuItem> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln('runner.db.menuItemsDao.getMenuItem(id: ${menuItem.id});');
+    }
+    for (final entry in menuItemsBuffers.entries) {
+      final menuId = entry.key;
+      final stringBuffer = entry.value;
+      final menu = await db.menusDao.getMenu(id: menuId);
+      final source = '/// Menu items for ${menu.name}.\n$stringBuffer';
+      final code = formatter.format(source);
+      File(path.join(menuItemsDirectory.path, 'menu_$menuId.dart'))
+          .writeAsStringSync(code);
+    }
+  }
+
   /// Write source code for all push menus.
   Future<void> writePushMenus(final CrossbowBackendDatabase db) async {
     final query = db.select(db.pushMenus);
@@ -455,6 +493,8 @@ class ProjectCode {
     await writeCommandTriggers(db);
     ensureClearDirectory(menusDirectory);
     await writeMenus(db);
+    ensureClearDirectory(menuItemsDirectory);
+    await writeMenuItems(db);
     await writePushMenus(db);
     final encryptionKeys = await writeEncryptedAssetReferences(db: db);
     await writeMainFile(
