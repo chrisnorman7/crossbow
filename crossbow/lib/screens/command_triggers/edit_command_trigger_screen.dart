@@ -153,6 +153,7 @@ class EditCommandTriggerScreenState
               commandTriggerId: commandTrigger.id,
               variableName: value,
             );
+            invalidateCommandTriggerProvider();
           },
         )
       ],
