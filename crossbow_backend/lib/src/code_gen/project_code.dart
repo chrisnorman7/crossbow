@@ -78,6 +78,17 @@ class ProjectCode {
   File get commandTriggerFile =>
       File(path.join(libDirectory.path, 'command_triggers.dart'));
 
+  /// The directory where menu-related source code will be written.
+  Directory get menusDirectory =>
+      Directory(path.join(srcDirectory.path, 'menus'));
+
+  /// The file where menus source code will be stored.
+  File get menusFile => File(path.join(menusDirectory.path, 'menus.dart'));
+
+  /// The file where the source code for push menus will be stored.
+  File get pushMenusFile =>
+      File(path.join(menusDirectory.path, 'push_menus.dart'));
+
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
 
@@ -92,13 +103,9 @@ class ProjectCode {
       File(path.join(outputDirectory, 'project.encrypted'));
 
   /// Write the project file.
-  String writeProjectFile({
-    required final File oldProjectFile,
-    required final File newProjectFile,
-  }) =>
-      encryptFile(
+  String writeProjectFile() => encryptFile(
         inputFile: oldProjectFile,
-        outputFile: newProjectFile,
+        outputFile: encryptedProjectFile,
       );
 
   /// Clear a [directory] of its contents.
@@ -192,46 +199,6 @@ class ProjectCode {
       }
     }
     return encryptionKeys;
-  }
-
-  /// Write everything.
-  Future<void> save() async {
-    final project = oldProject;
-    final oldDatabaseFile = File(
-      path.join(
-        oldProjectDirectory.path,
-        project.databaseFilename,
-      ),
-    );
-    final newDatabaseFile =
-        File(path.join(outputDirectory, project.databaseFilename))
-          ..writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
-    final db = CrossbowBackendDatabase.fromFile(newDatabaseFile);
-    await writeCommandTriggers(db);
-    if (!pubspecFile.existsSync()) {
-      writePubspec();
-    }
-    if (!libDirectory.existsSync()) {
-      libDirectory.createSync();
-    }
-    if (!srcDirectory.existsSync()) {
-      srcDirectory.createSync();
-    }
-    if (!binDirectory.existsSync()) {
-      binDirectory.createSync(recursive: true);
-    }
-    final encryptionKey = writeProjectFile(
-      oldProjectFile: oldProjectFile,
-      newProjectFile: encryptedProjectFile,
-    );
-    final encryptionKeys = await writeEncryptedAssetReferences(db: db);
-    await writeMainFile(
-      db: db,
-      encryptionKey: encryptionKey,
-      encryptionKeys: encryptionKeys,
-    );
-    await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
-    await db.close();
   }
 
   /// Write the game functions base file.
@@ -393,6 +360,49 @@ class ProjectCode {
     commandTriggerFile.writeAsStringSync(code);
   }
 
+  /// Write all menus.
+  Future<void> writeMenus(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.menus);
+    final menus = await query.get();
+    if (menus.isEmpty) {
+      return;
+    }
+    final stringBuffer = StringBuffer()
+      ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';");
+    for (final menu in menus) {
+      final variableName = menu.variableName ?? 'getMenu${menu.id}';
+      stringBuffer
+        ..writeln('/// ${menu.name}.')
+        ..writeln('Future<Menu> $variableName(final ProjectRunner runner) =>')
+        ..writeln('runner.db.menusDao.getMenu(id: ${menu.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    menusFile.writeAsStringSync(code);
+  }
+
+  /// Write source code for all push menus.
+  Future<void> writePushMenus(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.pushMenus);
+    final pushMenus = await query.get();
+    if (pushMenus.isEmpty) {
+      return;
+    }
+    final stringBuffer = StringBuffer()
+      ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';");
+    for (final pushMenu in pushMenus) {
+      final variableName = pushMenu.variableName ?? 'getPushMenu${pushMenu.id}';
+      final menu = await db.menusDao.getMenu(id: pushMenu.menuId);
+      stringBuffer
+        ..writeln('/// Push ${menu.name}.')
+        ..writeln(
+          'Future<PushMenu> $variableName(final ProjectRunner runner) =>',
+        )
+        ..writeln('runner.db.pushMenusDao.getPushMenu(id: ${pushMenu.id});');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    pushMenusFile.writeAsStringSync(code);
+  }
+
   /// Write the main file.
   Future<void> writeMainFile({
     required final CrossbowBackendDatabase db,
@@ -414,5 +424,45 @@ class ProjectCode {
       }),
     });
     mainFile.writeAsStringSync(formatter.format(output));
+  }
+
+  /// Write everything.
+  Future<void> save() async {
+    final project = oldProject;
+    final oldDatabaseFile = File(
+      path.join(
+        oldProjectDirectory.path,
+        project.databaseFilename,
+      ),
+    );
+    final newDatabaseFile =
+        File(path.join(outputDirectory, project.databaseFilename))
+          ..writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
+    final db = CrossbowBackendDatabase.fromFile(newDatabaseFile);
+    if (!pubspecFile.existsSync()) {
+      writePubspec();
+    }
+    if (!libDirectory.existsSync()) {
+      libDirectory.createSync();
+    }
+    if (!srcDirectory.existsSync()) {
+      srcDirectory.createSync();
+    }
+    if (!binDirectory.existsSync()) {
+      binDirectory.createSync(recursive: true);
+    }
+    final encryptionKey = writeProjectFile();
+    await writeCommandTriggers(db);
+    ensureClearDirectory(menusDirectory);
+    await writeMenus(db);
+    await writePushMenus(db);
+    final encryptionKeys = await writeEncryptedAssetReferences(db: db);
+    await writeMainFile(
+      db: db,
+      encryptionKey: encryptionKey,
+      encryptionKeys: encryptionKeys,
+    );
+    await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
+    await db.close();
   }
 }
