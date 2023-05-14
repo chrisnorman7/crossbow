@@ -103,8 +103,9 @@ class EditMenuItemScreen extends ConsumerWidget {
           VariableNameListTile(
             variableName: menuItem.variableName,
             getOtherVariableNames: () async {
-              final menuItems =
-                  await menuItemsDao.getMenuItems(menuId: menu.id);
+              final menuItems = await menuItemsDao.getMenuItems(
+                menuId: menu.id,
+              );
               return menuItems
                   .map((final e) => e.variableName ?? unsetMessage)
                   .toList();
