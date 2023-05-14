@@ -11,7 +11,14 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../crossbow_backend.dart';
 import '../../extensions.dart';
+import 'code_snippet.dart';
 import 'main_dart_code.dart';
+
+/// The ziggurat import to use.
+const zigguratImport = "import 'package:ziggurat/ziggurat.dart';";
+
+/// The type of the encryption keys map.
+typedef EncryptionKeys = Map<int, String>;
 
 /// A class for generating code for a project.
 class ProjectCode {
@@ -65,7 +72,11 @@ class ProjectCode {
 
   /// The directory where asset source code files will be written.
   Directory get assetSourcesDirectory =>
-      Directory(path.join(libDirectory.path, 'assets_stores'));
+      Directory(path.join(srcDirectory.path, 'assets_stores'));
+
+  /// The file where command trigger source code will be written.
+  File get commandTriggerFile =>
+      File(path.join(libDirectory.path, 'command_triggers.dart'));
 
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
@@ -90,26 +101,29 @@ class ProjectCode {
         outputFile: newProjectFile,
       );
 
-  /// Write everything.
-  Future<void> save() async {
-    final project = oldProject;
-    if (encryptedAssetsDirectory.existsSync()) {
-      for (final entity in encryptedAssetsDirectory.listSync()) {
-        entity.deleteSync(recursive: true);
-      }
-    } else {
-      encryptedAssetsDirectory.createSync(recursive: true);
+  /// Clear a [directory] of its contents.
+  void clearDirectory(final Directory directory) {
+    for (final entity in directory.listSync()) {
+      entity.deleteSync(recursive: true);
     }
-    final oldDatabaseFile = File(
-      path.join(
-        oldProjectDirectory.path,
-        project.databaseFilename,
-      ),
-    );
-    final newDatabaseFile =
-        File(path.join(outputDirectory, project.databaseFilename))
-          ..writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
-    final db = CrossbowBackendDatabase.fromFile(newDatabaseFile);
+  }
+
+  /// Ensure a [directory] is created and empty.
+  ///
+  /// This function uses [clearDirectory] if `directory.existsSync()` is `true`.
+  void ensureClearDirectory(final Directory directory) {
+    if (directory.existsSync()) {
+      clearDirectory(directory);
+    } else {
+      directory.createSync(recursive: true);
+    }
+  }
+
+  /// Encrypt and import all assets.
+  Future<EncryptionKeys> writeEncryptedAssetReferences({
+    required final CrossbowBackendDatabase db,
+  }) async {
+    ensureClearDirectory(encryptedAssetsDirectory);
     final encryptionKeys = <int, String>{};
     final assetStores = <String, ziggurat.AssetStore>{};
     final query = db.select(db.assetReferences);
@@ -176,11 +190,24 @@ class ProjectCode {
         encryptionKeys[assetReference.id] =
             assetReferenceReference.reference.encryptionKey!;
       }
-      await db.assetReferencesDao.setVariableName(
-        assetReferenceId: assetReference.id,
-        variableName: variableName,
-      );
     }
+    return encryptionKeys;
+  }
+
+  /// Write everything.
+  Future<void> save() async {
+    final project = oldProject;
+    final oldDatabaseFile = File(
+      path.join(
+        oldProjectDirectory.path,
+        project.databaseFilename,
+      ),
+    );
+    final newDatabaseFile =
+        File(path.join(outputDirectory, project.databaseFilename))
+          ..writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
+    final db = CrossbowBackendDatabase.fromFile(newDatabaseFile);
+    await writeCommandTriggers(db);
     if (!pubspecFile.existsSync()) {
       writePubspec();
     }
@@ -197,6 +224,7 @@ class ProjectCode {
       oldProjectFile: oldProjectFile,
       newProjectFile: encryptedProjectFile,
     );
+    final encryptionKeys = await writeEncryptedAssetReferences(db: db);
     await writeMainFile(
       db: db,
       encryptionKey: encryptionKey,
@@ -268,8 +296,7 @@ class ProjectCode {
     required final Map<int, String> encryptionKeys,
   }) async {
     final assetReferenceStringBuffers = <String, StringBuffer>{};
-    final query = db.select(db.assetReferences)
-      ..where((final table) => table.variableName.isNotNull());
+    final query = db.select(db.assetReferences);
     for (final assetReference in await query.get()) {
       final folderName = assetReference.folderName.snakeCase;
       final encryptionKey = encryptionKeys[assetReference.id]!;
@@ -288,14 +315,16 @@ class ProjectCode {
           'Asset reference not imported properly: $assetReference.',
         );
       }
+      final variableName =
+          assetReference.variableName ?? 'assetReference${assetReference.id}';
       final stringBuffer = assetReferenceStringBuffers.putIfAbsent(
         folderName,
         () => StringBuffer()
           ..writeln('/// Assets for ${assetReference.folderName}.')
-          ..writeln("import 'package:ziggurat/ziggurat.dart';"),
+          ..writeln(zigguratImport),
       )
         ..writeln('/// ${assetReference.comment}.')
-        ..writeln('const ${assetReference.variableName} = AssetReference(')
+        ..writeln('const $variableName = AssetReference(')
         ..writeln("'${assetReference.name}',")
         ..writeln('$assetType,')
         ..writeln("encryptionKey: '$encryptionKey',");
@@ -305,17 +334,63 @@ class ProjectCode {
       }
       stringBuffer.writeln(');');
     }
-    if (!assetSourcesDirectory.existsSync()) {
-      assetSourcesDirectory.createSync(recursive: true);
-    }
+    ensureClearDirectory(assetSourcesDirectory);
     for (final entry in assetReferenceStringBuffers.entries) {
       final folderName = entry.key;
-      final file =
-          File(path.join(assetSourcesDirectory.path, '$folderName.dart'));
+      final file = File(
+        path.join(assetSourcesDirectory.path, '$folderName.dart'),
+      );
       final buffer = entry.value;
       final code = formatter.format(buffer.toString());
       file.writeAsStringSync(code);
     }
+  }
+
+  /// Write command triggers to [commandTriggerFile].
+  Future<void> writeCommandTriggers(final CrossbowBackendDatabase db) async {
+    final query = db.select(db.commandTriggers);
+    final commandTriggers = await query.get();
+    if (commandTriggers.isEmpty) {
+      return;
+    }
+    final imports = {zigguratImport};
+    final stringBuffer = StringBuffer();
+    for (final commandTrigger in commandTriggers) {
+      final variableName =
+          commandTrigger.variableName ?? 'commandTrigger${commandTrigger.id}';
+      stringBuffer
+        ..writeln('/// ${commandTrigger.description}')
+        ..writeln('const $variableName = CommandTrigger(')
+        ..writeln("name: '${commandTrigger.name}',")
+        ..writeln("description: '${commandTrigger.description}',");
+      final button = commandTrigger.gameControllerButton;
+      if (button != null) {
+        stringBuffer.writeln('button: $button,');
+      }
+      final keyboardKeyId = commandTrigger.keyboardKeyId;
+      if (keyboardKeyId != null) {
+        imports.add("import 'package:dart_sdl/dart_sdl.dart';");
+        final keyboardKey = await db.commandTriggerKeyboardKeysDao
+            .getCommandTriggerKeyboardKey(id: keyboardKeyId);
+        stringBuffer
+          ..writeln('keyboardKey: CommandKeyboardKey(')
+          ..writeln('${keyboardKey.scanCode},');
+        if (keyboardKey.alt) {
+          stringBuffer.writeln('altKey: true,');
+        }
+        if (keyboardKey.control) {
+          stringBuffer.writeln('controlKey: true');
+        }
+        if (keyboardKey.shift) {
+          stringBuffer.writeln('shiftKey: true,');
+        }
+        stringBuffer.writeln('),');
+      }
+      stringBuffer.writeln(');');
+    }
+    final snippet = CodeSnippet(imports: imports, stringBuffer: stringBuffer);
+    final code = formatter.format(snippet.code);
+    commandTriggerFile.writeAsStringSync(code);
   }
 
   /// Write the main file.
