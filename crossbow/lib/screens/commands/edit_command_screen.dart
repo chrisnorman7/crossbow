@@ -120,6 +120,18 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
       body: ListView(
         children: [
           TextListTile(
+            autofocus: true,
+            value: command.description,
+            onChanged: (final value) async {
+              await commandsDao.setDescription(
+                commandId: command.id,
+                description: value,
+              );
+              invalidateCommandProvider();
+            },
+            header: descriptionMessage,
+          ),
+          TextListTile(
             value: command.messageText ?? '',
             onChanged: (final value) async {
               await commandsDao.setMessageText(
@@ -129,7 +141,6 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               invalidateCommandProvider();
             },
             header: outputText,
-            autofocus: true,
             labelText: outputText,
             title: outputText,
           ),
