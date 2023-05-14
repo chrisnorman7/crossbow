@@ -392,12 +392,8 @@ class ProjectCode {
     final stringBuffer = StringBuffer()..writeln(crossbowBackendImport);
     for (final command in commands) {
       final variableName = command.variableName ?? 'getCommand${command.id}';
-      if (command.id == oldProject.initialCommandId) {
-        stringBuffer.writeln('/// Initial command.');
-      } else {
-        stringBuffer.writeln('/// Command ${command.id}.');
-      }
       stringBuffer
+        ..writeln('/// ${command.description}')
         ..writeln(
           'Future<Command> $variableName(final ProjectRunner runner) =>',
         )
