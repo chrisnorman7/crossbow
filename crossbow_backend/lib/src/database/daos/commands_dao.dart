@@ -189,4 +189,14 @@ class CommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Get all the commands in the database.
   Future<List<Command>> getCommands() => select(commands).get();
+
+  /// Set the [description] for the command with the given [commandId].
+  Future<Command> setDescription({
+    required final int commandId,
+    required final String description,
+  }) async =>
+      (await getUpdateQuery(commandId).writeReturning(
+        CommandsCompanion(description: Value(description)),
+      ))
+          .single;
 }

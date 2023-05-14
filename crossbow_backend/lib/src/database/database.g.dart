@@ -3901,12 +3901,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
   late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
       'variable_name', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _pushMenuIdMeta =
       const VerificationMeta('pushMenuId');
   @override
@@ -3972,11 +3966,18 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES dart_functions (id) ON DELETE SET NULL'));
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('An unremarkable command.'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
         variableName,
-        description,
         pushMenuId,
         messageText,
         messageSoundId,
@@ -3984,7 +3985,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
         stopGameId,
         url,
         pushCustomLevelId,
-        dartFunctionId
+        dartFunctionId,
+        description
       ];
   @override
   String get aliasedName => _alias ?? 'commands';
@@ -4003,14 +4005,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           _variableNameMeta,
           variableName.isAcceptableOrUnknown(
               data['variable_name']!, _variableNameMeta));
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
     }
     if (data.containsKey('push_menu_id')) {
       context.handle(
@@ -4058,6 +4052,12 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           dartFunctionId.isAcceptableOrUnknown(
               data['dart_function_id']!, _dartFunctionIdMeta));
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
     return context;
   }
 
@@ -4071,8 +4071,6 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       variableName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       pushMenuId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}push_menu_id']),
       messageText: attachedDatabase.typeMapping
@@ -4089,6 +4087,8 @@ class $CommandsTable extends Commands with TableInfo<$CommandsTable, Command> {
           DriftSqlType.int, data['${effectivePrefix}push_custom_level_id']),
       dartFunctionId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}dart_function_id']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
   }
 
@@ -4104,9 +4104,6 @@ class Command extends DataClass implements Insertable<Command> {
 
   /// The variable name associated with a row.
   final String? variableName;
-
-  /// The description of this object.
-  final String description;
 
   /// The ID of a menu to push.
   final int? pushMenuId;
@@ -4131,10 +4128,12 @@ class Command extends DataClass implements Insertable<Command> {
 
   /// The ID of a dart function to call.
   final int? dartFunctionId;
+
+  /// The description for this command.
+  final String description;
   const Command(
       {required this.id,
       this.variableName,
-      required this.description,
       this.pushMenuId,
       this.messageText,
       this.messageSoundId,
@@ -4142,7 +4141,8 @@ class Command extends DataClass implements Insertable<Command> {
       this.stopGameId,
       this.url,
       this.pushCustomLevelId,
-      this.dartFunctionId});
+      this.dartFunctionId,
+      required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -4150,7 +4150,6 @@ class Command extends DataClass implements Insertable<Command> {
     if (!nullToAbsent || variableName != null) {
       map['variable_name'] = Variable<String>(variableName);
     }
-    map['description'] = Variable<String>(description);
     if (!nullToAbsent || pushMenuId != null) {
       map['push_menu_id'] = Variable<int>(pushMenuId);
     }
@@ -4175,6 +4174,7 @@ class Command extends DataClass implements Insertable<Command> {
     if (!nullToAbsent || dartFunctionId != null) {
       map['dart_function_id'] = Variable<int>(dartFunctionId);
     }
+    map['description'] = Variable<String>(description);
     return map;
   }
 
@@ -4184,7 +4184,6 @@ class Command extends DataClass implements Insertable<Command> {
       variableName: variableName == null && nullToAbsent
           ? const Value.absent()
           : Value(variableName),
-      description: Value(description),
       pushMenuId: pushMenuId == null && nullToAbsent
           ? const Value.absent()
           : Value(pushMenuId),
@@ -4207,6 +4206,7 @@ class Command extends DataClass implements Insertable<Command> {
       dartFunctionId: dartFunctionId == null && nullToAbsent
           ? const Value.absent()
           : Value(dartFunctionId),
+      description: Value(description),
     );
   }
 
@@ -4216,7 +4216,6 @@ class Command extends DataClass implements Insertable<Command> {
     return Command(
       id: serializer.fromJson<int>(json['id']),
       variableName: serializer.fromJson<String?>(json['variableName']),
-      description: serializer.fromJson<String>(json['description']),
       pushMenuId: serializer.fromJson<int?>(json['pushMenuId']),
       messageText: serializer.fromJson<String?>(json['messageText']),
       messageSoundId: serializer.fromJson<int?>(json['messageSoundId']),
@@ -4225,6 +4224,7 @@ class Command extends DataClass implements Insertable<Command> {
       url: serializer.fromJson<String?>(json['url']),
       pushCustomLevelId: serializer.fromJson<int?>(json['pushCustomLevelId']),
       dartFunctionId: serializer.fromJson<int?>(json['dartFunctionId']),
+      description: serializer.fromJson<String>(json['description']),
     );
   }
   @override
@@ -4233,7 +4233,6 @@ class Command extends DataClass implements Insertable<Command> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'variableName': serializer.toJson<String?>(variableName),
-      'description': serializer.toJson<String>(description),
       'pushMenuId': serializer.toJson<int?>(pushMenuId),
       'messageText': serializer.toJson<String?>(messageText),
       'messageSoundId': serializer.toJson<int?>(messageSoundId),
@@ -4242,13 +4241,13 @@ class Command extends DataClass implements Insertable<Command> {
       'url': serializer.toJson<String?>(url),
       'pushCustomLevelId': serializer.toJson<int?>(pushCustomLevelId),
       'dartFunctionId': serializer.toJson<int?>(dartFunctionId),
+      'description': serializer.toJson<String>(description),
     };
   }
 
   Command copyWith(
           {int? id,
           Value<String?> variableName = const Value.absent(),
-          String? description,
           Value<int?> pushMenuId = const Value.absent(),
           Value<String?> messageText = const Value.absent(),
           Value<int?> messageSoundId = const Value.absent(),
@@ -4256,12 +4255,12 @@ class Command extends DataClass implements Insertable<Command> {
           Value<int?> stopGameId = const Value.absent(),
           Value<String?> url = const Value.absent(),
           Value<int?> pushCustomLevelId = const Value.absent(),
-          Value<int?> dartFunctionId = const Value.absent()}) =>
+          Value<int?> dartFunctionId = const Value.absent(),
+          String? description}) =>
       Command(
         id: id ?? this.id,
         variableName:
             variableName.present ? variableName.value : this.variableName,
-        description: description ?? this.description,
         pushMenuId: pushMenuId.present ? pushMenuId.value : this.pushMenuId,
         messageText: messageText.present ? messageText.value : this.messageText,
         messageSoundId:
@@ -4274,13 +4273,13 @@ class Command extends DataClass implements Insertable<Command> {
             : this.pushCustomLevelId,
         dartFunctionId:
             dartFunctionId.present ? dartFunctionId.value : this.dartFunctionId,
+        description: description ?? this.description,
       );
   @override
   String toString() {
     return (StringBuffer('Command(')
           ..write('id: $id, ')
           ..write('variableName: $variableName, ')
-          ..write('description: $description, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
@@ -4288,7 +4287,8 @@ class Command extends DataClass implements Insertable<Command> {
           ..write('stopGameId: $stopGameId, ')
           ..write('url: $url, ')
           ..write('pushCustomLevelId: $pushCustomLevelId, ')
-          ..write('dartFunctionId: $dartFunctionId')
+          ..write('dartFunctionId: $dartFunctionId, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
@@ -4297,7 +4297,6 @@ class Command extends DataClass implements Insertable<Command> {
   int get hashCode => Object.hash(
       id,
       variableName,
-      description,
       pushMenuId,
       messageText,
       messageSoundId,
@@ -4305,14 +4304,14 @@ class Command extends DataClass implements Insertable<Command> {
       stopGameId,
       url,
       pushCustomLevelId,
-      dartFunctionId);
+      dartFunctionId,
+      description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Command &&
           other.id == this.id &&
           other.variableName == this.variableName &&
-          other.description == this.description &&
           other.pushMenuId == this.pushMenuId &&
           other.messageText == this.messageText &&
           other.messageSoundId == this.messageSoundId &&
@@ -4320,13 +4319,13 @@ class Command extends DataClass implements Insertable<Command> {
           other.stopGameId == this.stopGameId &&
           other.url == this.url &&
           other.pushCustomLevelId == this.pushCustomLevelId &&
-          other.dartFunctionId == this.dartFunctionId);
+          other.dartFunctionId == this.dartFunctionId &&
+          other.description == this.description);
 }
 
 class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<int> id;
   final Value<String?> variableName;
-  final Value<String> description;
   final Value<int?> pushMenuId;
   final Value<String?> messageText;
   final Value<int?> messageSoundId;
@@ -4335,10 +4334,10 @@ class CommandsCompanion extends UpdateCompanion<Command> {
   final Value<String?> url;
   final Value<int?> pushCustomLevelId;
   final Value<int?> dartFunctionId;
+  final Value<String> description;
   const CommandsCompanion({
     this.id = const Value.absent(),
     this.variableName = const Value.absent(),
-    this.description = const Value.absent(),
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -4347,11 +4346,11 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.url = const Value.absent(),
     this.pushCustomLevelId = const Value.absent(),
     this.dartFunctionId = const Value.absent(),
+    this.description = const Value.absent(),
   });
   CommandsCompanion.insert({
     this.id = const Value.absent(),
     this.variableName = const Value.absent(),
-    required String description,
     this.pushMenuId = const Value.absent(),
     this.messageText = const Value.absent(),
     this.messageSoundId = const Value.absent(),
@@ -4360,11 +4359,11 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     this.url = const Value.absent(),
     this.pushCustomLevelId = const Value.absent(),
     this.dartFunctionId = const Value.absent(),
-  }) : description = Value(description);
+    this.description = const Value.absent(),
+  });
   static Insertable<Command> custom({
     Expression<int>? id,
     Expression<String>? variableName,
-    Expression<String>? description,
     Expression<int>? pushMenuId,
     Expression<String>? messageText,
     Expression<int>? messageSoundId,
@@ -4373,11 +4372,11 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     Expression<String>? url,
     Expression<int>? pushCustomLevelId,
     Expression<int>? dartFunctionId,
+    Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (variableName != null) 'variable_name': variableName,
-      if (description != null) 'description': description,
       if (pushMenuId != null) 'push_menu_id': pushMenuId,
       if (messageText != null) 'message_text': messageText,
       if (messageSoundId != null) 'message_sound_id': messageSoundId,
@@ -4386,13 +4385,13 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       if (url != null) 'url': url,
       if (pushCustomLevelId != null) 'push_custom_level_id': pushCustomLevelId,
       if (dartFunctionId != null) 'dart_function_id': dartFunctionId,
+      if (description != null) 'description': description,
     });
   }
 
   CommandsCompanion copyWith(
       {Value<int>? id,
       Value<String?>? variableName,
-      Value<String>? description,
       Value<int?>? pushMenuId,
       Value<String?>? messageText,
       Value<int?>? messageSoundId,
@@ -4400,11 +4399,11 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       Value<int?>? stopGameId,
       Value<String?>? url,
       Value<int?>? pushCustomLevelId,
-      Value<int?>? dartFunctionId}) {
+      Value<int?>? dartFunctionId,
+      Value<String>? description}) {
     return CommandsCompanion(
       id: id ?? this.id,
       variableName: variableName ?? this.variableName,
-      description: description ?? this.description,
       pushMenuId: pushMenuId ?? this.pushMenuId,
       messageText: messageText ?? this.messageText,
       messageSoundId: messageSoundId ?? this.messageSoundId,
@@ -4413,6 +4412,7 @@ class CommandsCompanion extends UpdateCompanion<Command> {
       url: url ?? this.url,
       pushCustomLevelId: pushCustomLevelId ?? this.pushCustomLevelId,
       dartFunctionId: dartFunctionId ?? this.dartFunctionId,
+      description: description ?? this.description,
     );
   }
 
@@ -4424,9 +4424,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     }
     if (variableName.present) {
       map['variable_name'] = Variable<String>(variableName.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
     }
     if (pushMenuId.present) {
       map['push_menu_id'] = Variable<int>(pushMenuId.value);
@@ -4452,6 +4449,9 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     if (dartFunctionId.present) {
       map['dart_function_id'] = Variable<int>(dartFunctionId.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     return map;
   }
 
@@ -4460,7 +4460,6 @@ class CommandsCompanion extends UpdateCompanion<Command> {
     return (StringBuffer('CommandsCompanion(')
           ..write('id: $id, ')
           ..write('variableName: $variableName, ')
-          ..write('description: $description, ')
           ..write('pushMenuId: $pushMenuId, ')
           ..write('messageText: $messageText, ')
           ..write('messageSoundId: $messageSoundId, ')
@@ -4468,7 +4467,8 @@ class CommandsCompanion extends UpdateCompanion<Command> {
           ..write('stopGameId: $stopGameId, ')
           ..write('url: $url, ')
           ..write('pushCustomLevelId: $pushCustomLevelId, ')
-          ..write('dartFunctionId: $dartFunctionId')
+          ..write('dartFunctionId: $dartFunctionId, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }

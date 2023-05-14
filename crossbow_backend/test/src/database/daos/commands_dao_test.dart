@@ -423,6 +423,20 @@ void main() {
           expect(await commandsDao.getCommands(), commands);
         },
       );
+
+      test(
+        '.setDescription',
+        () async {
+          final command = await commandsDao.createCommand();
+          expect(command.description, 'An unremarkable command.');
+          final updatedCommand = await commandsDao.setDescription(
+            commandId: command.id,
+            description: 'Test command.',
+          );
+          expect(updatedCommand.id, command.id);
+          expect(updatedCommand.description, 'Test command.');
+        },
+      );
     },
   );
 }

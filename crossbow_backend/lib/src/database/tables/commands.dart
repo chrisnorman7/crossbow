@@ -9,8 +9,7 @@ import 'push_menus.dart';
 import 'stop_games.dart';
 
 /// The commands table.
-class Commands extends Table
-    with WithPrimaryKey, WithVariableName, WithDescription {
+class Commands extends Table with WithPrimaryKey, WithVariableName {
   /// The ID of a menu to push.
   IntColumn get pushMenuId => integer()
       .references(PushMenus, #id, onDelete: KeyAction.setNull)
@@ -50,4 +49,8 @@ class Commands extends Table
   IntColumn get dartFunctionId => integer()
       .references(DartFunctions, #id, onDelete: KeyAction.setNull)
       .nullable()();
+
+  /// The description for this command.
+  TextColumn get description =>
+      text().withDefault(const Constant('An unremarkable command.'))();
 }
