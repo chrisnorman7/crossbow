@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:dart_sdl/dart_sdl.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:dart_synthizer/dart_synthizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -521,3 +522,6 @@ final detachedAssetReferenceProvider =
     return ValueContext(projectContext: projectContext, value: assetReference);
   },
 );
+
+/// Provide a dart formatter.
+final dartFormatterProvider = Provider((final ref) => DartFormatter());
