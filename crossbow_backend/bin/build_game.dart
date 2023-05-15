@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:crossbow_backend/crossbow_backend.dart';
-import 'package:crossbow_backend/src/code_gen/project_code.dart';
 import 'package:dart_style/dart_style.dart';
 
 Future<void> main(final List<String> args) async {
