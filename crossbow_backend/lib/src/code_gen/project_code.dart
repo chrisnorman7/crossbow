@@ -11,7 +11,6 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../crossbow_backend.dart';
 import '../../extensions.dart';
-import 'code_snippet.dart';
 import 'main_dart_code.dart';
 
 /// The ziggurat import to use.
