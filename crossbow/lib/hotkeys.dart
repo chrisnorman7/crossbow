@@ -25,3 +25,11 @@ const pageDownHotkey = SingleActivator(LogicalKeyboardKey.pageDown);
 
 /// The backspace hotkey.
 const backspaceHotkey = SingleActivator(LogicalKeyboardKey.backspace);
+
+/// Build something.
+final buildHotkey = SingleActivator(
+  LogicalKeyboardKey.keyB,
+  control: useControlKey,
+  meta: useMetaKey,
+  shift: true,
+);
