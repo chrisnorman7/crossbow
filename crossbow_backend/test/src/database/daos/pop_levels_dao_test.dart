@@ -91,6 +91,20 @@ void main() {
           expect(updatedPopLevel.description, 'Pop');
         },
       );
+
+      test(
+        '.setVariableName',
+        () async {
+          final popLevel = await popLevelsDao.createPopLevel();
+          expect(popLevel.variableName, null);
+          final updatedPopLevel = await popLevelsDao.setVariableName(
+            popLevelId: popLevel.id,
+            variableName: 'popLevel',
+          );
+          expect(updatedPopLevel.id, popLevel.id);
+          expect(updatedPopLevel.variableName, 'popLevel');
+        },
+      );
     },
   );
 }

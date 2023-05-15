@@ -9,6 +9,7 @@ import '../../messages.dart';
 import '../../src/contexts/value_context.dart';
 import '../../src/providers.dart';
 import '../../widgets/fade_length_list_tile.dart';
+import '../../widgets/variable_name_list_tile.dart';
 
 /// A screen to edit a pop level with the given [popLevelId].
 class EditPopLevelScreen extends ConsumerWidget {
@@ -46,7 +47,8 @@ class EditPopLevelScreen extends ConsumerWidget {
     required final WidgetRef ref,
     required final ValueContext<PopLevel> popLevelContext,
   }) {
-    final popLevelsDao = popLevelContext.projectContext.db.popLevelsDao;
+    final db = popLevelContext.projectContext.db;
+    final popLevelsDao = db.popLevelsDao;
     final popLevel = popLevelContext.value;
     return SimpleScaffold(
       title: Intl.message('Edit Pop Level'),
@@ -70,6 +72,22 @@ class EditPopLevelScreen extends ConsumerWidget {
               await popLevelsDao.setFadeLength(
                 id: popLevelId,
                 fadeLength: value,
+              );
+              invalidatePopLevelProvider(ref);
+            },
+          ),
+          VariableNameListTile(
+            variableName: popLevel.variableName,
+            getOtherVariableNames: () async {
+              final popLevels = await db.select(db.popLevels).get();
+              return popLevels
+                  .map((final e) => e.variableName ?? unsetMessage)
+                  .toList();
+            },
+            onChanged: (final value) async {
+              await popLevelsDao.setVariableName(
+                popLevelId: popLevel.id,
+                variableName: value,
               );
               invalidatePopLevelProvider(ref);
             },

@@ -53,4 +53,14 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         PopLevelsCompanion(description: Value(description)),
       ))
           .single;
+
+  /// Set the [variableName] for the pop level with the given [popLevelId].
+  Future<PopLevel> setVariableName({
+    required final int popLevelId,
+    final String? variableName,
+  }) async =>
+      (await getUpdateQuery(popLevelId).writeReturning(
+        PopLevelsCompanion(variableName: Value(variableName)),
+      ))
+          .single;
 }
