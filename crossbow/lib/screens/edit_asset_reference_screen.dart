@@ -82,6 +82,7 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                       name: assetReference.name,
                       comment: value.isEmpty ? null : value,
                     );
+                    invalidateAssetReferenceProvider(ref);
                   },
                   header: 'Comment',
                 ),
@@ -101,6 +102,7 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                       assetReferenceId: assetReferenceId,
                       variableName: value,
                     );
+                    invalidateAssetReferenceProvider(ref);
                   },
                 )
               ],
