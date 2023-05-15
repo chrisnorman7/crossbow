@@ -14,6 +14,7 @@ dependencies:
     path: ../crossbow_backend
   cupertino_icons: ^1.0.2
   dart_sdl: ^0.10.1
+  dart_style: ^2.3.1
   dart_synthizer: ^0.11.1
   file_picker: ^5.2.5
   filesize: ^2.0.1
