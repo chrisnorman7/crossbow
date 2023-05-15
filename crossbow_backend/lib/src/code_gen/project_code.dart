@@ -620,7 +620,7 @@ class ProjectCode {
   }
 
   /// Write a `.gitignore` file.
-  void writeGitIgnore() {
+  Future<void> writeGitIgnore(final CrossbowBackendDatabase db) async {
     final stringBuffer = StringBuffer();
     for (final entity in [
       assetSourcesDirectory,
@@ -637,6 +637,14 @@ class ProjectCode {
       mainFile,
       menusFile,
       stopGamesFile,
+      ...[
+        for (final menu in await db.menusDao.getMenus())
+          File(path.join(menusDirectory.path, 'menu_${menu.id}.dart'))
+      ],
+      ...[
+        for (final menu in await db.menusDao.getMenus())
+          File(path.join(menuItemsDirectory.path, 'menu_${menu.id}.dart'))
+      ]
     ]) {
       stringBuffer.writeln(
         entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
@@ -687,7 +695,7 @@ class ProjectCode {
       encryptionKeys: encryptionKeys,
     );
     await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
+    await writeGitIgnore(db);
     await db.close();
-    writeGitIgnore();
   }
 }
