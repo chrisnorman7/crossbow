@@ -1,5 +1,26 @@
+import 'dart:io';
+
+import 'package:crossbow_backend/crossbow_backend.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path;
+
+/// Build the project whose `project.json` resides at [filename].
+Future<void> buildProjectFromFilename(final String filename) async {
+  final formatter = DartFormatter();
+  final file = File(filename);
+  final project = Project.fromFile(file);
+  final projectCode = ProjectCode(
+    formatter: formatter,
+    oldProjectFile: file,
+    outputDirectory: path.join(
+      file.parent.path,
+      project.appName,
+    ),
+  );
+  await projectCode.save();
+}
 
 /// The key that will hold the app preferences.
 const appPreferencesKey = 'crossbow_preferences';

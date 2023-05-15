@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
+import '../../hotkeys.dart';
 import '../../messages.dart';
 import '../../src/providers.dart';
 import '../../util.dart';
@@ -24,6 +25,7 @@ import '../commands/edit_command_screen.dart';
 import '../commands/edit_dart_function_screen.dart';
 import '../custom_levels/edit_custom_level_screen.dart';
 import 'assets_page.dart';
+import 'build_project_screen.dart';
 import 'menus/edit_menu_screen.dart';
 
 /// The main project screen.
@@ -39,13 +41,28 @@ class ProjectContextScreen extends ConsumerStatefulWidget {
 
 /// State for [ProjectContextScreen].
 class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
+  /// Build the current project.
+  Future<void> buildProject() async {
+    final state = ref.watch(projectContextNotifierProvider.notifier);
+    final projectContext = state.maybeProjectContext;
+    await state.clearProjectContext();
+    if (projectContext != null && mounted) {
+      await pushWidget(
+        context: context,
+        builder: (final builderContext) {
+          PlaySoundSemantics.of(builderContext)?.stop();
+          return BuildProjectScreen(projectContext: projectContext);
+        },
+      );
+    }
+  }
+
   /// Build the widget.
   @override
   Widget build(final BuildContext context) => CallbackShortcuts(
         bindings: {
-          closeProjectShortcut: () {
-            Navigator.of(context).maybePop();
-          }
+          closeProjectShortcut: () => Navigator.of(context).maybePop(),
+          buildHotkey: buildProject
         },
         child: TabbedScaffold(
           tabs: [
@@ -53,6 +70,11 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               title: Intl.message('Project Settings'),
               icon: const Icon(Icons.settings),
               builder: getSettingsPage,
+              floatingActionButton: FloatingActionButton(
+                onPressed: buildProject,
+                tooltip: Intl.message('Build Project'),
+                child: const Icon(Icons.build),
+              ),
             ),
             TabbedScaffoldTab(
               title: Intl.message('Custom Levels'),
