@@ -116,6 +116,9 @@ class ProjectCode {
   File get stopGamesFile =>
       File(path.join(libDirectory.path, 'stop_games.dart'));
 
+  /// The `.gitignore` file to use.
+  File get gitignoreFile => File(path.join(outputDirectory, '.gitignore'));
+
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
 
@@ -128,6 +131,10 @@ class ProjectCode {
   /// The file where the encrypted project will be written.
   File get encryptedProjectFile =>
       File(path.join(outputDirectory, 'project.encrypted'));
+
+  /// The file where the project database will be written.
+  File get databaseFile =>
+      File(path.join(outputDirectory, oldProject.databaseFilename));
 
   /// Write the project file.
   String writeProjectFile() => encryptFile(
@@ -613,6 +620,32 @@ class ProjectCode {
     mainFile.writeAsStringSync(formatter.format(output));
   }
 
+  /// Write a `.gitignore` file.
+  void writeGitIgnore() {
+    final stringBuffer = StringBuffer();
+    for (final entity in [
+      assetSourcesDirectory,
+      encryptedAssetsDirectory,
+      encryptedProjectFile,
+      commandTriggersFile,
+      commandsFile,
+      customLevelsFile,
+      pushCustomLevelsFile,
+      pushMenusFile,
+      popLevelsFile,
+      gameFunctionsBaseFile,
+      databaseFile,
+      mainFile,
+      menusFile,
+      stopGamesFile,
+    ]) {
+      stringBuffer.writeln(
+        entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
+      );
+    }
+    gitignoreFile.writeAsStringSync(stringBuffer.toString());
+  }
+
   /// Write everything.
   Future<void> save() async {
     final project = oldProject;
@@ -622,10 +655,8 @@ class ProjectCode {
         project.databaseFilename,
       ),
     );
-    final newDatabaseFile =
-        File(path.join(outputDirectory, project.databaseFilename))
-          ..writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
-    final db = CrossbowBackendDatabase.fromFile(newDatabaseFile);
+    databaseFile.writeAsBytesSync(oldDatabaseFile.readAsBytesSync());
+    final db = CrossbowBackendDatabase.fromFile(databaseFile);
     if (!pubspecFile.existsSync()) {
       writePubspec();
     }
@@ -658,5 +689,6 @@ class ProjectCode {
     );
     await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
     await db.close();
+    writeGitIgnore();
   }
 }
