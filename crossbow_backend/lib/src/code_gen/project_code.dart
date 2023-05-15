@@ -338,7 +338,9 @@ class ProjectCode {
       )
         ..writeln('/// ${assetReference.comment}.')
         ..writeln('const $variableName = AssetReference(')
-        ..writeln("'${assetReference.name}',")
+        ..writeln(
+          "'${oldProject.assetsDirectory}/${assetReference.folderName}/${assetReference.name}',",
+        )
         ..writeln('$assetType,')
         ..writeln("encryptionKey: '$encryptionKey',");
       final gain = assetReference.gain;
