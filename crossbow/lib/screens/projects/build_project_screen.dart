@@ -71,9 +71,12 @@ class BuildProjectScreen extends ConsumerWidget {
             ),
           );
         } else {
-          return SimpleScaffold(
-            title: Intl.message('Building Project'),
-            body: const LoadingWidget(),
+          return WillPopScope(
+            onWillPop: () => Future.value(false),
+            child: SimpleScaffold(
+              title: Intl.message('Building Project'),
+              body: const Focus(autofocus: true, child: LoadingWidget()),
+            ),
           );
         }
       },
