@@ -310,6 +310,7 @@ void main() async {
             name: 'select.mp3',
             gain: 1.0,
           );
+          expect(selectItemSound.gain, 1.0);
           final activateItemSound =
               await assetReferencesDao.createAssetReference(
             folderName: 'menus',

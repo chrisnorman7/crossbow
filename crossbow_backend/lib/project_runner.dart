@@ -297,27 +297,23 @@ class ProjectRunner {
     final activateItemSoundId = menu.activateItemSoundId;
     final selectItemSound = selectItemSoundId == null
         ? null
-        : getAssetReference(
-            await assetReferences.getAssetReference(id: selectItemSoundId),
-          );
+        : await getAssetReferenceFromId(selectItemSoundId);
     final activateItemSound = activateItemSoundId == null
         ? null
-        : getAssetReference(
-            await assetReferences.getAssetReference(id: activateItemSoundId),
-          );
+        : await getAssetReferenceFromId(activateItemSoundId);
     final selectItemSounds = <int, ziggurat.AssetReference>{};
     final activateItemSounds = <int, ziggurat.AssetReference>{};
     for (final item in menuItems) {
       final selectSoundId = item.selectSoundId;
       if (selectSoundId != null) {
-        selectItemSounds[item.id] = getAssetReference(
-          await assetReferences.getAssetReference(id: selectSoundId),
+        selectItemSounds[item.id] = await getAssetReferenceFromId(
+          selectSoundId,
         );
       }
       final activateSoundId = item.activateSoundId;
       if (activateSoundId != null) {
-        activateItemSounds[item.id] = getAssetReference(
-          await assetReferences.getAssetReference(id: activateSoundId),
+        activateItemSounds[item.id] = await getAssetReferenceFromId(
+          activateSoundId,
         );
       }
     }
@@ -336,8 +332,8 @@ class ProjectRunner {
             ziggurat.Message(
               text: e.name,
               sound: selectSound,
-              gain: selectSound?.gain ?? 0.7,
               keepAlive: true,
+              gain: selectSound?.gain ?? 0.7,
             ),
             ziggurat_menus.Button(
               () async {
