@@ -683,7 +683,9 @@ class ProjectCode {
     }
     final encryptionKey = writeProjectFile();
     await writeGameFunctionsBase(db: db);
-    writeGameFunctionsClass();
+    if (!gameFunctionsFile.existsSync()) {
+      writeGameFunctionsClass();
+    }
     await writeCommandTriggers(db);
     await writeCommands(db);
     await writeCustomLevels(db);
