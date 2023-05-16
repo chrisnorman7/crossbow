@@ -121,6 +121,12 @@ class ProjectCode {
   /// The `.gitignore` file to use.
   File get gitignoreFile => File(path.join(outputDirectory, '.gitignore'));
 
+  /// The file where the build script will be written.
+  File get buildScriptFileDefault => File(path.join(outputDirectory, 'build'));
+
+  /// The file where the windows build script will be written.
+  File get buildScriptFileWindows => File('${buildScriptFileDefault.path}.bat');
+
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
 
@@ -649,13 +655,54 @@ class ProjectCode {
       ...[
         for (final menu in await db.menusDao.getMenus())
           File(path.join(menuItemsDirectory.path, 'menu_${menu.id}.dart'))
-      ]
+      ],
+      buildScriptFileDefault,
+      buildScriptFileWindows,
+      File(path.join(outputDirectory, packageName)),
     ]) {
       stringBuffer.writeln(
         entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
       );
     }
     gitignoreFile.writeAsStringSync(stringBuffer.toString());
+  }
+
+  /// Write build scripts.
+  void writeBuildScripts() {
+    final directory = packageName;
+    final sourceAssetsDirectory = path.basename(encryptedAssetsDirectory.path);
+    final destinationAssetsDirectory = path.join(
+      directory,
+      sourceAssetsDirectory,
+    );
+    final defaultScriptBuffer = StringBuffer()
+      ..writeln('#!/bin/sh')
+      ..writeln('rm -rf $directory')
+      ..writeln('mkdir $directory')
+      ..writeln('cp -R $sourceAssetsDirectory $directory');
+    final windowsStringBuffer = StringBuffer()
+      ..writeln('@echo off')
+      ..writeln('rd /S /Q $directory')
+      ..writeln('md $directory')
+      ..writeln('xcopy *.dll $directory')
+      ..writeln(
+        'xcopy /E /Y /I $sourceAssetsDirectory $destinationAssetsDirectory',
+      );
+    for (final file in [databaseFile, encryptedProjectFile]) {
+      final filename = path.basename(file.path);
+      defaultScriptBuffer.writeln('cp $filename $directory');
+      windowsStringBuffer.writeln('xcopy $filename $directory');
+    }
+    final bin = path.basename(binDirectory.path);
+    final mainFilename = path.basename(mainFile.path);
+    defaultScriptBuffer.writeln(
+      'dart compile exe $bin/$mainFilename -o $directory/$directory',
+    );
+    windowsStringBuffer.writeln(
+      'dart compile exe $bin\\$mainFilename -o $directory\\$directory.exe',
+    );
+    buildScriptFileDefault.writeAsStringSync(defaultScriptBuffer.toString());
+    buildScriptFileWindows.writeAsStringSync(windowsStringBuffer.toString());
   }
 
   /// Write everything.
@@ -705,6 +752,7 @@ class ProjectCode {
     );
     await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
     await writeGitIgnore(db);
+    writeBuildScripts();
     await db.close();
   }
 }

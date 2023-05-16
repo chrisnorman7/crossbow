@@ -3,6 +3,7 @@
     "analyzer",
     "bools",
     "chrisnorman",
+    "cp",
     "daos",
     "dpad",
     "encrypter",
@@ -13,13 +14,15 @@
     "leftshoulder",
     "pubspec",
     "recase",
+    "rm",
     "sdl",
     "synthizer",
     "todos",
     "triggerleft",
     "triggerright",
     "unawaited",
-    "writeln"
+    "writeln",
+    "xcopy"
   ],
   "cmake.sourceDirectory": "c:\\Users\\chris\\src\\crossbow\\crossbow\\windows"
 }
