@@ -679,6 +679,8 @@ class ProjectCode {
       binDirectory.createSync(recursive: true);
     }
     final encryptionKey = writeProjectFile();
+    await writeGameFunctionsBase(db: db);
+    writeGameFunctionsClass();
     await writeCommandTriggers(db);
     await writeCommands(db);
     await writeCustomLevels(db);
