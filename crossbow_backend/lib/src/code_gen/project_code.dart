@@ -57,9 +57,12 @@ class ProjectCode {
   /// The `src` directory for the project.
   Directory get srcDirectory => Directory(path.join(libDirectory.path, 'src'));
 
+  /// The name of the [gameFunctionsBaseFile].
+  String get gameFunctionsBaseFilename => 'game_functions_base.dart';
+
   /// The file where the game functions abstract class will be written.
   File get gameFunctionsBaseFile =>
-      File(path.join(srcDirectory.path, 'game_functions_base.dart'));
+      File(path.join(srcDirectory.path, gameFunctionsBaseFilename));
 
   /// The file where the initial game functions class will be written.
   File get gameFunctionsFile =>
@@ -267,7 +270,7 @@ class ProjectCode {
   /// Write the game functions class.
   void writeGameFunctionsClass() {
     final stringBuffer = StringBuffer()
-      ..writeln("import 'src/$gameFunctionsBaseFile';")
+      ..writeln("import 'src/$gameFunctionsBaseFilename';")
       ..writeln('/// Provide all the game functions.')
       ..writeln('class GameFunctions extends GameFunctionsBase {')
       ..writeln('/// Make this class constant.')
