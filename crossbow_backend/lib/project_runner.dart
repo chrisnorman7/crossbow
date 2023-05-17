@@ -172,22 +172,6 @@ class ProjectRunner {
     return getAssetReference(assetReference);
   }
 
-  /// Get music from the given [assetReference].
-  Music getMusic(final AssetReference assetReference) {
-    final sound = getAssetReference(assetReference);
-    return Music(
-      sound: sound,
-      gain: sound.gain,
-    );
-  }
-
-  /// Get music from the given [id].
-  Future<Music> getMusicFromId(final int id) async {
-    final assetReference =
-        await db.assetReferencesDao.getAssetReference(id: id);
-    return getMusic(assetReference);
-  }
-
   /// Run the given [command].
   Future<void> handleCommand(final Command command) async {
     final messageText = command.messageText;
@@ -245,7 +229,6 @@ class ProjectRunner {
     if (text != null || assetReference != null) {
       game.outputMessage(
         ziggurat.Message(
-          gain: assetReference?.gain ?? 0.7,
           sound:
               assetReference == null ? null : getAssetReference(assetReference),
           text: text,
@@ -333,21 +316,20 @@ class ProjectRunner {
               text: e.name,
               sound: selectSound,
               keepAlive: true,
-              gain: selectSound?.gain ?? 0.7,
             ),
-            ziggurat_menus.Button(
-              () async {
+            activator: ziggurat_menus.MenuItemActivator(
+              onActivate: () async {
                 final callCommands = await db.menuItemsDao.getCallCommands(
                   menuItemId: e.id,
                 );
                 await handleCallCommands(callCommands);
               },
-              activateSound: activateSound,
+              sound: activateSound,
             ),
           );
         },
       ).toList(),
-      music: music == null ? null : getMusic(music),
+      music: music == null ? null : getAssetReference(music),
       onCancel: () async {
         final callCommands = await db.menusDao.getOnCancelCallCommands(
           menuId: menu.id,
@@ -390,8 +372,8 @@ class ProjectRunner {
       game: game,
       music: musicId == null
           ? null
-          : getMusic(
-              await db.assetReferencesDao.getAssetReference(id: musicId),
+          : await getAssetReferenceFromId(
+              musicId,
             ),
     );
     final customLevelCommandsDao = db.customLevelCommandsDao;
