@@ -5586,6 +5586,807 @@ class PinnedCommandsCompanion extends UpdateCompanion<PinnedCommand> {
   }
 }
 
+class $ReverbsTable extends Reverbs with TableInfo<$ReverbsTable, Reverb> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReverbsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('Untitled Object'));
+  static const VerificationMeta _variableNameMeta =
+      const VerificationMeta('variableName');
+  @override
+  late final GeneratedColumn<String> variableName = GeneratedColumn<String>(
+      'variable_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _testSoundIdMeta =
+      const VerificationMeta('testSoundId');
+  @override
+  late final GeneratedColumn<int> testSoundId = GeneratedColumn<int>(
+      'test_sound_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES asset_references (id) ON DELETE SET DEFAULT'));
+  static const VerificationMeta _gainMeta = const VerificationMeta('gain');
+  @override
+  late final GeneratedColumn<double> gain = GeneratedColumn<double>(
+      'gain', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.7));
+  static const VerificationMeta _lateReflectionsDelayMeta =
+      const VerificationMeta('lateReflectionsDelay');
+  @override
+  late final GeneratedColumn<double> lateReflectionsDelay =
+      GeneratedColumn<double>('late_reflections_delay', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0.03));
+  static const VerificationMeta _lateReflectionsDiffusionMeta =
+      const VerificationMeta('lateReflectionsDiffusion');
+  @override
+  late final GeneratedColumn<double> lateReflectionsDiffusion =
+      GeneratedColumn<double>('late_reflections_diffusion', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(1.0));
+  static const VerificationMeta _lateReflectionsHfReferenceMeta =
+      const VerificationMeta('lateReflectionsHfReference');
+  @override
+  late final GeneratedColumn<double> lateReflectionsHfReference =
+      GeneratedColumn<double>(
+          'late_reflections_hf_reference', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(500.0));
+  static const VerificationMeta _lateReflectionsHfRolloffMeta =
+      const VerificationMeta('lateReflectionsHfRolloff');
+  @override
+  late final GeneratedColumn<double> lateReflectionsHfRolloff =
+      GeneratedColumn<double>('late_reflections_hf_rolloff', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0.5));
+  static const VerificationMeta _lateReflectionsLfReferenceMeta =
+      const VerificationMeta('lateReflectionsLfReference');
+  @override
+  late final GeneratedColumn<double> lateReflectionsLfReference =
+      GeneratedColumn<double>(
+          'late_reflections_lf_reference', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(200.0));
+  static const VerificationMeta _lateReflectionsLfRolloffMeta =
+      const VerificationMeta('lateReflectionsLfRolloff');
+  @override
+  late final GeneratedColumn<double> lateReflectionsLfRolloff =
+      GeneratedColumn<double>('late_reflections_lf_rolloff', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(1.0));
+  static const VerificationMeta _lateReflectionsModulationDepthMeta =
+      const VerificationMeta('lateReflectionsModulationDepth');
+  @override
+  late final GeneratedColumn<double> lateReflectionsModulationDepth =
+      GeneratedColumn<double>(
+          'late_reflections_modulation_depth', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0.01));
+  static const VerificationMeta _lateReflectionsModulationFrequencyMeta =
+      const VerificationMeta('lateReflectionsModulationFrequency');
+  @override
+  late final GeneratedColumn<double> lateReflectionsModulationFrequency =
+      GeneratedColumn<double>(
+          'late_reflections_modulation_frequency', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0.5));
+  static const VerificationMeta _meanFreePathMeta =
+      const VerificationMeta('meanFreePath');
+  @override
+  late final GeneratedColumn<double> meanFreePath = GeneratedColumn<double>(
+      'mean_free_path', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.1));
+  static const VerificationMeta _t60Meta = const VerificationMeta('t60');
+  @override
+  late final GeneratedColumn<double> t60 = GeneratedColumn<double>(
+      't60', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.3));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        variableName,
+        testSoundId,
+        gain,
+        lateReflectionsDelay,
+        lateReflectionsDiffusion,
+        lateReflectionsHfReference,
+        lateReflectionsHfRolloff,
+        lateReflectionsLfReference,
+        lateReflectionsLfRolloff,
+        lateReflectionsModulationDepth,
+        lateReflectionsModulationFrequency,
+        meanFreePath,
+        t60
+      ];
+  @override
+  String get aliasedName => _alias ?? 'reverbs';
+  @override
+  String get actualTableName => 'reverbs';
+  @override
+  VerificationContext validateIntegrity(Insertable<Reverb> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    }
+    if (data.containsKey('variable_name')) {
+      context.handle(
+          _variableNameMeta,
+          variableName.isAcceptableOrUnknown(
+              data['variable_name']!, _variableNameMeta));
+    }
+    if (data.containsKey('test_sound_id')) {
+      context.handle(
+          _testSoundIdMeta,
+          testSoundId.isAcceptableOrUnknown(
+              data['test_sound_id']!, _testSoundIdMeta));
+    }
+    if (data.containsKey('gain')) {
+      context.handle(
+          _gainMeta, gain.isAcceptableOrUnknown(data['gain']!, _gainMeta));
+    }
+    if (data.containsKey('late_reflections_delay')) {
+      context.handle(
+          _lateReflectionsDelayMeta,
+          lateReflectionsDelay.isAcceptableOrUnknown(
+              data['late_reflections_delay']!, _lateReflectionsDelayMeta));
+    }
+    if (data.containsKey('late_reflections_diffusion')) {
+      context.handle(
+          _lateReflectionsDiffusionMeta,
+          lateReflectionsDiffusion.isAcceptableOrUnknown(
+              data['late_reflections_diffusion']!,
+              _lateReflectionsDiffusionMeta));
+    }
+    if (data.containsKey('late_reflections_hf_reference')) {
+      context.handle(
+          _lateReflectionsHfReferenceMeta,
+          lateReflectionsHfReference.isAcceptableOrUnknown(
+              data['late_reflections_hf_reference']!,
+              _lateReflectionsHfReferenceMeta));
+    }
+    if (data.containsKey('late_reflections_hf_rolloff')) {
+      context.handle(
+          _lateReflectionsHfRolloffMeta,
+          lateReflectionsHfRolloff.isAcceptableOrUnknown(
+              data['late_reflections_hf_rolloff']!,
+              _lateReflectionsHfRolloffMeta));
+    }
+    if (data.containsKey('late_reflections_lf_reference')) {
+      context.handle(
+          _lateReflectionsLfReferenceMeta,
+          lateReflectionsLfReference.isAcceptableOrUnknown(
+              data['late_reflections_lf_reference']!,
+              _lateReflectionsLfReferenceMeta));
+    }
+    if (data.containsKey('late_reflections_lf_rolloff')) {
+      context.handle(
+          _lateReflectionsLfRolloffMeta,
+          lateReflectionsLfRolloff.isAcceptableOrUnknown(
+              data['late_reflections_lf_rolloff']!,
+              _lateReflectionsLfRolloffMeta));
+    }
+    if (data.containsKey('late_reflections_modulation_depth')) {
+      context.handle(
+          _lateReflectionsModulationDepthMeta,
+          lateReflectionsModulationDepth.isAcceptableOrUnknown(
+              data['late_reflections_modulation_depth']!,
+              _lateReflectionsModulationDepthMeta));
+    }
+    if (data.containsKey('late_reflections_modulation_frequency')) {
+      context.handle(
+          _lateReflectionsModulationFrequencyMeta,
+          lateReflectionsModulationFrequency.isAcceptableOrUnknown(
+              data['late_reflections_modulation_frequency']!,
+              _lateReflectionsModulationFrequencyMeta));
+    }
+    if (data.containsKey('mean_free_path')) {
+      context.handle(
+          _meanFreePathMeta,
+          meanFreePath.isAcceptableOrUnknown(
+              data['mean_free_path']!, _meanFreePathMeta));
+    }
+    if (data.containsKey('t60')) {
+      context.handle(
+          _t60Meta, t60.isAcceptableOrUnknown(data['t60']!, _t60Meta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Reverb map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Reverb(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      variableName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}variable_name']),
+      testSoundId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}test_sound_id']),
+      gain: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}gain'])!,
+      lateReflectionsDelay: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_delay'])!,
+      lateReflectionsDiffusion: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_diffusion'])!,
+      lateReflectionsHfReference: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_hf_reference'])!,
+      lateReflectionsHfRolloff: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_hf_rolloff'])!,
+      lateReflectionsLfReference: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_lf_reference'])!,
+      lateReflectionsLfRolloff: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_lf_rolloff'])!,
+      lateReflectionsModulationDepth: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_modulation_depth'])!,
+      lateReflectionsModulationFrequency: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}late_reflections_modulation_frequency'])!,
+      meanFreePath: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}mean_free_path'])!,
+      t60: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}t60'])!,
+    );
+  }
+
+  @override
+  $ReverbsTable createAlias(String alias) {
+    return $ReverbsTable(attachedDatabase, alias);
+  }
+}
+
+class Reverb extends DataClass implements Insertable<Reverb> {
+  /// The primary key.
+  final int id;
+
+  /// The name of this object.
+  final String name;
+
+  /// The variable name associated with a row.
+  final String? variableName;
+
+  /// The ID of a sound to test this reverb with.
+  final int? testSoundId;
+
+  /// Gain.
+  final double gain;
+
+  /// Late reflections delay.
+  final double lateReflectionsDelay;
+
+  /// Late reflections diffusion.
+  final double lateReflectionsDiffusion;
+
+  /// Late reflections hf reference.
+  final double lateReflectionsHfReference;
+
+  /// Late reflections hf rolloff.
+  final double lateReflectionsHfRolloff;
+
+  /// Late reflections lf reference.
+  final double lateReflectionsLfReference;
+
+  /// Late reflections lf rolloff.
+  final double lateReflectionsLfRolloff;
+
+  /// Late reflections modulation depth.
+  final double lateReflectionsModulationDepth;
+
+  /// Late reflections modulation frequency.
+  final double lateReflectionsModulationFrequency;
+
+  /// Mean free path.
+  final double meanFreePath;
+
+  /// T60.
+  final double t60;
+  const Reverb(
+      {required this.id,
+      required this.name,
+      this.variableName,
+      this.testSoundId,
+      required this.gain,
+      required this.lateReflectionsDelay,
+      required this.lateReflectionsDiffusion,
+      required this.lateReflectionsHfReference,
+      required this.lateReflectionsHfRolloff,
+      required this.lateReflectionsLfReference,
+      required this.lateReflectionsLfRolloff,
+      required this.lateReflectionsModulationDepth,
+      required this.lateReflectionsModulationFrequency,
+      required this.meanFreePath,
+      required this.t60});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || variableName != null) {
+      map['variable_name'] = Variable<String>(variableName);
+    }
+    if (!nullToAbsent || testSoundId != null) {
+      map['test_sound_id'] = Variable<int>(testSoundId);
+    }
+    map['gain'] = Variable<double>(gain);
+    map['late_reflections_delay'] = Variable<double>(lateReflectionsDelay);
+    map['late_reflections_diffusion'] =
+        Variable<double>(lateReflectionsDiffusion);
+    map['late_reflections_hf_reference'] =
+        Variable<double>(lateReflectionsHfReference);
+    map['late_reflections_hf_rolloff'] =
+        Variable<double>(lateReflectionsHfRolloff);
+    map['late_reflections_lf_reference'] =
+        Variable<double>(lateReflectionsLfReference);
+    map['late_reflections_lf_rolloff'] =
+        Variable<double>(lateReflectionsLfRolloff);
+    map['late_reflections_modulation_depth'] =
+        Variable<double>(lateReflectionsModulationDepth);
+    map['late_reflections_modulation_frequency'] =
+        Variable<double>(lateReflectionsModulationFrequency);
+    map['mean_free_path'] = Variable<double>(meanFreePath);
+    map['t60'] = Variable<double>(t60);
+    return map;
+  }
+
+  ReverbsCompanion toCompanion(bool nullToAbsent) {
+    return ReverbsCompanion(
+      id: Value(id),
+      name: Value(name),
+      variableName: variableName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(variableName),
+      testSoundId: testSoundId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testSoundId),
+      gain: Value(gain),
+      lateReflectionsDelay: Value(lateReflectionsDelay),
+      lateReflectionsDiffusion: Value(lateReflectionsDiffusion),
+      lateReflectionsHfReference: Value(lateReflectionsHfReference),
+      lateReflectionsHfRolloff: Value(lateReflectionsHfRolloff),
+      lateReflectionsLfReference: Value(lateReflectionsLfReference),
+      lateReflectionsLfRolloff: Value(lateReflectionsLfRolloff),
+      lateReflectionsModulationDepth: Value(lateReflectionsModulationDepth),
+      lateReflectionsModulationFrequency:
+          Value(lateReflectionsModulationFrequency),
+      meanFreePath: Value(meanFreePath),
+      t60: Value(t60),
+    );
+  }
+
+  factory Reverb.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Reverb(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      variableName: serializer.fromJson<String?>(json['variableName']),
+      testSoundId: serializer.fromJson<int?>(json['testSoundId']),
+      gain: serializer.fromJson<double>(json['gain']),
+      lateReflectionsDelay:
+          serializer.fromJson<double>(json['lateReflectionsDelay']),
+      lateReflectionsDiffusion:
+          serializer.fromJson<double>(json['lateReflectionsDiffusion']),
+      lateReflectionsHfReference:
+          serializer.fromJson<double>(json['lateReflectionsHfReference']),
+      lateReflectionsHfRolloff:
+          serializer.fromJson<double>(json['lateReflectionsHfRolloff']),
+      lateReflectionsLfReference:
+          serializer.fromJson<double>(json['lateReflectionsLfReference']),
+      lateReflectionsLfRolloff:
+          serializer.fromJson<double>(json['lateReflectionsLfRolloff']),
+      lateReflectionsModulationDepth:
+          serializer.fromJson<double>(json['lateReflectionsModulationDepth']),
+      lateReflectionsModulationFrequency: serializer
+          .fromJson<double>(json['lateReflectionsModulationFrequency']),
+      meanFreePath: serializer.fromJson<double>(json['meanFreePath']),
+      t60: serializer.fromJson<double>(json['t60']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'variableName': serializer.toJson<String?>(variableName),
+      'testSoundId': serializer.toJson<int?>(testSoundId),
+      'gain': serializer.toJson<double>(gain),
+      'lateReflectionsDelay': serializer.toJson<double>(lateReflectionsDelay),
+      'lateReflectionsDiffusion':
+          serializer.toJson<double>(lateReflectionsDiffusion),
+      'lateReflectionsHfReference':
+          serializer.toJson<double>(lateReflectionsHfReference),
+      'lateReflectionsHfRolloff':
+          serializer.toJson<double>(lateReflectionsHfRolloff),
+      'lateReflectionsLfReference':
+          serializer.toJson<double>(lateReflectionsLfReference),
+      'lateReflectionsLfRolloff':
+          serializer.toJson<double>(lateReflectionsLfRolloff),
+      'lateReflectionsModulationDepth':
+          serializer.toJson<double>(lateReflectionsModulationDepth),
+      'lateReflectionsModulationFrequency':
+          serializer.toJson<double>(lateReflectionsModulationFrequency),
+      'meanFreePath': serializer.toJson<double>(meanFreePath),
+      't60': serializer.toJson<double>(t60),
+    };
+  }
+
+  Reverb copyWith(
+          {int? id,
+          String? name,
+          Value<String?> variableName = const Value.absent(),
+          Value<int?> testSoundId = const Value.absent(),
+          double? gain,
+          double? lateReflectionsDelay,
+          double? lateReflectionsDiffusion,
+          double? lateReflectionsHfReference,
+          double? lateReflectionsHfRolloff,
+          double? lateReflectionsLfReference,
+          double? lateReflectionsLfRolloff,
+          double? lateReflectionsModulationDepth,
+          double? lateReflectionsModulationFrequency,
+          double? meanFreePath,
+          double? t60}) =>
+      Reverb(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        variableName:
+            variableName.present ? variableName.value : this.variableName,
+        testSoundId: testSoundId.present ? testSoundId.value : this.testSoundId,
+        gain: gain ?? this.gain,
+        lateReflectionsDelay: lateReflectionsDelay ?? this.lateReflectionsDelay,
+        lateReflectionsDiffusion:
+            lateReflectionsDiffusion ?? this.lateReflectionsDiffusion,
+        lateReflectionsHfReference:
+            lateReflectionsHfReference ?? this.lateReflectionsHfReference,
+        lateReflectionsHfRolloff:
+            lateReflectionsHfRolloff ?? this.lateReflectionsHfRolloff,
+        lateReflectionsLfReference:
+            lateReflectionsLfReference ?? this.lateReflectionsLfReference,
+        lateReflectionsLfRolloff:
+            lateReflectionsLfRolloff ?? this.lateReflectionsLfRolloff,
+        lateReflectionsModulationDepth: lateReflectionsModulationDepth ??
+            this.lateReflectionsModulationDepth,
+        lateReflectionsModulationFrequency:
+            lateReflectionsModulationFrequency ??
+                this.lateReflectionsModulationFrequency,
+        meanFreePath: meanFreePath ?? this.meanFreePath,
+        t60: t60 ?? this.t60,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Reverb(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
+          ..write('testSoundId: $testSoundId, ')
+          ..write('gain: $gain, ')
+          ..write('lateReflectionsDelay: $lateReflectionsDelay, ')
+          ..write('lateReflectionsDiffusion: $lateReflectionsDiffusion, ')
+          ..write('lateReflectionsHfReference: $lateReflectionsHfReference, ')
+          ..write('lateReflectionsHfRolloff: $lateReflectionsHfRolloff, ')
+          ..write('lateReflectionsLfReference: $lateReflectionsLfReference, ')
+          ..write('lateReflectionsLfRolloff: $lateReflectionsLfRolloff, ')
+          ..write(
+              'lateReflectionsModulationDepth: $lateReflectionsModulationDepth, ')
+          ..write(
+              'lateReflectionsModulationFrequency: $lateReflectionsModulationFrequency, ')
+          ..write('meanFreePath: $meanFreePath, ')
+          ..write('t60: $t60')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      name,
+      variableName,
+      testSoundId,
+      gain,
+      lateReflectionsDelay,
+      lateReflectionsDiffusion,
+      lateReflectionsHfReference,
+      lateReflectionsHfRolloff,
+      lateReflectionsLfReference,
+      lateReflectionsLfRolloff,
+      lateReflectionsModulationDepth,
+      lateReflectionsModulationFrequency,
+      meanFreePath,
+      t60);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Reverb &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.variableName == this.variableName &&
+          other.testSoundId == this.testSoundId &&
+          other.gain == this.gain &&
+          other.lateReflectionsDelay == this.lateReflectionsDelay &&
+          other.lateReflectionsDiffusion == this.lateReflectionsDiffusion &&
+          other.lateReflectionsHfReference == this.lateReflectionsHfReference &&
+          other.lateReflectionsHfRolloff == this.lateReflectionsHfRolloff &&
+          other.lateReflectionsLfReference == this.lateReflectionsLfReference &&
+          other.lateReflectionsLfRolloff == this.lateReflectionsLfRolloff &&
+          other.lateReflectionsModulationDepth ==
+              this.lateReflectionsModulationDepth &&
+          other.lateReflectionsModulationFrequency ==
+              this.lateReflectionsModulationFrequency &&
+          other.meanFreePath == this.meanFreePath &&
+          other.t60 == this.t60);
+}
+
+class ReverbsCompanion extends UpdateCompanion<Reverb> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> variableName;
+  final Value<int?> testSoundId;
+  final Value<double> gain;
+  final Value<double> lateReflectionsDelay;
+  final Value<double> lateReflectionsDiffusion;
+  final Value<double> lateReflectionsHfReference;
+  final Value<double> lateReflectionsHfRolloff;
+  final Value<double> lateReflectionsLfReference;
+  final Value<double> lateReflectionsLfRolloff;
+  final Value<double> lateReflectionsModulationDepth;
+  final Value<double> lateReflectionsModulationFrequency;
+  final Value<double> meanFreePath;
+  final Value<double> t60;
+  const ReverbsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
+    this.testSoundId = const Value.absent(),
+    this.gain = const Value.absent(),
+    this.lateReflectionsDelay = const Value.absent(),
+    this.lateReflectionsDiffusion = const Value.absent(),
+    this.lateReflectionsHfReference = const Value.absent(),
+    this.lateReflectionsHfRolloff = const Value.absent(),
+    this.lateReflectionsLfReference = const Value.absent(),
+    this.lateReflectionsLfRolloff = const Value.absent(),
+    this.lateReflectionsModulationDepth = const Value.absent(),
+    this.lateReflectionsModulationFrequency = const Value.absent(),
+    this.meanFreePath = const Value.absent(),
+    this.t60 = const Value.absent(),
+  });
+  ReverbsCompanion.insert({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.variableName = const Value.absent(),
+    this.testSoundId = const Value.absent(),
+    this.gain = const Value.absent(),
+    this.lateReflectionsDelay = const Value.absent(),
+    this.lateReflectionsDiffusion = const Value.absent(),
+    this.lateReflectionsHfReference = const Value.absent(),
+    this.lateReflectionsHfRolloff = const Value.absent(),
+    this.lateReflectionsLfReference = const Value.absent(),
+    this.lateReflectionsLfRolloff = const Value.absent(),
+    this.lateReflectionsModulationDepth = const Value.absent(),
+    this.lateReflectionsModulationFrequency = const Value.absent(),
+    this.meanFreePath = const Value.absent(),
+    this.t60 = const Value.absent(),
+  });
+  static Insertable<Reverb> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? variableName,
+    Expression<int>? testSoundId,
+    Expression<double>? gain,
+    Expression<double>? lateReflectionsDelay,
+    Expression<double>? lateReflectionsDiffusion,
+    Expression<double>? lateReflectionsHfReference,
+    Expression<double>? lateReflectionsHfRolloff,
+    Expression<double>? lateReflectionsLfReference,
+    Expression<double>? lateReflectionsLfRolloff,
+    Expression<double>? lateReflectionsModulationDepth,
+    Expression<double>? lateReflectionsModulationFrequency,
+    Expression<double>? meanFreePath,
+    Expression<double>? t60,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (variableName != null) 'variable_name': variableName,
+      if (testSoundId != null) 'test_sound_id': testSoundId,
+      if (gain != null) 'gain': gain,
+      if (lateReflectionsDelay != null)
+        'late_reflections_delay': lateReflectionsDelay,
+      if (lateReflectionsDiffusion != null)
+        'late_reflections_diffusion': lateReflectionsDiffusion,
+      if (lateReflectionsHfReference != null)
+        'late_reflections_hf_reference': lateReflectionsHfReference,
+      if (lateReflectionsHfRolloff != null)
+        'late_reflections_hf_rolloff': lateReflectionsHfRolloff,
+      if (lateReflectionsLfReference != null)
+        'late_reflections_lf_reference': lateReflectionsLfReference,
+      if (lateReflectionsLfRolloff != null)
+        'late_reflections_lf_rolloff': lateReflectionsLfRolloff,
+      if (lateReflectionsModulationDepth != null)
+        'late_reflections_modulation_depth': lateReflectionsModulationDepth,
+      if (lateReflectionsModulationFrequency != null)
+        'late_reflections_modulation_frequency':
+            lateReflectionsModulationFrequency,
+      if (meanFreePath != null) 'mean_free_path': meanFreePath,
+      if (t60 != null) 't60': t60,
+    });
+  }
+
+  ReverbsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String?>? variableName,
+      Value<int?>? testSoundId,
+      Value<double>? gain,
+      Value<double>? lateReflectionsDelay,
+      Value<double>? lateReflectionsDiffusion,
+      Value<double>? lateReflectionsHfReference,
+      Value<double>? lateReflectionsHfRolloff,
+      Value<double>? lateReflectionsLfReference,
+      Value<double>? lateReflectionsLfRolloff,
+      Value<double>? lateReflectionsModulationDepth,
+      Value<double>? lateReflectionsModulationFrequency,
+      Value<double>? meanFreePath,
+      Value<double>? t60}) {
+    return ReverbsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      variableName: variableName ?? this.variableName,
+      testSoundId: testSoundId ?? this.testSoundId,
+      gain: gain ?? this.gain,
+      lateReflectionsDelay: lateReflectionsDelay ?? this.lateReflectionsDelay,
+      lateReflectionsDiffusion:
+          lateReflectionsDiffusion ?? this.lateReflectionsDiffusion,
+      lateReflectionsHfReference:
+          lateReflectionsHfReference ?? this.lateReflectionsHfReference,
+      lateReflectionsHfRolloff:
+          lateReflectionsHfRolloff ?? this.lateReflectionsHfRolloff,
+      lateReflectionsLfReference:
+          lateReflectionsLfReference ?? this.lateReflectionsLfReference,
+      lateReflectionsLfRolloff:
+          lateReflectionsLfRolloff ?? this.lateReflectionsLfRolloff,
+      lateReflectionsModulationDepth:
+          lateReflectionsModulationDepth ?? this.lateReflectionsModulationDepth,
+      lateReflectionsModulationFrequency: lateReflectionsModulationFrequency ??
+          this.lateReflectionsModulationFrequency,
+      meanFreePath: meanFreePath ?? this.meanFreePath,
+      t60: t60 ?? this.t60,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (variableName.present) {
+      map['variable_name'] = Variable<String>(variableName.value);
+    }
+    if (testSoundId.present) {
+      map['test_sound_id'] = Variable<int>(testSoundId.value);
+    }
+    if (gain.present) {
+      map['gain'] = Variable<double>(gain.value);
+    }
+    if (lateReflectionsDelay.present) {
+      map['late_reflections_delay'] =
+          Variable<double>(lateReflectionsDelay.value);
+    }
+    if (lateReflectionsDiffusion.present) {
+      map['late_reflections_diffusion'] =
+          Variable<double>(lateReflectionsDiffusion.value);
+    }
+    if (lateReflectionsHfReference.present) {
+      map['late_reflections_hf_reference'] =
+          Variable<double>(lateReflectionsHfReference.value);
+    }
+    if (lateReflectionsHfRolloff.present) {
+      map['late_reflections_hf_rolloff'] =
+          Variable<double>(lateReflectionsHfRolloff.value);
+    }
+    if (lateReflectionsLfReference.present) {
+      map['late_reflections_lf_reference'] =
+          Variable<double>(lateReflectionsLfReference.value);
+    }
+    if (lateReflectionsLfRolloff.present) {
+      map['late_reflections_lf_rolloff'] =
+          Variable<double>(lateReflectionsLfRolloff.value);
+    }
+    if (lateReflectionsModulationDepth.present) {
+      map['late_reflections_modulation_depth'] =
+          Variable<double>(lateReflectionsModulationDepth.value);
+    }
+    if (lateReflectionsModulationFrequency.present) {
+      map['late_reflections_modulation_frequency'] =
+          Variable<double>(lateReflectionsModulationFrequency.value);
+    }
+    if (meanFreePath.present) {
+      map['mean_free_path'] = Variable<double>(meanFreePath.value);
+    }
+    if (t60.present) {
+      map['t60'] = Variable<double>(t60.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReverbsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('variableName: $variableName, ')
+          ..write('testSoundId: $testSoundId, ')
+          ..write('gain: $gain, ')
+          ..write('lateReflectionsDelay: $lateReflectionsDelay, ')
+          ..write('lateReflectionsDiffusion: $lateReflectionsDiffusion, ')
+          ..write('lateReflectionsHfReference: $lateReflectionsHfReference, ')
+          ..write('lateReflectionsHfRolloff: $lateReflectionsHfRolloff, ')
+          ..write('lateReflectionsLfReference: $lateReflectionsLfReference, ')
+          ..write('lateReflectionsLfRolloff: $lateReflectionsLfRolloff, ')
+          ..write(
+              'lateReflectionsModulationDepth: $lateReflectionsModulationDepth, ')
+          ..write(
+              'lateReflectionsModulationFrequency: $lateReflectionsModulationFrequency, ')
+          ..write('meanFreePath: $meanFreePath, ')
+          ..write('t60: $t60')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
   _$CrossbowBackendDatabase(QueryExecutor e) : super(e);
   late final $AssetReferencesTable assetReferences =
@@ -5608,6 +6409,7 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       $CustomLevelCommandsTable(this);
   late final $CallCommandsTable callCommands = $CallCommandsTable(this);
   late final $PinnedCommandsTable pinnedCommands = $PinnedCommandsTable(this);
+  late final $ReverbsTable reverbs = $ReverbsTable(this);
   late final MenusDao menusDao = MenusDao(this as CrossbowBackendDatabase);
   late final MenuItemsDao menuItemsDao =
       MenuItemsDao(this as CrossbowBackendDatabase);
@@ -5638,6 +6440,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
       PushCustomLevelsDao(this as CrossbowBackendDatabase);
   late final DartFunctionsDao dartFunctionsDao =
       DartFunctionsDao(this as CrossbowBackendDatabase);
+  late final ReverbsDao reverbsDao =
+      ReverbsDao(this as CrossbowBackendDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5657,7 +6461,8 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
         commands,
         customLevelCommands,
         callCommands,
-        pinnedCommands
+        pinnedCommands,
+        reverbs
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -5828,6 +6633,13 @@ abstract class _$CrossbowBackendDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('call_commands', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('asset_references',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('reverbs', kind: UpdateKind.update),
             ],
           ),
         ],

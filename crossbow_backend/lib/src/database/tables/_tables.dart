@@ -12,4 +12,5 @@ export 'pinned_commands.dart';
 export 'pop_levels.dart';
 export 'push_custom_levels.dart';
 export 'push_menus.dart';
+export 'reverbs.dart';
 export 'stop_games.dart';

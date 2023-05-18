@@ -27,6 +27,7 @@ part 'database.g.dart';
     CustomLevelCommands,
     PushCustomLevels,
     DartFunctions,
+    Reverbs,
   ],
   daos: [
     MenusDao,
@@ -45,6 +46,7 @@ part 'database.g.dart';
     CustomLevelCommandsDao,
     PushCustomLevelsDao,
     DartFunctionsDao,
+    ReverbsDao,
   ],
 )
 class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
@@ -61,7 +63,7 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
 
   /// The schema version.
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 23;
 
   /// Migrate the database.
   @override
@@ -176,6 +178,9 @@ class CrossbowBackendDatabase extends _$CrossbowBackendDatabase {
           }
           if (from < 22) {
             await m.addColumn(popLevels, popLevels.variableName);
+          }
+          if (from < 23) {
+            await m.createTable(reverbs);
           }
         },
       );
