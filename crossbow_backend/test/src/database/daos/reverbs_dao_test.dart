@@ -127,8 +127,7 @@ void main() {
         () async {
           await db.delete(db.reverbs).go();
           final reverbs = [
-            for (var i = 0; i < random.nextInt(100); i++)
-              await reverbsDao.createReverb(newId())
+            for (var i = 0; i < 10; i++) await reverbsDao.createReverb(newId())
           ];
           expect(await reverbsDao.getReverbs(), reverbs);
         },
