@@ -538,3 +538,17 @@ final detachedAssetReferenceProvider =
     return ValueContext(projectContext: projectContext, value: assetReference);
   },
 );
+
+/// Provide all reverbs.
+final reverbsProvider = FutureProvider((final ref) async {
+  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  return projectContext.db.reverbsDao.getReverbs();
+});
+
+/// Get a single reverb.
+final reverbProvider = FutureProvider.family<ValueContext<Reverb>, int>(
+    (final ref, final arg) async {
+  final projectContext = ref.watch(projectContextNotifierProvider)!;
+  final reverb = await projectContext.db.reverbsDao.getReverb(arg);
+  return ValueContext(projectContext: projectContext, value: reverb);
+});
