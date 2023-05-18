@@ -681,7 +681,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
       ref.invalidate(reverbsProvider);
       await pushWidget(
         context: context,
-        builder: (final context) => EditRoomReverbScreen(
+        builder: (final context) => EditReverbScreen(
           reverbId: reverb.id,
         ),
       );

@@ -181,3 +181,9 @@ final descriptionMessage = Intl.message('Description');
 
 /// Dart function.
 final dartFunctionMessage = Intl.message('Dart Function');
+
+/// The play message.
+final playMessage = Intl.message('Play');
+
+/// The stop message.
+final stopMessage = Intl.message('Stop');

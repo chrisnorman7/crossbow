@@ -63,7 +63,7 @@ class ReverbsPageState extends ConsumerState<ReverbsPage> {
                   subtitle: Text(reverb.variableName ?? unsetMessage),
                   onTap: () => pushWidget(
                     context: context,
-                    builder: (final context) => EditRoomReverbScreen(
+                    builder: (final context) => EditReverbScreen(
                       reverbId: reverb.id,
                     ),
                   ),

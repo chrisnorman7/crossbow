@@ -33,3 +33,11 @@ final buildHotkey = SingleActivator(
   meta: useMetaKey,
   shift: true,
 );
+
+/// The hotkey for playing and pausing things.
+final playPauseHotkey = SingleActivator(
+  LogicalKeyboardKey.keyP,
+  control: useControlKey,
+  meta: useMetaKey,
+  shift: true,
+);
