@@ -17,59 +17,63 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create a custom level.
   Future<CustomLevel> createCustomLevel({
     required final String name,
-    final int? musicId,
+    final AssetReference? music,
   }) =>
       into(customLevels).insertReturning(
         CustomLevelsCompanion(
           name: Value(name),
-          musicId: Value(musicId),
+          musicId: Value(music?.id),
         ),
       );
-
-  /// Get an [update] query, which matches on the given [id].
-  UpdateStatement<$CustomLevelsTable, CustomLevel> getUpdateQuery(
-    final int id,
-  ) =>
-      update(customLevels)..where((final table) => table.id.equals(id));
 
   /// Get a custom level with the given [id].
   Future<CustomLevel> getCustomLevel({required final int id}) =>
       (select(customLevels)..where((final table) => table.id.equals(id)))
           .getSingle();
 
-  /// Set the [musicId] for the level with the given [customLevelId].
+  /// Get an [update] query, which matches [customLevel].
+  UpdateStatement<$CustomLevelsTable, CustomLevel> getUpdateQuery(
+    final CustomLevel customLevel,
+  ) =>
+      update(customLevels)
+        ..where((final table) => table.id.equals(customLevel.id));
+
+  /// Set the [music] for [customLevel].
   Future<CustomLevel> setMusicId({
-    required final int customLevelId,
-    final int? musicId,
+    required final CustomLevel customLevel,
+    final AssetReference? music,
   }) async =>
-      (await getUpdateQuery(customLevelId)
-              .writeReturning(CustomLevelsCompanion(musicId: Value(musicId))))
+      (await getUpdateQuery(customLevel)
+              .writeReturning(CustomLevelsCompanion(musicId: Value(music?.id))))
           .single;
 
-  /// Set the [name] for the level with the given [customLevelId].
+  /// Set the [name] for [customLevel].
   Future<CustomLevel> setName({
-    required final int customLevelId,
+    required final CustomLevel customLevel,
     required final String name,
   }) async =>
-      (await getUpdateQuery(customLevelId)
+      (await getUpdateQuery(customLevel)
               .writeReturning(CustomLevelsCompanion(name: Value(name))))
           .single;
 
-  /// Delete the level with the given [id].
+  /// Delete [customLevel].
   @internal
   Future<int> deleteCustomLevel({
-    required final int id,
+    required final CustomLevel customLevel,
   }) =>
-      (delete(customLevels)..where((final table) => table.id.equals(id))).go();
+      (delete(customLevels)
+            ..where((final table) => table.id.equals(customLevel.id)))
+          .go();
 
-  /// Get the commands associated with the level with the given [customLevelId].
+  /// Get the commands associated with [customLevel].
   Future<List<CustomLevelCommand>> getCustomLevelCommands({
-    required final int customLevelId,
-  }) {
-    final query = select(customLevelCommands)
-      ..where((final table) => table.customLevelId.equals(customLevelId));
-    return query.get();
-  }
+    required final CustomLevel customLevel,
+  }) =>
+      (select(customLevelCommands)
+            ..where(
+              (final table) => table.customLevelId.equals(customLevel.id),
+            ))
+          .get();
 
   /// Get all the custom levels in the database.
   Future<List<CustomLevel>> getCustomLevels() {
@@ -78,12 +82,12 @@ class CustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
-  /// Set the [variableName] for the the row with the given [customLevelId].
+  /// Set the [variableName] for [customLevel].
   Future<CustomLevel> setVariableName({
-    required final int customLevelId,
+    required final CustomLevel customLevel,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(customLevelId).writeReturning(
+      (await getUpdateQuery(customLevel).writeReturning(
         CustomLevelsCompanion(variableName: Value(variableName)),
       ))
           .single;

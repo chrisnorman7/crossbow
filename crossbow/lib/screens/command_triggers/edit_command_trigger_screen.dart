@@ -65,7 +65,7 @@ class EditCommandTriggerScreenState
           value: commandTrigger.description,
           onChanged: (final value) async {
             await commandTriggersDao.setDescription(
-              commandTriggerId: commandTrigger.id,
+              commandTrigger: commandTrigger,
               description: value,
             );
             invalidateCommandTriggerProvider();
@@ -82,7 +82,7 @@ class EditCommandTriggerScreenState
               values: const [null, ...GameControllerButton.values],
               onDone: (final value) async {
                 await commandTriggersDao.setGameControllerButton(
-                  commandTriggerId: commandTrigger.id,
+                  commandTrigger: commandTrigger,
                   gameControllerButton: value,
                 );
                 invalidateCommandTriggerProvider();
@@ -98,7 +98,7 @@ class EditCommandTriggerScreenState
             if (keyboardKey != null) {
               await projectContext.db.commandTriggerKeyboardKeysDao
                   .deleteCommandTriggerKeyboardKey(
-                commandTriggerKeyboardKeyId: keyboardKey.id,
+                commandTriggerKeyboardKey: keyboardKey,
               );
               invalidateCommandTriggerProvider();
             }
@@ -111,27 +111,26 @@ class EditCommandTriggerScreenState
                   : commandTriggerKeyboardKeyToString(keyboardKey),
             ),
             onTap: () async {
-              final int keyboardKeyId;
+              final CommandTriggerKeyboardKey newKeyboardKey;
               if (keyboardKey == null) {
-                keyboardKeyId = (await projectContext
-                        .db.commandTriggerKeyboardKeysDao
-                        .createCommandTriggerKeyboardKey(
+                newKeyboardKey = await projectContext
+                    .db.commandTriggerKeyboardKeysDao
+                    .createCommandTriggerKeyboardKey(
                   scanCode: ScanCode.space,
-                ))
-                    .id;
+                );
                 await commandTriggersDao.setKeyboardKeyId(
-                  commandTriggerId: commandTrigger.id,
-                  keyboardKeyId: keyboardKeyId,
+                  commandTrigger: commandTrigger,
+                  keyboardKey: newKeyboardKey,
                 );
               } else {
-                keyboardKeyId = keyboardKey.id;
+                newKeyboardKey = keyboardKey;
               }
               if (mounted) {
                 await pushWidget(
                   context: context,
                   builder: (final context) =>
                       EditCommandTriggerKeyboardKeyScreen(
-                    commandTriggerKeyboardKeyId: keyboardKeyId,
+                    commandTriggerKeyboardKeyId: newKeyboardKey.id,
                   ),
                 );
               }
@@ -150,7 +149,7 @@ class EditCommandTriggerScreenState
           },
           onChanged: (final value) async {
             await commandTriggersDao.setVariableName(
-              commandTriggerId: commandTrigger.id,
+              commandTrigger: commandTrigger,
               variableName: value,
             );
             invalidateCommandTriggerProvider();

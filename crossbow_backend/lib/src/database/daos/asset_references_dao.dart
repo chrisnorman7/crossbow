@@ -51,44 +51,44 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
             ))
           .getSingleOrNull();
 
-  /// Edit the asset reference with the given [assetReferenceId].
+  /// Get an [update] query for the given [assetReference].
+  UpdateStatement<$AssetReferencesTable, AssetReference> getUpdateQuery(
+    final AssetReference assetReference,
+  ) =>
+      update(assetReferences)
+        ..where((final table) => table.id.equals(assetReference.id));
+
+  /// Edit [assetReference].
   Future<AssetReference> editAssetReference({
-    required final int assetReferenceId,
+    required final AssetReference assetReference,
     required final String folderName,
     required final String name,
     final String? comment,
-  }) async {
-    final query = update(assetReferences)
-      ..where((final table) => table.id.equals(assetReferenceId));
-    return (await query.writeReturning(
-      AssetReferencesCompanion(
-        folderName: Value(folderName),
-        name: Value(name),
-        comment: Value(comment),
-      ),
-    ))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(assetReference).writeReturning(
+        AssetReferencesCompanion(
+          folderName: Value(folderName),
+          name: Value(name),
+          comment: Value(comment),
+        ),
+      ))
+          .single;
 
-  /// Get an [update] query that matches [id].
-  UpdateStatement<$AssetReferencesTable, AssetReference> getUpdateQuery(
-    final int id,
-  ) =>
-      update(assetReferences)..where((final table) => table.id.equals(id));
-
-  /// Set the gain for the asset reference with the given [assetReferenceId].
+  /// Set the [gain] for [assetReference].
   Future<AssetReference> setGain({
-    required final int assetReferenceId,
+    required final AssetReference assetReference,
     required final double gain,
   }) async =>
-      (await getUpdateQuery(assetReferenceId)
+      (await getUpdateQuery(assetReference)
               .writeReturning(AssetReferencesCompanion(gain: Value(gain))))
           .single;
 
-  /// Delete the asset reference with the given [id].
-  Future<int> deleteAssetReference({required final int id}) async {
+  /// Delete [assetReference].
+  Future<int> deleteAssetReference({
+    required final AssetReference assetReference,
+  }) async {
     final query = delete(assetReferences)
-      ..where((final table) => table.id.equals(id));
+      ..where((final table) => table.id.equals(assetReference.id));
     return query.go();
   }
 
@@ -101,13 +101,12 @@ class AssetReferencesDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
-  /// Set the [variableName] for the asset reference with the given
-  /// [assetReferenceId].
+  /// Set the [variableName] for [assetReference].
   Future<AssetReference> setVariableName({
-    required final int assetReferenceId,
+    required final AssetReference assetReference,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(assetReferenceId).writeReturning(
+      (await getUpdateQuery(assetReference).writeReturning(
         AssetReferencesCompanion(variableName: Value(variableName)),
       ))
           .single;

@@ -60,8 +60,8 @@ class EditPushCustomLevelScreen extends ConsumerWidget {
           customLevelId: level.id,
           onChanged: (final value) async {
             await pushCustomLevelsDao.setCustomLevelId(
-              pushCustomLevelId: pushCustomLevelId,
-              customLevelId: value!,
+              pushCustomLevel: pushCustomLevel,
+              customLevel: value!,
             );
             invalidatePushCustomLevelProvider(ref);
           },
@@ -71,7 +71,7 @@ class EditPushCustomLevelScreen extends ConsumerWidget {
           after: pushCustomLevel.after,
           onChanged: (final value) async {
             await pushCustomLevelsDao.setAfter(
-              pushCustomLevelId: pushCustomLevelId,
+              pushCustomLevel: pushCustomLevel,
               after: value == 0 ? null : value,
             );
             invalidatePushCustomLevelProvider(ref);
@@ -82,7 +82,7 @@ class EditPushCustomLevelScreen extends ConsumerWidget {
           fadeLength: pushCustomLevel.fadeLength,
           onChanged: (final value) async {
             await pushCustomLevelsDao.setFadeLength(
-              pushCustomLevelId: pushCustomLevelId,
+              pushCustomLevel: pushCustomLevel,
               fadeLength: value,
             );
             invalidatePushCustomLevelProvider(ref);
@@ -99,7 +99,7 @@ class EditPushCustomLevelScreen extends ConsumerWidget {
           },
           onChanged: (final value) async {
             await pushCustomLevelsDao.setVariableName(
-              pushCustomLevelId: pushCustomLevel.id,
+              pushCustomLevel: pushCustomLevel,
               variableName: value,
             );
             invalidatePushCustomLevelProvider(ref);

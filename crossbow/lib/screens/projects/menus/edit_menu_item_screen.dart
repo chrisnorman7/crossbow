@@ -62,7 +62,7 @@ class EditMenuItemScreen extends ConsumerWidget {
           TextListTile(
             value: menuItem.name,
             onChanged: (final value) async {
-              await menuItemsDao.setName(menuItemId: menuItemId, name: value);
+              await menuItemsDao.setName(menuItem: menuItem, name: value);
               invalidateMenuProvider(ref);
             },
             header: Intl.message('Menu Item Name'),
@@ -78,9 +78,9 @@ class EditMenuItemScreen extends ConsumerWidget {
           AssetReferenceListTile(
             assetReferenceId: menuItem.selectSoundId ?? menu.selectItemSoundId,
             onChanged: (final value) async {
-              await menuItemsDao.setSelectSoundId(
-                menuItemId: menuItemId,
-                selectSoundId: value,
+              await menuItemsDao.setSelectSound(
+                menuItem: menuItem,
+                selectSound: value,
               );
               invalidateMenuProvider(ref);
             },
@@ -91,9 +91,9 @@ class EditMenuItemScreen extends ConsumerWidget {
             assetReferenceId:
                 menuItem.activateSoundId ?? menu.activateItemSoundId,
             onChanged: (final value) async {
-              await menuItemsDao.setActivateSoundId(
-                menuItemId: menuItemId,
-                activateSoundId: value,
+              await menuItemsDao.setActivateSound(
+                menuItem: menuItem,
+                activateSound: value,
               );
               invalidateMenuProvider(ref);
             },
@@ -104,7 +104,7 @@ class EditMenuItemScreen extends ConsumerWidget {
             variableName: menuItem.variableName,
             getOtherVariableNames: () async {
               final menuItems = await menuItemsDao.getMenuItems(
-                menuId: menu.id,
+                menu: menu,
               );
               return menuItems
                   .map((final e) => e.variableName ?? unsetMessage)
@@ -112,7 +112,7 @@ class EditMenuItemScreen extends ConsumerWidget {
             },
             onChanged: (final value) async {
               await menuItemsDao.setVariableName(
-                menuItemId: menuItem.id,
+                menuItem: menuItem,
                 variableName: value,
               );
               invalidateMenuProvider(ref);

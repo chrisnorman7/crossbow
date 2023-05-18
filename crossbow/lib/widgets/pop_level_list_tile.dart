@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,7 +26,7 @@ class PopLevelListTile extends ConsumerStatefulWidget {
   final int? popLevelId;
 
   /// The function to call when the pop level changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<PopLevel?> onChanged;
 
   /// The title of the list tile.
   final String title;
@@ -56,7 +57,7 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
           final projectContext = ref.watch(projectContextNotifierProvider)!;
           final popLevel =
               await projectContext.db.popLevelsDao.createPopLevel();
-          widget.onChanged(popLevel.id);
+          widget.onChanged(popLevel);
           if (mounted) {
             await pushWidget(
               context: context,
@@ -78,7 +79,7 @@ class PopLevelListTileState extends ConsumerState<PopLevelListTile> {
           deleteCallback: () async {
             if (widget.nullable) {
               await projectContext.db.popLevelsDao
-                  .deletePopLevel(id: popLevel.id);
+                  .deletePopLevel(popLevel: popLevel);
               widget.onChanged(null);
             }
           },

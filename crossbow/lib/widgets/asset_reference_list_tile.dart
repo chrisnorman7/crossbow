@@ -34,7 +34,7 @@ class AssetReferenceListTile extends ConsumerWidget {
   final int? assetReferenceId;
 
   /// The function to call when the asset reference changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<AssetReference?> onChanged;
 
   /// Whether the asset reference can be `null`.
   final bool nullable;
@@ -98,14 +98,16 @@ class AssetReferenceListTile extends ConsumerWidget {
             deleteCallback: nullable && assetReference != null
                 ? () async {
                     await projectContext.db.assetReferencesDao
-                        .deleteAssetReference(id: assetReference.id);
+                        .deleteAssetReference(
+                      assetReference: assetReference,
+                    );
                     onChanged(null);
                   }
                 : null,
             moveDownCallback: assetReference != null
                 ? () async {
                     await assetReferencesDao.setGain(
-                      assetReferenceId: assetReference.id,
+                      assetReference: assetReference,
                       gain: max(0.0, assetReference.gain - 0.1),
                     );
                     invalidateAssetReferenceProvider(ref);
@@ -114,7 +116,7 @@ class AssetReferenceListTile extends ConsumerWidget {
             moveUpCallback: assetReference != null
                 ? () async {
                     await assetReferencesDao.setGain(
-                      assetReferenceId: assetReference.id,
+                      assetReference: assetReference,
                       gain: assetReference.gain + 0.1,
                     );
                     invalidateAssetReferenceProvider(ref);
@@ -141,9 +143,7 @@ class AssetReferenceListTile extends ConsumerWidget {
                           folderName: value.folderName,
                           name: value.name,
                         );
-                        onChanged(
-                          newAssetReference.id,
-                        );
+                        onChanged(newAssetReference);
                         ref.invalidate(
                           assetReferenceProvider.call(newAssetReference.id),
                         );

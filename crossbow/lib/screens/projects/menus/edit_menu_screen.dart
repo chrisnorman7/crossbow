@@ -110,7 +110,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         TextListTile(
           value: menu.name,
           onChanged: (final value) async {
-            await menusDao.setName(menuId: menu.id, name: value);
+            await menusDao.setName(menu: menu, name: value);
             invalidateMenuProvider();
           },
           header: menuNameLabel,
@@ -120,7 +120,10 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
         AssetReferenceListTile(
           assetReferenceId: menu.musicId,
           onChanged: (final value) async {
-            await menusDao.setMusicId(menuId: menu.id, musicId: value);
+            await menusDao.setMusicId(
+              menu: menu,
+              music: value,
+            );
             invalidateMenuProvider();
           },
           nullable: true,
@@ -131,8 +134,8 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           assetReferenceId: menu.activateItemSoundId,
           onChanged: (final value) async {
             await menusDao.setActivateItemSoundId(
-              menuId: menu.id,
-              activateItemSoundId: value,
+              menu: menu,
+              activateItemSound: value,
             );
             invalidateMenuProvider();
           },
@@ -143,8 +146,8 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           assetReferenceId: menu.selectItemSoundId,
           onChanged: (final value) async {
             await menusDao.setSelectItemSoundId(
-              menuId: menu.id,
-              selectItemSoundId: value,
+              menu: menu,
+              selectItemSound: value,
             );
             invalidateMenuProvider();
           },
@@ -168,7 +171,7 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
           },
           onChanged: (final value) async {
             await menusDao.setVariableName(
-              menuId: menu.id,
+              menu: menu,
               variableName: value,
             );
             invalidateMenuProvider();
@@ -207,10 +210,10 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
                 reorderMenuItems(oldIndex: index, newIndex: index - 1),
             deleteCallback: () async {
               final callCommands = await menuItemsDao.getCallCommands(
-                menuItemId: menuItem.id,
+                menuItem: menuItem,
               );
               final onCancelCallCommands =
-                  await menusDao.getOnCancelCallCommands(menuId: menu.id);
+                  await menusDao.getOnCancelCallCommands(menu: menu);
               if (!mounted) {
                 return;
               }
@@ -283,10 +286,13 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
   Future<void> newMenuItem() async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final menuId = widget.menuId;
-    final menuItemsDao = projectContext.db.menuItemsDao;
-    final menuItems = await menuItemsDao.getMenuItems(menuId: menuId);
+    final db = projectContext.db;
+    final menuItemsDao = db.menuItemsDao;
+    final menusDao = db.menusDao;
+    final menu = await menusDao.getMenu(id: menuId);
+    final menuItems = await menuItemsDao.getMenuItems(menu: menu);
     final menuItem = await menuItemsDao.createMenuItem(
-      menuId: menuId,
+      menu: menu,
       name: 'Untitled Menu Item',
       position: menuItems.length,
     );
@@ -311,18 +317,21 @@ class EditMenuScreenState extends ConsumerState<EditMenuScreen> {
       return;
     }
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final menuItemsDao = projectContext.db.menuItemsDao;
-    final menuItems = await menuItemsDao.getMenuItems(menuId: widget.menuId);
+    final db = projectContext.db;
+    final menuItemsDao = db.menuItemsDao;
+    final menusDao = db.menusDao;
+    final menu = await menusDao.getMenu(id: widget.menuId);
+    final menuItems = await menuItemsDao.getMenuItems(menu: menu);
     final oldMenuItem = menuItems[oldIndex];
     final newMenuItem =
         newIndex >= menuItems.length ? null : menuItems[newIndex];
     await menuItemsDao.moveMenuItem(
-      menuItemId: oldMenuItem.id,
+      menuItem: oldMenuItem,
       position: newIndex,
     );
     if (newMenuItem != null) {
       await menuItemsDao.moveMenuItem(
-        menuItemId: newMenuItem.id,
+        menuItem: newMenuItem,
         position: oldIndex,
       );
     }

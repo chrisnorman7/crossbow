@@ -23,43 +23,47 @@ class PopLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Get an [update] query that matches on the given [id].
-  UpdateStatement<$PopLevelsTable, PopLevel> getUpdateQuery(final int id) =>
-      update(popLevels)..where((final table) => table.id.equals(id));
+  /// Get an [update] query that matches [popLevel].
+  UpdateStatement<$PopLevelsTable, PopLevel> getUpdateQuery(
+    final PopLevel popLevel,
+  ) =>
+      update(popLevels)..where((final table) => table.id.equals(popLevel.id));
 
-  /// Set the [fadeLength] for the pop level with the given [id].
+  /// Set [fadeLength] for [popLevel].
   Future<PopLevel> setFadeLength({
-    required final int id,
+    required final PopLevel popLevel,
     final double? fadeLength,
   }) async =>
-      (await getUpdateQuery(id).writeReturning(
+      (await getUpdateQuery(popLevel).writeReturning(
         PopLevelsCompanion(fadeLength: Value(fadeLength)),
       ))
           .single;
 
-  /// Delete the pop level with the given [id].
-  Future<int> deletePopLevel({required final int id}) async {
+  /// Delete [popLevel].
+  Future<int> deletePopLevel({
+    required final PopLevel popLevel,
+  }) async {
     final query = delete(popLevels)
-      ..where((final table) => table.id.equals(id));
+      ..where((final table) => table.id.equals(popLevel.id));
     return query.go();
   }
 
-  /// Set the [description] for the pop level with the given [popLevelId].
+  /// Set the [description] for [popLevel].
   Future<PopLevel> setDescription({
-    required final int popLevelId,
+    required final PopLevel popLevel,
     required final String description,
   }) async =>
-      (await getUpdateQuery(popLevelId).writeReturning(
+      (await getUpdateQuery(popLevel).writeReturning(
         PopLevelsCompanion(description: Value(description)),
       ))
           .single;
 
-  /// Set the [variableName] for the pop level with the given [popLevelId].
+  /// Set the [variableName] for [popLevel].
   Future<PopLevel> setVariableName({
-    required final int popLevelId,
+    required final PopLevel popLevel,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(popLevelId).writeReturning(
+      (await getUpdateQuery(popLevel).writeReturning(
         PopLevelsCompanion(variableName: Value(variableName)),
       ))
           .single;

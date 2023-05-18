@@ -12,20 +12,21 @@ class PinnedCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create an instance.
   PinnedCommandsDao(super.db);
 
-  /// Get an [update] query that matches on the given [id].
+  /// Get an [update] query that matches [pinnedCommand].
   UpdateStatement<$PinnedCommandsTable, PinnedCommand> getUpdateQuery(
-    final int id,
+    final PinnedCommand pinnedCommand,
   ) =>
-      update(pinnedCommands)..where((final table) => table.id.equals(id));
+      update(pinnedCommands)
+        ..where((final table) => table.id.equals(pinnedCommand.id));
 
-  /// Pin the command with the given [commandId] with the given [name].
+  /// Pin [command] with the given [name].
   Future<PinnedCommand> createPinnedCommand({
-    required final int commandId,
+    required final Command command,
     required final String name,
   }) =>
       into(pinnedCommands).insertReturning(
         PinnedCommandsCompanion(
-          commandId: Value(commandId),
+          commandId: Value(command.id),
           name: Value(name),
         ),
       );
@@ -37,21 +38,24 @@ class PinnedCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Set the [name] for the pinned command with the given [pinnedCommandId].
+  /// Set the [name] for [pinnedCommand].
   Future<PinnedCommand> setName({
-    required final int pinnedCommandId,
+    required final PinnedCommand pinnedCommand,
     required final String name,
   }) async =>
-      (await getUpdateQuery(pinnedCommandId)
+      (await getUpdateQuery(pinnedCommand)
               .writeReturning(PinnedCommandsCompanion(name: Value(name))))
           .single;
 
-  /// Delete the pinned command with the given [pinnedCommandId].
+  /// Delete [pinnedCommand].
   ///
-  /// This method will not delete the associated row from the [commands] table.
-  Future<int> deletePinnedCommand({required final int pinnedCommandId}) {
+  /// This method *will not* delete the associated row from the [commands]
+  /// table.
+  Future<int> deletePinnedCommand({
+    required final PinnedCommand pinnedCommand,
+  }) {
     final query = delete(pinnedCommands)
-      ..where((final table) => table.id.equals(pinnedCommandId));
+      ..where((final table) => table.id.equals(pinnedCommand.id));
     return query.go();
   }
 

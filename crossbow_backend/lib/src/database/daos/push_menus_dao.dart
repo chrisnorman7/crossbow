@@ -14,13 +14,13 @@ class PushMenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Create a new push menu.
   Future<PushMenu> createPushMenu({
-    required final int menuId,
+    required final Menu menu,
     final int? after,
     final double? fadeLength,
   }) =>
       into(pushMenus).insertReturning(
         PushMenusCompanion(
-          menuId: Value(menuId),
+          menuId: Value(menu.id),
           after: Value(after),
           fadeLength: Value(fadeLength),
         ),
@@ -33,51 +33,53 @@ class PushMenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Delete the push menu with the given [id].
-  Future<int> deletePushMenu({required final int id}) async {
+  /// Delete [pushMenu].
+  Future<int> deletePushMenu({required final PushMenu pushMenu}) async {
     final query = delete(pushMenus)
-      ..where((final table) => table.id.equals(id));
+      ..where((final table) => table.id.equals(pushMenu.id));
     return query.go();
   }
 
-  /// Get an [update] query that matches [id].
-  UpdateStatement<$PushMenusTable, PushMenu> getUpdateQuery(final int id) =>
-      update(pushMenus)..where((final table) => table.id.equals(id));
+  /// Get an [update] query that matches [pushMenu].
+  UpdateStatement<$PushMenusTable, PushMenu> getUpdateQuery(
+    final PushMenu pushMenu,
+  ) =>
+      update(pushMenus)..where((final table) => table.id.equals(pushMenu.id));
 
-  /// Set the [menuId] for the push menu with the given [pushMenuId].
-  Future<PushMenu> setMenuId({
-    required final int pushMenuId,
-    required final int menuId,
+  /// Set the [menu] for [pushMenu].
+  Future<PushMenu> setMenu({
+    required final PushMenu pushMenu,
+    required final Menu menu,
   }) async =>
-      (await getUpdateQuery(pushMenuId)
-              .writeReturning(PushMenusCompanion(menuId: Value(menuId))))
+      (await getUpdateQuery(pushMenu)
+              .writeReturning(PushMenusCompanion(menuId: Value(menu.id))))
           .single;
 
-  /// Set the [after] value for the push menu with the given [pushMenuId].
+  /// Set the [after] value for [pushMenu].
   Future<PushMenu> setAfter({
-    required final int pushMenuId,
+    required final PushMenu pushMenu,
     final int? after,
   }) async =>
-      (await getUpdateQuery(pushMenuId)
+      (await getUpdateQuery(pushMenu)
               .writeReturning(PushMenusCompanion(after: Value(after))))
           .single;
 
-  /// Set the [fadeLength] for the push menu with the given [pushMenuId].
+  /// Set the [fadeLength] value for [pushMenu].
   Future<PushMenu> setFadeLength({
-    required final int pushMenuId,
+    required final PushMenu pushMenu,
     final double? fadeLength,
   }) async =>
-      (await getUpdateQuery(pushMenuId).writeReturning(
+      (await getUpdateQuery(pushMenu).writeReturning(
         PushMenusCompanion(fadeLength: Value(fadeLength)),
       ))
           .single;
 
-  /// Set the [variableName] for the push menu with the given [pushMenuId].
+  /// Set the [variableName] for [pushMenu].
   Future<PushMenu> setVariableName({
-    required final int pushMenuId,
+    required final PushMenu pushMenu,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(pushMenuId).writeReturning(
+      (await getUpdateQuery(pushMenu).writeReturning(
         PushMenusCompanion(variableName: Value(variableName)),
       ))
           .single;

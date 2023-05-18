@@ -18,7 +18,7 @@ void main() {
           final level =
               await customLevelsDao.createCustomLevel(name: 'Test Level');
           final pushLevel = await pushCustomLevelsDao.createPushCustomLevel(
-            customLevelId: level.id,
+            customLevel: level,
           );
           expect(pushLevel.after, null);
           expect(pushLevel.customLevelId, level.id);
@@ -34,7 +34,7 @@ void main() {
             name: 'Test Level',
           );
           final pushLevel = await pushCustomLevelsDao.createPushCustomLevel(
-            customLevelId: level.id,
+            customLevel: level,
             after: 1234,
             fadeTime: pi,
           );
@@ -56,10 +56,12 @@ void main() {
             name: 'Test Level',
           );
           final pushLevel = await pushCustomLevelsDao.createPushCustomLevel(
-            customLevelId: level.id,
+            customLevel: level,
           );
           expect(
-            await pushCustomLevelsDao.deletePushCustomLevel(id: pushLevel.id),
+            await pushCustomLevelsDao.deletePushCustomLevel(
+              pushCustomLevel: pushLevel,
+            ),
             1,
           );
           await expectLater(
@@ -80,17 +82,17 @@ void main() {
             name: 'Test Level',
           );
           final pushLevel = await pushCustomLevelsDao.createPushCustomLevel(
-            customLevelId: level.id,
+            customLevel: level,
             after: 1234,
           );
           expect(pushLevel.after, 1234);
           var updatedPushLevel = await pushCustomLevelsDao.setAfter(
-            pushCustomLevelId: pushLevel.id,
+            pushCustomLevel: pushLevel,
           );
           expect(updatedPushLevel.id, pushLevel.id);
           expect(updatedPushLevel.after, null);
           updatedPushLevel = await pushCustomLevelsDao.setAfter(
-            pushCustomLevelId: pushLevel.id,
+            pushCustomLevel: pushLevel,
             after: 4321,
           );
           expect(updatedPushLevel.id, pushLevel.id);
@@ -105,17 +107,17 @@ void main() {
             name: 'Test Level',
           );
           final pushLevel = await pushCustomLevelsDao.createPushCustomLevel(
-            customLevelId: level.id,
+            customLevel: level,
             fadeTime: pi,
           );
           expect(pushLevel.fadeLength, pi);
           var updatedPushLevel = await pushCustomLevelsDao.setFadeLength(
-            pushCustomLevelId: pushLevel.id,
+            pushCustomLevel: pushLevel,
           );
           expect(updatedPushLevel.id, pushLevel.id);
           expect(updatedPushLevel.fadeLength, null);
           updatedPushLevel = await pushCustomLevelsDao.setFadeLength(
-            pushCustomLevelId: pushLevel.id,
+            pushCustomLevel: pushLevel,
             fadeLength: 1234.5,
           );
           expect(updatedPushLevel.id, pushLevel.id);
@@ -131,18 +133,18 @@ void main() {
           final level2 =
               await customLevelsDao.createCustomLevel(name: 'Level 2');
           final pushCustomLevel = await pushCustomLevelsDao
-              .createPushCustomLevel(customLevelId: level1.id);
+              .createPushCustomLevel(customLevel: level1);
           expect(pushCustomLevel.customLevelId, level1.id);
           var updatedPushCustomLevel =
               await pushCustomLevelsDao.setCustomLevelId(
-            pushCustomLevelId: pushCustomLevel.id,
-            customLevelId: level2.id,
+            pushCustomLevel: pushCustomLevel,
+            customLevel: level2,
           );
           expect(updatedPushCustomLevel.id, pushCustomLevel.id);
           expect(updatedPushCustomLevel.customLevelId, level2.id);
           updatedPushCustomLevel = await pushCustomLevelsDao.setCustomLevelId(
-            pushCustomLevelId: pushCustomLevel.id,
-            customLevelId: level1.id,
+            pushCustomLevel: pushCustomLevel,
+            customLevel: level1,
           );
           expect(updatedPushCustomLevel.id, pushCustomLevel.id);
           expect(updatedPushCustomLevel.customLevelId, level1.id);
@@ -154,11 +156,11 @@ void main() {
         () async {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final pushCustomLevel = await pushCustomLevelsDao
-              .createPushCustomLevel(customLevelId: level.id);
+              .createPushCustomLevel(customLevel: level);
           expect(pushCustomLevel.variableName, null);
           final updatedPushCustomLevel =
               await pushCustomLevelsDao.setVariableName(
-            pushCustomLevelId: pushCustomLevel.id,
+            pushCustomLevel: pushCustomLevel,
             variableName: 'push',
           );
           expect(updatedPushCustomLevel.id, pushCustomLevel.id);

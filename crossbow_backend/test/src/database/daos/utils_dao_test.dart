@@ -29,7 +29,7 @@ void main() {
           );
           final trigger = await commandTriggersDao.createCommandTrigger(
             description: 'Test trigger',
-            keyboardKeyId: keyboardKey.id,
+            keyboardKey: keyboardKey,
           );
           await utilsDao.deleteCommandTrigger(trigger);
           expect(
@@ -53,26 +53,26 @@ void main() {
           );
           final popLevel = await db.popLevelsDao.createPopLevel();
           final menu = await menusDao.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenusDao.createPushMenu(menuId: menu.id);
+          final pushMenu = await pushMenusDao.createPushMenu(menu: menu);
           final stopGame = await db.stopGamesDao.createStopGame();
           final command = await commandsDao.createCommand(
-            messageSoundId: assetReference.id,
-            popLevelId: popLevel.id,
-            pushMenuId: pushMenu.id,
-            stopGameId: stopGame.id,
+            messageSound: assetReference,
+            popLevel: popLevel,
+            pushMenu: pushMenu,
+            stopGame: stopGame,
           );
           final command2 = await commandsDao.createCommand();
           final callCommand = await callCommandsDao.createCallCommand(
-            commandId: command2.id,
-            callingCommandId: command.id,
+            command: command2,
+            callingCommand: command,
           );
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Cannot delete me',
           );
           await expectLater(utilsDao.deleteCommand(command), throwsStateError);
           await pinnedCommandsDao.deletePinnedCommand(
-            pinnedCommandId: pinnedCommand.id,
+            pinnedCommand: pinnedCommand,
           );
           await utilsDao.deleteCommand(command);
           expect(commandsDao.getCommand(id: command.id), throwsStateError);
@@ -120,12 +120,12 @@ void main() {
           );
           final menu = await menusDao.createMenu(
             name: 'Test Menu',
-            musicId: music.id,
-            activateItemSoundId: activateSound.id,
-            selectItemSoundId: selectSound.id,
+            music: music,
+            activateItemSound: activateSound,
+            selectItemSound: selectSound,
           );
           final play = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Play',
           );
           final mistakeActivateSound =
@@ -139,20 +139,20 @@ void main() {
             name: 'mistake_select.mp3',
           );
           final mistake = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Mistake',
-            activateSoundId: mistakeActivateSound.id,
-            selectSoundId: mistakeSelectSound.id,
+            activateSound: mistakeActivateSound,
+            selectSound: mistakeSelectSound,
           );
           final command1 = await commandsDao.createCommand();
           final command2 = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command1.id,
-            callingMenuItemId: mistake.id,
+            command: command1,
+            callingMenuItem: mistake,
           );
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command2.id,
-            callingMenuItemId: mistake.id,
+            command: command2,
+            callingMenuItem: mistake,
           );
           await utilsDao.deleteMenuItem(mistake);
           await expectLater(
@@ -218,26 +218,26 @@ void main() {
           );
           final menu = await menusDao.createMenu(
             name: 'Test Menu',
-            musicId: music.id,
-            activateItemSoundId: activateSound.id,
-            selectItemSoundId: selectSound.id,
+            music: music,
+            activateItemSound: activateSound,
+            selectItemSound: selectSound,
           );
           final command1 = await commandsDao.createCommand();
           final command2 = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command1.id,
-            onCancelMenuId: menu.id,
+            command: command1,
+            onCancelMenu: menu,
           );
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command2.id,
-            onCancelMenuId: menu.id,
+            command: command2,
+            onCancelMenu: menu,
           );
           final menuItem1 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 1',
           );
           final menuItem2 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 2',
           );
           await utilsDao.deleteMenu(menu);
@@ -293,17 +293,17 @@ void main() {
           );
           final level = await customLevelsDao.createCustomLevel(
             name: 'Test Level',
-            musicId: music.id,
+            music: music,
           );
           final customLevelCommand =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: trigger.id,
+            customLevel: level,
+            commandTrigger: trigger,
           );
           final command = await commandsDao.createCommand();
           final callCommand = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCustomLevelCommandId: customLevelCommand.id,
+            command: command,
+            callingCustomLevelCommand: customLevelCommand,
           );
           await utilsDao.deleteCustomLevel(level);
           await expectLater(

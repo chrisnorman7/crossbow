@@ -16,19 +16,19 @@ void main() {
         () async {
           final command = await commands.createCommand();
           await expectLater(
-            () => callCommands.createCallCommand(commandId: command.id),
+            () => callCommands.createCallCommand(command: command),
             throwsStateError,
           );
           final menu = await db.menusDao.createMenu(name: 'Test Menu');
           final menuItem = await db.menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Test',
           );
           var callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
-            callingCommandId: command.id,
-            onCancelMenuId: menu.id,
-            callingMenuItemId: menuItem.id,
+            command: command,
+            callingCommand: command,
+            onCancelMenu: menu,
+            callingMenuItem: menuItem,
           );
           expect(callCommand.after, null);
           expect(callCommand.commandId, command.id);
@@ -36,11 +36,11 @@ void main() {
           expect(callCommand.callingMenuItemId, menuItem.id);
           expect(callCommand.onCancelMenuId, menu.id);
           callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
+            command: command,
             after: 1234,
-            callingCommandId: command.id,
-            callingMenuItemId: menuItem.id,
-            onCancelMenuId: menu.id,
+            callingCommand: command,
+            callingMenuItem: menuItem,
+            onCancelMenu: menu,
           );
           expect(callCommand.after, 1234);
           expect(callCommand.commandId, command.id);
@@ -55,8 +55,8 @@ void main() {
         () async {
           final command = await commands.createCommand();
           final callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
-            callingCommandId: command.id,
+            command: command,
+            callingCommand: command,
           );
           expect(
             await callCommands.getCallCommand(id: callCommand.id),
@@ -72,18 +72,18 @@ void main() {
         () async {
           final command = await commands.createCommand();
           final callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
-            callingCommandId: command.id,
+            command: command,
+            callingCommand: command,
             randomNumberBase: 5,
           );
           expect(callCommand.randomNumberBase, 5);
           var updatedCallCommand = await callCommands.setRandomNumberBase(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
           );
           expect(updatedCallCommand.id, callCommand.id);
           expect(updatedCallCommand.randomNumberBase, null);
           updatedCallCommand = await callCommands.setRandomNumberBase(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
             randomNumberBase: 2,
           );
           expect(updatedCallCommand.id, callCommand.id);
@@ -96,18 +96,18 @@ void main() {
         () async {
           final command = await commands.createCommand();
           final callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
-            callingCommandId: command.id,
+            command: command,
+            callingCommand: command,
             after: 5,
           );
           expect(callCommand.after, 5);
           var updatedCallCommand = await callCommands.setAfter(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
           );
           expect(updatedCallCommand.id, callCommand.id);
           expect(updatedCallCommand.after, null);
           updatedCallCommand = await callCommands.setAfter(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
             after: 2,
           );
           expect(updatedCallCommand.id, callCommand.id);
@@ -122,17 +122,17 @@ void main() {
           final command1 = await commands.createCommand();
           final command2 = await commands.createCommand();
           final callCommand = await callCommands.createCallCommand(
-            commandId: command1.id,
-            callingCommandId: callingCommand.id,
+            command: command1,
+            callingCommand: callingCommand,
           );
           var updatedCallCommand = await callCommands.setCommandId(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
             commandId: command2.id,
           );
           expect(updatedCallCommand.id, callCommand.id);
           expect(updatedCallCommand.commandId, command2.id);
           updatedCallCommand = await callCommands.setCommandId(
-            callCommandId: updatedCallCommand.id,
+            callCommand: updatedCallCommand,
             commandId: command1.id,
           );
           expect(updatedCallCommand.id, callCommand.id);
@@ -146,12 +146,12 @@ void main() {
           final callingCommand = await commands.createCommand();
           final command = await commands.createCommand();
           final callCommand = await callCommands.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand.id,
+            command: command,
+            callingCommand: callingCommand,
           );
           expect(
             await callCommands.deleteCallCommand(
-              callCommandId: callCommand.id,
+              callCommand: callCommand,
             ),
             1,
           );

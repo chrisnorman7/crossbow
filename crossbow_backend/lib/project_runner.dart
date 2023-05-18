@@ -63,16 +63,16 @@ class ProjectRunner {
   /// Get a suitable trigger map.
   Future<ziggurat.TriggerMap> getTriggerMap() async {
     final triggers = (await db.commandTriggersDao.getCommandTriggers())
-        .map<Future<ziggurat.CommandTrigger>>((final e) async {
-      final keyboardKeyId = e.keyboardKeyId;
+        .map<Future<ziggurat.CommandTrigger>>((final commandTrigger) async {
+      final keyboardKeyId = commandTrigger.keyboardKeyId;
       final keyboardKey = keyboardKeyId == null
           ? null
           : await db.commandTriggerKeyboardKeysDao
               .getCommandTriggerKeyboardKey(id: keyboardKeyId);
       return ziggurat.CommandTrigger(
-        description: e.description,
-        name: e.name,
-        button: e.gameControllerButton,
+        description: commandTrigger.description,
+        name: commandTrigger.name,
+        button: commandTrigger.gameControllerButton,
         keyboardKey: keyboardKey == null
             ? null
             : ziggurat.CommandKeyboardKey(
@@ -191,7 +191,7 @@ class ProjectRunner {
       await handlePushMenu(pushMenuRow);
     }
     final callCommands = await db.commandsDao.getCallCommands(
-      commandId: command.id,
+      command: command,
     );
     await handleCallCommands(callCommands);
     final stopGameId = command.stopGameId;
@@ -274,7 +274,7 @@ class ProjectRunner {
 
   /// Get a menu level from the given [menu].
   Future<ziggurat_menus.Menu> getMenuLevel(final Menu menu) async {
-    final menuItems = await db.menuItemsDao.getMenuItems(menuId: menu.id);
+    final menuItems = await db.menuItemsDao.getMenuItems(menu: menu);
     final assetReferences = db.assetReferencesDao;
     final selectItemSoundId = menu.selectItemSoundId;
     final activateItemSoundId = menu.activateItemSoundId;
@@ -320,7 +320,7 @@ class ProjectRunner {
             activator: ziggurat_menus.MenuItemActivator(
               onActivate: () async {
                 final callCommands = await db.menuItemsDao.getCallCommands(
-                  menuItemId: e.id,
+                  menuItem: e,
                 );
                 await handleCallCommands(callCommands);
               },
@@ -332,7 +332,7 @@ class ProjectRunner {
       music: music == null ? null : getAssetReference(music),
       onCancel: () async {
         final callCommands = await db.menusDao.getOnCancelCallCommands(
-          menuId: menu.id,
+          menu: menu,
         );
         await handleCallCommands(callCommands);
       },
@@ -378,15 +378,15 @@ class ProjectRunner {
     );
     final customLevelCommandsDao = db.customLevelCommandsDao;
     for (final customLevelCommand in await db.customLevelsDao
-        .getCustomLevelCommands(customLevelId: customLevel.id)) {
+        .getCustomLevelCommands(customLevel: customLevel)) {
       final trigger = await db.commandTriggersDao.getCommandTrigger(
         id: customLevelCommand.commandTriggerId,
       );
       final callCommands = await customLevelCommandsDao.getCallCommands(
-        customLevelCommandId: customLevelCommand.id,
+        customLevelCommand: customLevelCommand,
       );
       final releaseCommands = await customLevelCommandsDao.getReleaseCommands(
-        customLevelCommandId: customLevelCommand.id,
+        customLevelCommand: customLevelCommand,
       );
       if (callCommands.isNotEmpty || releaseCommands.isNotEmpty) {
         level.registerCommand(

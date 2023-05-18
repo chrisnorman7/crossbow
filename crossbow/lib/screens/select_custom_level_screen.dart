@@ -18,7 +18,7 @@ class SelectCustomLevelScreen extends ConsumerWidget {
   });
 
   /// The function to call when a new menu is selected.
-  final ValueChanged<int> onChanged;
+  final ValueChanged<CustomLevel> onChanged;
 
   /// The ID of the current custom level.
   final int? currentCustomLevelId;
@@ -40,7 +40,7 @@ class SelectCustomLevelScreen extends ConsumerWidget {
     final customLevelId = currentCustomLevelId;
     return SelectItem(
       values: levels,
-      onDone: (final value) => onChanged(value.id),
+      onDone: onChanged,
       getSearchString: (final value) => value.name,
       getWidget: (final value) => AssetReferencePlaySoundSemantics(
         assetReferenceId: value.musicId,

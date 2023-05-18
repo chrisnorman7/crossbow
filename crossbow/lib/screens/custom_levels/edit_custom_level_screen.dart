@@ -79,7 +79,7 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               value: level.name,
               onChanged: (final value) async {
                 await customLevelsDao.setName(
-                  customLevelId: level.id,
+                  customLevel: level,
                   name: value,
                 );
                 invalidateCustomLevelProvider();
@@ -91,8 +91,8 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               assetReferenceId: level.musicId,
               onChanged: (final value) async {
                 await customLevelsDao.setMusicId(
-                  customLevelId: level.id,
-                  musicId: value,
+                  customLevel: level,
+                  music: value,
                 );
                 invalidateCustomLevelProvider();
               },
@@ -110,7 +110,7 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
               },
               onChanged: (final value) async {
                 await customLevelsDao.setVariableName(
-                  customLevelId: level.id,
+                  customLevel: level,
                   variableName: value,
                 );
                 invalidateCustomLevelProvider();
@@ -159,7 +159,7 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
                       title: confirmDeleteTitle,
                       yesCallback: () async {
                         await customLevelCommandsDao.deleteCustomLevelCommand(
-                          id: commandContext.value.id,
+                          customLevelCommand: commandContext.value,
                         );
                         ref.invalidate(
                           customLevelCommandsProvider
@@ -207,8 +207,9 @@ class EditCustomLevelScreenState extends ConsumerState<EditCustomLevelScreen> {
         onChanged: (final value) async {
           final command =
               await db.customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: widget.customLevelId,
-            commandTriggerId: value,
+            customLevel: await db.customLevelsDao
+                .getCustomLevel(id: widget.customLevelId),
+            commandTrigger: value,
           );
           if (mounted) {
             await pushWidget(

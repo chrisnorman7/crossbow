@@ -12,32 +12,32 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create an instance.
   CallCommandsDao(super.db);
 
-  /// Create a new call command to call the command with the given [commandId].
+  /// Create a new call command to call the command with the given [command].
   Future<CallCommand> createCallCommand({
-    required final int commandId,
-    final int? callingCommandId,
-    final int? callingMenuItemId,
-    final int? onCancelMenuId,
-    final int? callingCustomLevelCommandId,
-    final int? releasingCustomLevelCommandId,
+    required final Command command,
+    final Command? callingCommand,
+    final MenuItem? callingMenuItem,
+    final Menu? onCancelMenu,
+    final CustomLevelCommand? callingCustomLevelCommand,
+    final CustomLevelCommand? releasingCustomLevelCommand,
     final int? after,
     final int? randomNumberBase,
   }) {
-    if (callingCommandId == null &&
-        callingMenuItemId == null &&
-        onCancelMenuId == null &&
-        callingCustomLevelCommandId == null &&
-        releasingCustomLevelCommandId == null) {
-      throw StateError('This call command will not be attached to any object.');
+    if (callingCommand == null &&
+        callingMenuItem == null &&
+        onCancelMenu == null &&
+        callingCustomLevelCommand == null &&
+        releasingCustomLevelCommand == null) {
+      throw StateError('This call command will be unattached.');
     }
     return into(callCommands).insertReturning(
       CallCommandsCompanion(
-        commandId: Value(commandId),
-        callingCommandId: Value(callingCommandId),
-        callingMenuItemId: Value(callingMenuItemId),
-        releasingCustomLevelCommandId: Value(releasingCustomLevelCommandId),
-        onCancelMenuId: Value(onCancelMenuId),
-        callingCustomLevelCommandId: Value(callingCustomLevelCommandId),
+        commandId: Value(command.id),
+        callingCommandId: Value(callingCommand?.id),
+        callingMenuItemId: Value(callingMenuItem?.id),
+        releasingCustomLevelCommandId: Value(releasingCustomLevelCommand?.id),
+        onCancelMenuId: Value(onCancelMenu?.id),
+        callingCustomLevelCommandId: Value(callingCustomLevelCommand?.id),
         after: Value(after),
         randomNumberBase: Value(randomNumberBase),
       ),
@@ -51,51 +51,49 @@ class CallCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Set the random number base for the call command with the given
-  /// [callCommandId].
+  /// Get an[update] query that matches [callCommand].
+  UpdateStatement<$CallCommandsTable, CallCommand> getUpdateQuery(
+    final CallCommand callCommand,
+  ) =>
+      update(callCommands)
+        ..where((final table) => table.id.equals(callCommand.id));
+
+  /// Set the [randomNumberBase] for [callCommand].
   Future<CallCommand> setRandomNumberBase({
-    required final int callCommandId,
+    required final CallCommand callCommand,
     final int? randomNumberBase,
-  }) async {
-    final query = update(callCommands)
-      ..where((final table) => table.id.equals(callCommandId));
-    return (await query.writeReturning(
-      CallCommandsCompanion(
-        randomNumberBase: Value(randomNumberBase),
-      ),
-    ))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(callCommand).writeReturning(
+        CallCommandsCompanion(
+          randomNumberBase: Value(randomNumberBase),
+        ),
+      ))
+          .single;
 
-  /// Set the [after] value for the call command with the given [callCommandId].
+  /// Set the [after] value for [callCommand].
   Future<CallCommand> setAfter({
-    required final int callCommandId,
+    required final CallCommand callCommand,
     final int? after,
-  }) async {
-    final query = update(callCommands)
-      ..where((final table) => table.id.equals(callCommandId));
-    return (await query
-            .writeReturning(CallCommandsCompanion(after: Value(after))))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(callCommand)
+              .writeReturning(CallCommandsCompanion(after: Value(after))))
+          .single;
 
-  /// Set the [commandId] for the call command with the given [callCommandId].
+  /// Set the [commandId] for [callCommand].
   Future<CallCommand> setCommandId({
-    required final int callCommandId,
+    required final CallCommand callCommand,
     required final int commandId,
-  }) async {
-    final query = update(callCommands)
-      ..where((final table) => table.id.equals(callCommandId));
-    return (await query
-            .writeReturning(CallCommandsCompanion(commandId: Value(commandId))))
-        .single;
-  }
+  }) async =>
+      (await getUpdateQuery(callCommand).writeReturning(
+        CallCommandsCompanion(commandId: Value(commandId)),
+      ))
+          .single;
 
-  /// Delete the call command with the given [callCommandId].
+  /// Delete [callCommand].
   Future<int> deleteCallCommand({
-    required final int callCommandId,
+    required final CallCommand callCommand,
   }) =>
       (delete(callCommands)
-            ..where((final table) => table.id.equals(callCommandId)))
+            ..where((final table) => table.id.equals(callCommand.id)))
           .go();
 }

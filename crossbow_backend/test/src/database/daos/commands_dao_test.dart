@@ -53,17 +53,17 @@ void main() {
         '.setPushMenu',
         () async {
           final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
-          final command =
-              await commandsDao.createCommand(pushMenuId: pushMenu.id);
+          final pushMenu = await pushMenus.createPushMenu(menu: menu);
+          final command = await commandsDao.createCommand(pushMenu: pushMenu);
           expect(command.pushMenuId, pushMenu.id);
-          var updatedCommand =
-              await commandsDao.setPushMenuId(commandId: command.id);
+          var updatedCommand = await commandsDao.setPushMenuId(
+            command: command,
+          );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.pushMenuId, null);
           updatedCommand = await commandsDao.setPushMenuId(
-            commandId: command.id,
-            pushMenuId: pushMenu.id,
+            command: command,
+            pushMenu: pushMenu,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.pushMenuId, pushMenu.id);
@@ -75,17 +75,17 @@ void main() {
         () async {
           var command = await commandsDao.createCommand();
           final menu = await menus.createMenu(name: 'Test Menu');
-          final pushMenu = await pushMenus.createPushMenu(menuId: menu.id);
+          final pushMenu = await pushMenus.createPushMenu(menu: menu);
           command = await commandsDao.setPushMenuId(
-            commandId: command.id,
-            pushMenuId: pushMenu.id,
+            command: command,
+            pushMenu: pushMenu,
           );
           final callingCommand = await commandsDao.createCommand();
           final callCommand = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand.id,
+            command: command,
+            callingCommand: callingCommand,
           );
-          expect(await commandsDao.deleteCommand(id: command.id), 1);
+          expect(await commandsDao.deleteCommand(command: command), 1);
           expect(
             await pushMenus.getPushMenu(id: pushMenu.id),
             predicate<PushMenu>(
@@ -110,7 +110,7 @@ void main() {
           expect(command.messageText, null);
           const string = 'Hello world.';
           final updatedCommand = await commandsDao.setMessageText(
-            commandId: command.id,
+            command: command,
             text: string,
           );
           expect(updatedCommand.id, command.id);
@@ -127,15 +127,15 @@ void main() {
             name: 'test',
           );
           final command = await commandsDao.createCommand(
-            messageSoundId: assetReference.id,
+            messageSound: assetReference,
           );
           expect(command.messageSoundId, assetReference.id);
           var updatedCommand =
-              await commandsDao.setMessageSoundId(commandId: command.id);
+              await commandsDao.setMessageSoundId(command: command);
           expect(updatedCommand.messageSoundId, null);
           updatedCommand = await commandsDao.setMessageSoundId(
-            commandId: command.id,
-            assetReferenceId: assetReference.id,
+            command: command,
+            assetReference: assetReference,
           );
           expect(updatedCommand.messageSoundId, assetReference.id);
         },
@@ -145,16 +145,15 @@ void main() {
         '.setStopGameId',
         () async {
           final stopGame = await db.stopGamesDao.createStopGame();
-          final command =
-              await commandsDao.createCommand(stopGameId: stopGame.id);
+          final command = await commandsDao.createCommand(stopGame: stopGame);
           expect(command.stopGameId, stopGame.id);
           var updatedCommand = await commandsDao.setStopGameId(
-            commandId: command.id,
+            command: command,
           );
           expect(updatedCommand.stopGameId, null);
           updatedCommand = await commandsDao.setStopGameId(
-            commandId: command.id,
-            stopGameId: stopGame.id,
+            command: command,
+            stopGame: stopGame,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.stopGameId, stopGame.id);
@@ -165,17 +164,16 @@ void main() {
         '.setPopLevelId',
         () async {
           final popLevel = await db.popLevelsDao.createPopLevel();
-          final command =
-              await commandsDao.createCommand(popLevelId: popLevel.id);
+          final command = await commandsDao.createCommand(popLevel: popLevel);
           expect(command.popLevelId, popLevel.id);
           var updatedCommand = await commandsDao.setPopLevelId(
-            commandId: command.id,
+            command: command,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.popLevelId, null);
           updatedCommand = await commandsDao.setPopLevelId(
-            commandId: command.id,
-            popLevelId: popLevel.id,
+            command: command,
+            popLevel: popLevel,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.popLevelId, popLevel.id);
@@ -189,7 +187,7 @@ void main() {
           expect(command.url, null);
           const url = 'https://www.github.com/chrisnorman7/';
           final updatedCommand = await commandsDao.setUrl(
-            commandId: command.id,
+            command: command,
             url: url,
           );
           expect(updatedCommand.id, command.id);
@@ -203,31 +201,32 @@ void main() {
           final command = await commandsDao.createCommand();
           final menu = await menus.createMenu(name: 'Test Menu');
           final menuItem = await db.menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Test',
           );
           await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            onCancelMenuId: menu.id,
-            callingMenuItemId: menuItem.id,
+            command: command,
+            onCancelMenu: menu,
+            callingMenuItem: menuItem,
           );
           expect(
-            await commandsDao.getCallCommands(commandId: command.id),
+            await commandsDao.getCallCommands(command: command),
             isEmpty,
           );
           final createdCallCommands = [
             await callCommandsDao.createCallCommand(
-              commandId: command.id,
-              callingCommandId: command.id,
+              command: command,
+              callingCommand: command,
             ),
             await callCommandsDao.createCallCommand(
-              commandId: command.id,
-              callingCommandId: command.id,
+              command: command,
+              callingCommand: command,
               after: 1234,
             ),
           ];
-          final queryCallCommands =
-              await commandsDao.getCallCommands(commandId: command.id);
+          final queryCallCommands = await commandsDao.getCallCommands(
+            command: command,
+          );
           expect(queryCallCommands.length, createdCallCommands.length);
           for (var i = 0; i < createdCallCommands.length; i++) {
             expect(createdCallCommands[i].id, queryCallCommands[i].id);
@@ -240,17 +239,17 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
           final retrievedPinnedCommand =
-              (await commandsDao.getPinnedCommand(commandId: command.id))!;
-          expect(retrievedPinnedCommand.commandId, command.id);
+              await commandsDao.getPinnedCommand(command: command);
+          expect(retrievedPinnedCommand!.commandId, command.id);
           expect(retrievedPinnedCommand.id, pinnedCommand.id);
           expect(retrievedPinnedCommand.name, pinnedCommand.name);
           final command2 = await commandsDao.createCommand();
           expect(
-            await commandsDao.getPinnedCommand(commandId: command2.id),
+            await commandsDao.getPinnedCommand(command: command2),
             null,
           );
         },
@@ -261,19 +260,19 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
-          expect(await commandsDao.isPinned(commandId: command.id), true);
+          expect(await commandsDao.isPinned(command: command), true);
           final unpinnedCommand = await commandsDao.createCommand();
           expect(
-            await commandsDao.isPinned(commandId: unpinnedCommand.id),
+            await commandsDao.isPinned(command: unpinnedCommand),
             false,
           );
           await pinnedCommandsDao.deletePinnedCommand(
-            pinnedCommandId: pinnedCommand.id,
+            pinnedCommand: pinnedCommand,
           );
-          expect(await commandsDao.isPinned(commandId: command.id), false);
+          expect(await commandsDao.isPinned(command: command), false);
         },
       );
 
@@ -284,30 +283,30 @@ void main() {
           final callingCommand1 = await commandsDao.createCommand();
           final callingCommand2 = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand1.id,
+            command: command,
+            callingCommand: callingCommand1,
           );
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand2.id,
+            command: command,
+            callingCommand: callingCommand2,
           );
-          expect(await commandsDao.isCalled(commandId: command.id), isTrue);
+          expect(await commandsDao.isCalled(command: command), isTrue);
           expect(
-            await commandsDao.isCalled(commandId: callingCommand1.id),
+            await commandsDao.isCalled(command: callingCommand1),
             isFalse,
           );
           expect(
-            await commandsDao.isCalled(commandId: callingCommand2.id),
+            await commandsDao.isCalled(command: callingCommand2),
             isFalse,
           );
           await callCommandsDao.deleteCallCommand(
-            callCommandId: callCommand1.id,
+            callCommand: callCommand1,
           );
-          expect(await commandsDao.isCalled(commandId: command.id), isTrue);
+          expect(await commandsDao.isCalled(command: command), isTrue);
           await callCommandsDao.deleteCallCommand(
-            callCommandId: callCommand2.id,
+            callCommand: callCommand2,
           );
-          expect(await commandsDao.isCalled(commandId: command.id), isFalse);
+          expect(await commandsDao.isCalled(command: command), isFalse);
         },
       );
 
@@ -317,11 +316,11 @@ void main() {
           final command = await commandsDao.createCommand();
           final callingCommand = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand.id,
+            command: command,
+            callingCommand: callingCommand,
           );
           var callingCallCommands =
-              await commandsDao.getCallingCallCommands(commandId: command.id);
+              await commandsDao.getCallingCallCommands(command: command);
           expect(callingCallCommands.length, 1);
           expect(
             callingCallCommands.single,
@@ -334,11 +333,11 @@ void main() {
           );
           final callingCommand2 = await commandsDao.createCommand();
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: callingCommand2.id,
+            command: command,
+            callingCommand: callingCommand2,
           );
           callingCallCommands = await commandsDao.getCallingCallCommands(
-            commandId: command.id,
+            command: command,
           );
           expect(callingCallCommands.length, 2);
           expect(callingCallCommands.first.id, callCommand1.id);
@@ -360,19 +359,21 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(
             name: 'Test Custom Level',
           );
-          final pushCustomLevel = await pushCustomLevelsDao
-              .createPushCustomLevel(customLevelId: level.id);
+          final pushCustomLevel =
+              await pushCustomLevelsDao.createPushCustomLevel(
+            customLevel: level,
+          );
           final command = await commandsDao.createCommand(
-            pushCustomLevelId: pushCustomLevel.id,
+            pushCustomLevel: pushCustomLevel,
           );
           expect(command.pushCustomLevelId, pushCustomLevel.id);
           var updatedCommand =
-              await commandsDao.setPushCustomLevelId(commandId: command.id);
+              await commandsDao.setPushCustomLevelId(command: command);
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.pushCustomLevelId, null);
           updatedCommand = await commandsDao.setPushCustomLevelId(
-            commandId: command.id,
-            pushCustomLevelId: pushCustomLevel.id,
+            command: command,
+            pushCustomLevel: pushCustomLevel,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.pushCustomLevelId, pushCustomLevel.id);
@@ -386,16 +387,16 @@ void main() {
             description: 'Testing.',
           );
           final command = await commandsDao.createCommand(
-            dartFunctionId: dartFunction.id,
+            dartFunction: dartFunction,
           );
           expect(command.dartFunctionId, dartFunction.id);
           var updatedCommand =
-              await commandsDao.setDartFunctionId(commandId: command.id);
+              await commandsDao.setDartFunctionId(command: command);
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.dartFunctionId, null);
           updatedCommand = await commandsDao.setDartFunctionId(
-            commandId: command.id,
-            dartFunctionId: dartFunction.id,
+            command: command,
+            dartFunction: dartFunction,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.dartFunctionId, dartFunction.id);
@@ -408,7 +409,7 @@ void main() {
           final command = await commandsDao.createCommand();
           expect(command.variableName, null);
           final updatedCommand = await commandsDao.setVariableName(
-            commandId: command.id,
+            command: command,
             variableName: 'pinned',
           );
           expect(updatedCommand.id, command.id);
@@ -430,7 +431,7 @@ void main() {
           final command = await commandsDao.createCommand();
           expect(command.description, 'An unremarkable command.');
           final updatedCommand = await commandsDao.setDescription(
-            commandId: command.id,
+            command: command,
             description: 'Test command.',
           );
           expect(updatedCommand.id, command.id);

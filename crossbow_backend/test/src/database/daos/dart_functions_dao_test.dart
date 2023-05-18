@@ -28,7 +28,7 @@ void main() {
           final f = await dartFunctionsDao.createDartFunction(
             description: 'Testing.',
           );
-          await dartFunctionsDao.deleteDartFunction(id: f.id);
+          await dartFunctionsDao.deleteDartFunction(dartFunction: f);
           await expectLater(
             dartFunctionsDao.getDartFunction(id: f.id),
             throwsStateError,
@@ -42,13 +42,13 @@ void main() {
           final f =
               await dartFunctionsDao.createDartFunction(description: 'Test');
           var updatedFunction = await dartFunctionsDao.setDescription(
-            dartFunctionId: f.id,
+            dartFunction: f,
             description: 'Something else',
           );
           expect(updatedFunction.id, f.id);
           expect(updatedFunction.description, 'Something else');
           updatedFunction = await dartFunctionsDao.setDescription(
-            dartFunctionId: f.id,
+            dartFunction: f,
             description: f.description,
           );
           expect(updatedFunction.id, f.id);
@@ -81,14 +81,14 @@ void main() {
           expect(f.name, 'function${f.id}');
           const name = 'doSomething';
           var updatedFunction = await dartFunctionsDao.setName(
-            dartFunctionId: f.id,
+            dartFunction: f,
             name: name,
           );
           expect(updatedFunction.id, f.id);
           expect(updatedFunction.functionName, name);
           expect(updatedFunction.name, name);
           updatedFunction = await dartFunctionsDao.setName(
-            dartFunctionId: f.id,
+            dartFunction: f,
           );
           expect(updatedFunction.id, f.id);
           expect(updatedFunction.functionName, null);

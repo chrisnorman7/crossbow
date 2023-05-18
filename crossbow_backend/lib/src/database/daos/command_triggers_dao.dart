@@ -18,21 +18,22 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
   Future<CommandTrigger> createCommandTrigger({
     required final String description,
     final GameControllerButton? gameControllerButton,
-    final int? keyboardKeyId,
+    final CommandTriggerKeyboardKey? keyboardKey,
   }) =>
       into(commandTriggers).insertReturning(
         CommandTriggersCompanion(
           description: Value(description),
           gameControllerButton: Value(gameControllerButton),
-          keyboardKeyId: Value(keyboardKeyId),
+          keyboardKeyId: Value(keyboardKey?.id),
         ),
       );
 
-  /// Get an [update] query which matches on the given [id].
+  /// Get an [update] query which matches on the given [commandTrigger].
   UpdateStatement<$CommandTriggersTable, CommandTrigger> getUpdateQuery(
-    final int id,
+    final CommandTrigger commandTrigger,
   ) =>
-      update(commandTriggers)..where((final table) => table.id.equals(id));
+      update(commandTriggers)
+        ..where((final table) => table.id.equals(commandTrigger.id));
 
   /// Get the command trigger with the given [id].
   Future<CommandTrigger> getCommandTrigger({required final int id}) {
@@ -41,38 +42,35 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Change the [description] for the command trigger with the given
-  /// [commandTriggerId].
+  /// Change the [description] for [commandTrigger].
   Future<CommandTrigger> setDescription({
-    required final int commandTriggerId,
+    required final CommandTrigger commandTrigger,
     required final String description,
   }) async =>
-      (await getUpdateQuery(commandTriggerId).writeReturning(
+      (await getUpdateQuery(commandTrigger).writeReturning(
         CommandTriggersCompanion(description: Value(description)),
       ))
           .single;
 
-  /// Set the [gameControllerButton] for the command trigger with the given
-  /// [commandTriggerId].
+  /// Set the [gameControllerButton] for [commandTrigger].
   Future<CommandTrigger> setGameControllerButton({
-    required final int commandTriggerId,
+    required final CommandTrigger commandTrigger,
     final GameControllerButton? gameControllerButton,
   }) async =>
-      (await getUpdateQuery(commandTriggerId).writeReturning(
+      (await getUpdateQuery(commandTrigger).writeReturning(
         CommandTriggersCompanion(
           gameControllerButton: Value(gameControllerButton),
         ),
       ))
           .single;
 
-  /// Set the [keyboardKeyId] for the command trigger with the given
-  /// [commandTriggerId].
+  /// Set the [keyboardKey] for the [commandTrigger].
   Future<CommandTrigger> setKeyboardKeyId({
-    required final int commandTriggerId,
-    final int? keyboardKeyId,
+    required final CommandTrigger commandTrigger,
+    final CommandTriggerKeyboardKey? keyboardKey,
   }) async =>
-      (await getUpdateQuery(commandTriggerId).writeReturning(
-        CommandTriggersCompanion(keyboardKeyId: Value(keyboardKeyId)),
+      (await getUpdateQuery(commandTrigger).writeReturning(
+        CommandTriggersCompanion(keyboardKeyId: Value(keyboardKey?.id)),
       ))
           .single;
 
@@ -83,16 +81,16 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
-  /// Delete the command trigger with the given [commandTriggerId].
+  /// Delete the [commandTrigger].
   @internal
   Future<int> deleteCommandTrigger({
-    required final int commandTriggerId,
+    required final CommandTrigger commandTrigger,
   }) =>
       (delete(commandTriggers)
-            ..where((final table) => table.id.equals(commandTriggerId)))
+            ..where((final table) => table.id.equals(commandTrigger.id)))
           .go();
 
-  /// Get the name of the command with the given [commandTriggerId].
+  /// Get the name of the command trigger with the given [commandTriggerId].
   Future<String> getCommandTriggerName({
     required final int commandTriggerId,
   }) async {
@@ -102,12 +100,12 @@ class CommandTriggersDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return commandTrigger.name;
   }
 
-  /// Set the [variableName] for the command with the given [commandTriggerId].
+  /// Set the [variableName] for [commandTrigger].
   Future<CommandTrigger> setVariableName({
-    required final int commandTriggerId,
+    required final CommandTrigger commandTrigger,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(commandTriggerId).writeReturning(
+      (await getUpdateQuery(commandTrigger).writeReturning(
         CommandTriggersCompanion(variableName: Value(variableName)),
       ))
           .single;

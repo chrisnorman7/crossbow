@@ -14,14 +14,14 @@ class PushCustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Create a new push custom level.
   Future<PushCustomLevel> createPushCustomLevel({
-    required final int customLevelId,
+    required final CustomLevel customLevel,
     final int? after,
     final double? fadeTime,
   }) =>
       into(pushCustomLevels).insertReturning(
         PushCustomLevelsCompanion(
+          customLevelId: Value(customLevel.id),
           after: Value(after),
-          customLevelId: Value(customLevelId),
           fadeLength: Value(fadeTime),
         ),
       );
@@ -31,58 +31,56 @@ class PushCustomLevelsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(pushCustomLevels)..where((final table) => table.id.equals(id)))
           .getSingle();
 
-  /// Delete the push custom level with the given [id].
+  /// Delete [pushCustomLevel].
   Future<int> deletePushCustomLevel({
-    required final int id,
+    required final PushCustomLevel pushCustomLevel,
   }) =>
-      (delete(pushCustomLevels)..where((final table) => table.id.equals(id)))
+      (delete(pushCustomLevels)
+            ..where((final table) => table.id.equals(pushCustomLevel.id)))
           .go();
 
-  /// Get an [update] query that matches the given [id].
+  /// Get an [update] query that matches [pushCustomLevel].
   UpdateStatement<$PushCustomLevelsTable, PushCustomLevel> getUpdateQuery(
-    final int id,
+    final PushCustomLevel pushCustomLevel,
   ) =>
-      update(pushCustomLevels)..where((final table) => table.id.equals(id));
+      update(pushCustomLevels)
+        ..where((final table) => table.id.equals(pushCustomLevel.id));
 
-  /// Set the [after] value for the push custom level with the given
-  /// [pushCustomLevelId].
+  /// Set the [after] value for [pushCustomLevel].
   Future<PushCustomLevel> setAfter({
-    required final int pushCustomLevelId,
+    required final PushCustomLevel pushCustomLevel,
     final int? after,
   }) async =>
-      (await getUpdateQuery(pushCustomLevelId)
+      (await getUpdateQuery(pushCustomLevel)
               .writeReturning(PushCustomLevelsCompanion(after: Value(after))))
           .single;
 
-  /// Set the [fadeLength] value for the push custom level with the given
-  /// [pushCustomLevelId].
+  /// Set the [fadeLength] value for the [pushCustomLevel].
   Future<PushCustomLevel> setFadeLength({
-    required final int pushCustomLevelId,
+    required final PushCustomLevel pushCustomLevel,
     final double? fadeLength,
   }) async =>
-      (await getUpdateQuery(pushCustomLevelId).writeReturning(
+      (await getUpdateQuery(pushCustomLevel).writeReturning(
         PushCustomLevelsCompanion(fadeLength: Value(fadeLength)),
       ))
           .single;
 
-  /// Set the [customLevelId] value for a push custom level with the given
-  /// [pushCustomLevelId].
+  /// Set the [customLevel] that will be pushed by [pushCustomLevel].
   Future<PushCustomLevel> setCustomLevelId({
-    required final int pushCustomLevelId,
-    required final int customLevelId,
+    required final PushCustomLevel pushCustomLevel,
+    required final CustomLevel customLevel,
   }) async =>
-      (await getUpdateQuery(pushCustomLevelId).writeReturning(
-        PushCustomLevelsCompanion(customLevelId: Value(customLevelId)),
+      (await getUpdateQuery(pushCustomLevel).writeReturning(
+        PushCustomLevelsCompanion(customLevelId: Value(customLevel.id)),
       ))
           .single;
 
-  /// Set the [variableName] for the push custom level with the given
-  /// [pushCustomLevelId].
+  /// Set the [variableName] for [pushCustomLevel].
   Future<PushCustomLevel> setVariableName({
-    required final int pushCustomLevelId,
+    required final PushCustomLevel pushCustomLevel,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(pushCustomLevelId).writeReturning(
+      (await getUpdateQuery(pushCustomLevel).writeReturning(
         PushCustomLevelsCompanion(variableName: Value(variableName)),
       ))
           .single;

@@ -17,7 +17,7 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
           expect(pinnedCommand.commandId, command.id);
@@ -31,7 +31,7 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
           final retrievedPinnedCommand =
@@ -47,17 +47,17 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
           var updatedPinnedCommand = await pinnedCommandsDao.setName(
-            pinnedCommandId: pinnedCommand.id,
+            pinnedCommand: pinnedCommand,
             name: 'Test 2',
           );
           expect(updatedPinnedCommand.id, pinnedCommand.id);
           expect(updatedPinnedCommand.name, 'Test 2');
           updatedPinnedCommand = await pinnedCommandsDao.setName(
-            pinnedCommandId: pinnedCommand.id,
+            pinnedCommand: pinnedCommand,
             name: pinnedCommand.name,
           );
           expect(updatedPinnedCommand.name, pinnedCommand.name);
@@ -69,11 +69,11 @@ void main() {
         () async {
           final command = await commandsDao.createCommand();
           final pinnedCommand = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: 'Test',
           );
           expect(
-            commandsDao.deleteCommand(id: command.id),
+            commandsDao.deleteCommand(command: command),
             throwsA(isA<SqliteException>()),
           );
           expect(
@@ -87,7 +87,7 @@ void main() {
           );
           expect(
             await pinnedCommandsDao.deletePinnedCommand(
-              pinnedCommandId: pinnedCommand.id,
+              pinnedCommand: pinnedCommand,
             ),
             1,
           );
@@ -106,15 +106,15 @@ void main() {
           await deleteQuery.go();
           final command = await commandsDao.createCommand();
           final pc1 = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: '1',
           );
           final pc3 = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: '3',
           );
           final pc2 = await pinnedCommandsDao.createPinnedCommand(
-            commandId: command.id,
+            command: command,
             name: '2',
           );
           final expected = [pc1, pc2, pc3];

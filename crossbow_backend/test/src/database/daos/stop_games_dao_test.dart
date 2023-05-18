@@ -37,12 +37,11 @@ void main() {
         () async {
           final stopGame = await stopGamesDao.createStopGame(after: 1234);
           expect(stopGame.after, 1234);
-          var updatedStopGame =
-              await stopGamesDao.setAfter(stopGameId: stopGame.id);
+          var updatedStopGame = await stopGamesDao.setAfter(stopGame: stopGame);
           expect(updatedStopGame.id, stopGame.id);
           expect(updatedStopGame.after, null);
           updatedStopGame =
-              await stopGamesDao.setAfter(stopGameId: stopGame.id, after: 4321);
+              await stopGamesDao.setAfter(stopGame: stopGame, after: 4321);
           expect(updatedStopGame.id, stopGame.id);
           expect(updatedStopGame.after, 4321);
         },
@@ -52,12 +51,11 @@ void main() {
         '.deleteStopGame',
         () async {
           var stopGame = await stopGamesDao.createStopGame();
-          expect(await stopGamesDao.deleteStopGame(stopGameId: stopGame.id), 1);
+          expect(await stopGamesDao.deleteStopGame(stopGame: stopGame), 1);
           stopGame = await stopGamesDao.createStopGame();
-          final command =
-              await commandsDao.createCommand(stopGameId: stopGame.id);
+          final command = await commandsDao.createCommand(stopGame: stopGame);
           expect(command.stopGameId, stopGame.id);
-          expect(await stopGamesDao.deleteStopGame(stopGameId: stopGame.id), 1);
+          expect(await stopGamesDao.deleteStopGame(stopGame: stopGame), 1);
           expect(
             (await commandsDao.getCommand(id: command.id)).stopGameId,
             null,
@@ -71,7 +69,7 @@ void main() {
           final stopGame = await stopGamesDao.createStopGame();
           expect(stopGame.variableName, null);
           final updatedStopGame = await stopGamesDao.setVariableName(
-            stopGameId: stopGame.id,
+            stopGame: stopGame,
             variableName: 'stopGame',
           );
           expect(updatedStopGame.id, stopGame.id);
@@ -85,7 +83,7 @@ void main() {
           final stopGame = await stopGamesDao.createStopGame();
           expect(stopGame.description, 'Stop the game.');
           final updatedStopGame = await stopGamesDao.setDescription(
-            stopGameId: stopGame.id,
+            stopGame: stopGame,
             description: 'Stop.',
           );
           expect(updatedStopGame.id, stopGame.id);

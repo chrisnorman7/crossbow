@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +29,7 @@ class PushCustomLevelListTile extends ConsumerStatefulWidget {
   final int? pushCustomLevelId;
 
   /// The function to call when the push custom level changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<PushCustomLevel?> onChanged;
 
   /// Whether the list tile should be autofocused or not.
   final bool autofocus;
@@ -68,7 +69,7 @@ class PushCustomLevelListTileState
         deleteCallback: () async {
           if (pushCustomLevel != null) {
             await pushCustomLevelsDao.deletePushCustomLevel(
-              id: pushCustomLevel.id,
+              pushCustomLevel: pushCustomLevel,
             );
             widget.onChanged(null);
           }
@@ -87,9 +88,9 @@ class PushCustomLevelListTileState
                     onChanged: (final value) async {
                       final newPushCustomLevel =
                           await pushCustomLevelsDao.createPushCustomLevel(
-                        customLevelId: value,
+                        customLevel: value,
                       );
-                      widget.onChanged(newPushCustomLevel.id);
+                      widget.onChanged(newPushCustomLevel);
                       if (mounted) {
                         await pushWidget(
                           context: context,

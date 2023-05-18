@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +29,7 @@ class PushMenuListTile extends ConsumerStatefulWidget {
   final int? pushMenuId;
 
   /// The function to call when the push menu changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<PushMenu?> onChanged;
 
   /// Whether the list tile should be autofocused or not.
   final bool autofocus;
@@ -66,7 +67,7 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
       child: CommonShortcuts(
         deleteCallback: () async {
           if (pushMenu != null) {
-            await pushMenusDao.deletePushMenu(id: pushMenu.id);
+            await pushMenusDao.deletePushMenu(pushMenu: pushMenu);
             widget.onChanged(null);
           }
         },
@@ -83,9 +84,9 @@ class PushMenuListTileState extends ConsumerState<PushMenuListTile> {
                   builder: (final context) => SelectMenuScreen(
                     onChanged: (final value) async {
                       final newPushMenu = await pushMenusDao.createPushMenu(
-                        menuId: value,
+                        menu: value,
                       );
-                      widget.onChanged(newPushMenu.id);
+                      widget.onChanged(newPushMenu);
                       if (mounted) {
                         await pushWidget(
                           context: context,

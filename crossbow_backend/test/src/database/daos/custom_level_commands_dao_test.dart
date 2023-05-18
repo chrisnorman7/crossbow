@@ -26,8 +26,8 @@ void main() {
         () async {
           final level = await customLevelsDao.createCustomLevel(name: 'Level');
           final command = await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           expect(command.commandTriggerId, commandTrigger.id);
           expect(command.customLevelId, level.id);
@@ -40,8 +40,8 @@ void main() {
         () async {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final command = await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final retrievedCommand = await customLevelCommandsDao
               .getCustomLevelCommand(id: command.id);
@@ -59,19 +59,19 @@ void main() {
           );
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final command = await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
-          var updatedCommand = await customLevelCommandsDao.setCommandTriggerId(
-            customLevelCommandId: command.id,
-            commandTriggerId: commandTrigger2.id,
+          var updatedCommand = await customLevelCommandsDao.setCommandTrigger(
+            customLevelCommand: command,
+            commandTrigger: commandTrigger2,
           );
           expect(updatedCommand.commandTriggerId, commandTrigger2.id);
           expect(updatedCommand.customLevelId, level.id);
           expect(updatedCommand.id, command.id);
-          updatedCommand = await customLevelCommandsDao.setCommandTriggerId(
-            customLevelCommandId: command.id,
-            commandTriggerId: commandTrigger.id,
+          updatedCommand = await customLevelCommandsDao.setCommandTrigger(
+            customLevelCommand: command,
+            commandTrigger: commandTrigger,
           );
           expect(updatedCommand.commandTriggerId, commandTrigger.id);
           expect(updatedCommand.customLevelId, level.id);
@@ -85,17 +85,17 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final command1 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final command2 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           expect(
             await customLevelCommandsDao.deleteCustomLevelCommand(
-              id: command1.id,
+              customLevelCommand: command1,
             ),
             1,
           );
@@ -119,20 +119,20 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final customLevelCommand =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final command = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCustomLevelCommandId: customLevelCommand.id,
+            command: command,
+            callingCustomLevelCommand: customLevelCommand,
           );
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCustomLevelCommandId: customLevelCommand.id,
+            command: command,
+            callingCustomLevelCommand: customLevelCommand,
           );
           final callCommands = await customLevelCommandsDao.getCallCommands(
-            customLevelCommandId: customLevelCommand.id,
+            customLevelCommand: customLevelCommand,
           );
           expect(callCommands.length, 2);
           expect(callCommands.first.id, callCommand1.id);
@@ -146,20 +146,20 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final customLevelCommand =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final command = await commandsDao.createCommand();
           final callCommand1 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            releasingCustomLevelCommandId: customLevelCommand.id,
+            command: command,
+            releasingCustomLevelCommand: customLevelCommand,
           );
           final callCommand2 = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            releasingCustomLevelCommandId: customLevelCommand.id,
+            command: command,
+            releasingCustomLevelCommand: customLevelCommand,
           );
           final callCommands = await customLevelCommandsDao.getReleaseCommands(
-            customLevelCommandId: customLevelCommand.id,
+            customLevelCommand: customLevelCommand,
           );
           expect(callCommands.length, 2);
           expect(callCommands.first.id, callCommand1.id);
@@ -173,18 +173,18 @@ void main() {
           final level =
               await customLevelsDao.createCustomLevel(name: 'Test Level');
           final command = await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
             interval: 1000,
           );
           expect(command.interval, 1000);
           var updatedCommand = await customLevelCommandsDao.setInterval(
-            customLevelCommandId: command.id,
+            customLevelCommand: command,
           );
           expect(updatedCommand.id, command.id);
           expect(updatedCommand.interval, null);
           updatedCommand = await customLevelCommandsDao.setInterval(
-            customLevelCommandId: command.id,
+            customLevelCommand: command,
             interval: 5000,
           );
           expect(updatedCommand.id, command.id);

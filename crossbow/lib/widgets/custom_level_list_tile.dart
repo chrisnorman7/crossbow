@@ -30,7 +30,7 @@ class CustomLevelListTile extends ConsumerWidget {
   final int? customLevelId;
 
   /// The function to call when the custom level changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<CustomLevel?> onChanged;
 
   /// The title for this list tile.
   final String? title;

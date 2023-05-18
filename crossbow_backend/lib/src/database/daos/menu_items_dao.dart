@@ -14,22 +14,22 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create an instance.
   MenuItemsDao(super.db);
 
-  /// Create a menu item in the menu with the given [menuId].
+  /// Create a menu item in the [menu].
   ///
   /// The created [MenuItem] will have the given [name].
   Future<MenuItem> createMenuItem({
-    required final int menuId,
+    required final Menu menu,
     required final String name,
-    final int? activateSoundId,
+    final AssetReference? activateSound,
     final int position = 0,
-    final int? selectSoundId,
+    final AssetReference? selectSound,
   }) =>
       into(menuItems).insertReturning(
         MenuItemsCompanion(
-          menuId: Value(menuId),
+          menuId: Value(menu.id),
           name: Value(name),
-          activateSoundId: Value(activateSoundId),
-          selectSoundId: Value(selectSoundId),
+          activateSoundId: Value(activateSound?.id),
+          selectSoundId: Value(selectSound?.id),
           position: Value(position),
         ),
       );
@@ -41,80 +41,84 @@ class MenuItemsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Get the menu items for the menu with the given [menuId].
+  /// Get the menu items for [menu].
   Future<List<MenuItem>> getMenuItems({
-    required final int menuId,
+    required final Menu menu,
   }) {
     final query = select(menuItems)
-      ..where((final table) => table.menuId.equals(menuId))
+      ..where((final table) => table.menuId.equals(menu.id))
       ..orderBy([(final table) => OrderingTerm.asc(table.position)]);
     return query.get();
   }
 
-  /// Get an [update] query that matches [id].
-  UpdateStatement<$MenuItemsTable, MenuItem> getUpdateQuery(final int id) =>
-      update(menuItems)..where((final table) => table.id.equals(id));
+  /// Get an [update] query that matches [menuItem].
+  UpdateStatement<$MenuItemsTable, MenuItem> getUpdateQuery(
+    final MenuItem menuItem,
+  ) =>
+      update(menuItems)..where((final table) => table.id.equals(menuItem.id));
 
-  /// Move the [MenuItem] with the given [menuItemId] to the new [position].
+  /// Move [menuItem] to the new [position].
   Future<MenuItem> moveMenuItem({
-    required final int menuItemId,
+    required final MenuItem menuItem,
     required final int position,
   }) async =>
-      (await getUpdateQuery(menuItemId)
+      (await getUpdateQuery(menuItem)
               .writeReturning(MenuItemsCompanion(position: Value(position))))
           .single;
 
-  /// Delete the menu item with the given [id].
+  /// Delete [menuItem].
   @internal
-  Future<int> deleteMenuItem({required final int id}) {
+  Future<int> deleteMenuItem({required final MenuItem menuItem}) {
     final query = delete(menuItems)
-      ..where((final table) => table.id.equals(id));
+      ..where((final table) => table.id.equals(menuItem.id));
     return query.go();
   }
 
-  /// Rename the menu item with the given [menuItemId].
+  /// Rename [menuItem] to [name].
   Future<MenuItem> setName({
-    required final int menuItemId,
+    required final MenuItem menuItem,
     required final String name,
   }) async =>
-      (await getUpdateQuery(menuItemId)
+      (await getUpdateQuery(menuItem)
               .writeReturning(MenuItemsCompanion(name: Value(name))))
           .single;
 
-  /// Set the select sound for the menu item with the given [menuItemId].
-  Future<MenuItem> setSelectSoundId({
-    required final int menuItemId,
-    final int? selectSoundId,
+  /// Set the [selectSound] for [menuItem].
+  Future<MenuItem> setSelectSound({
+    required final MenuItem menuItem,
+    final AssetReference? selectSound,
   }) async =>
-      (await getUpdateQuery(menuItemId).writeReturning(
-        MenuItemsCompanion(selectSoundId: Value(selectSoundId)),
+      (await getUpdateQuery(menuItem).writeReturning(
+        MenuItemsCompanion(selectSoundId: Value(selectSound?.id)),
       ))
           .single;
 
-  /// Set the select sound for the menu item with the given [menuItemId].
-  Future<MenuItem> setActivateSoundId({
-    required final int menuItemId,
-    final int? activateSoundId,
+  /// Set the [activateSound] for [menuItem].
+  Future<MenuItem> setActivateSound({
+    required final MenuItem menuItem,
+    final AssetReference? activateSound,
   }) async =>
-      (await getUpdateQuery(menuItemId).writeReturning(
-        MenuItemsCompanion(activateSoundId: Value(activateSoundId)),
+      (await getUpdateQuery(menuItem).writeReturning(
+        MenuItemsCompanion(activateSoundId: Value(activateSound?.id)),
       ))
           .single;
 
-  /// Get the calling commands for the menu item with the given [menuItemId].
-  Future<List<CallCommand>> getCallCommands({required final int menuItemId}) =>
+  /// Get the calling commands for [menuItem].
+  Future<List<CallCommand>> getCallCommands({
+    required final MenuItem menuItem,
+  }) =>
       (select(callCommands)
             ..where(
-              (final table) => table.callingMenuItemId.equals(menuItemId),
+              (final table) => table.callingMenuItemId.equals(menuItem.id),
             ))
           .get();
 
-  /// Set the [variableName] for the menu item with the given [menuItemId].
+  /// Set the [variableName] for [menuItem].
   Future<MenuItem> setVariableName({
-    required final int menuItemId,
+    required final MenuItem menuItem,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(menuItemId).writeReturning(
+      (await getUpdateQuery(menuItem).writeReturning(
         MenuItemsCompanion(variableName: Value(variableName)),
       ))
           .single;

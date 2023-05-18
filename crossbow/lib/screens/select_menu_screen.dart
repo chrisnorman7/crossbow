@@ -18,7 +18,7 @@ class SelectMenuScreen extends ConsumerWidget {
   });
 
   /// The function to call when a new menu is selected.
-  final ValueChanged<int> onChanged;
+  final ValueChanged<Menu> onChanged;
 
   /// The ID of the current menu.
   final int? currentMenuId;
@@ -40,7 +40,7 @@ class SelectMenuScreen extends ConsumerWidget {
     final menuId = currentMenuId;
     return SelectItem(
       values: menus,
-      onDone: (final value) => onChanged(value.id),
+      onDone: onChanged,
       getSearchString: (final value) => value.name,
       getWidget: (final value) => AssetReferencePlaySoundSemantics(
         assetReferenceId: value.musicId,

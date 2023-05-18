@@ -41,7 +41,7 @@ void main() async {
     name: 'boots',
     gain: 0.5,
   );
-  final command = await db.commandsDao.createCommand(messageSoundId: clink.id);
+  final command = await db.commandsDao.createCommand(messageSound: clink);
   final project = Project(
     projectName: 'Test Project',
     initialCommandId: command.id,
@@ -102,7 +102,7 @@ void main() async {
           final forwardsTrigger = await commandTriggersDao.createCommandTrigger(
             description: 'Forward',
             gameControllerButton: GameControllerButton.dpadUp,
-            keyboardKeyId: forwardsKey.id,
+            keyboardKey: forwardsKey,
           );
           var triggerMap = await projectRunner.getTriggerMap();
           var triggers = triggerMap.triggers;
@@ -126,7 +126,7 @@ void main() async {
           final saveTrigger = await commandTriggersDao.createCommandTrigger(
             description: 'Save the game',
             gameControllerButton: GameControllerButton.leftshoulder,
-            keyboardKeyId: saveKeyboardKey.id,
+            keyboardKey: saveKeyboardKey,
           );
           triggerMap = await projectRunner.getTriggerMap();
           triggers = triggerMap.triggers;
@@ -241,12 +241,12 @@ void main() async {
         () async {
           final command = await commandsDao.createCommand();
           var callCommand = await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCommandId: command.id,
+            command: command,
+            callingCommand: command,
           );
           expect(await projectRunner.callCommandShouldRun(callCommand), true);
           callCommand = await callCommandsDao.setRandomNumberBase(
-            callCommandId: callCommand.id,
+            callCommand: callCommand,
             randomNumberBase: 1,
           );
           // Now the random number generator will always return `0`, so the
@@ -286,33 +286,33 @@ void main() async {
           );
           final menu = await menusDao.createMenu(
             name: 'Test Menu',
-            activateItemSoundId: activateItemSound.id,
-            musicId: music.id,
-            selectItemSoundId: selectItemSound.id,
+            activateItemSound: activateItemSound,
+            music: music,
+            selectItemSound: selectItemSound,
           );
           final quitCommand = await commandsDao.createCommand();
           final playCommand = await commandsDao.createCommand();
           final quit = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Quit',
             position: 2,
-            selectSoundId: quitMessage.id,
+            selectSound: quitMessage,
           );
           await callCommandsDao.createCallCommand(
-            commandId: quitCommand.id,
-            callingMenuItemId: quit.id,
+            command: quitCommand,
+            callingMenuItem: quit,
           );
           final play = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Play',
-            selectSoundId: playMessage.id,
+            selectSound: playMessage,
           );
           await callCommandsDao.createCallCommand(
-            commandId: playCommand.id,
-            callingMenuItemId: play.id,
+            command: playCommand,
+            callingMenuItem: play,
           );
           final label = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: '...',
           );
           final menuLevel = await projectRunner.getMenuLevel(menu);
@@ -387,8 +387,8 @@ void main() async {
           expect(level.game, projectRunner.game);
           expect(level.music, null);
           customLevel = await customLevelsDao.setMusicId(
-            customLevelId: customLevel.id,
-            musicId: clink.id,
+            customLevel: customLevel,
+            music: clink,
           );
           level = await projectRunner.getCustomLevel(customLevel);
           expect(level.ambiances, isEmpty);
@@ -404,8 +404,8 @@ void main() async {
           );
           final command1 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: customLevel.id,
-            commandTriggerId: trigger1.id,
+            customLevel: customLevel,
+            commandTrigger: trigger1,
             interval: 1000,
           );
           var runner = ProjectRunner(
@@ -424,8 +424,8 @@ void main() async {
           expect(level.commands, isEmpty);
           final command = await commandsDao.createCommand();
           await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCustomLevelCommandId: command1.id,
+            command: command,
+            callingCustomLevelCommand: command1,
           );
           level = await runner.getCustomLevel(customLevel);
           final levelCommand = level.commands.values.single;
@@ -438,16 +438,16 @@ void main() async {
           );
           final command2 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: customLevel.id,
-            commandTriggerId: trigger2.id,
+            customLevel: customLevel,
+            commandTrigger: trigger2,
           );
           await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            callingCustomLevelCommandId: command2.id,
+            command: command,
+            callingCustomLevelCommand: command2,
           );
           await callCommandsDao.createCallCommand(
-            commandId: command.id,
-            releasingCustomLevelCommandId: command2.id,
+            command: command,
+            releasingCustomLevelCommand: command2,
           );
           runner = ProjectRunner(
             projectContext: projectContext,

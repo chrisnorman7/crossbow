@@ -53,7 +53,7 @@ class EditDartFunctionScreen extends ConsumerWidget {
       children: [
         CommonShortcuts(
           deleteCallback: () async {
-            await dartFunctionsDao.setName(dartFunctionId: f.id);
+            await dartFunctionsDao.setName(dartFunction: f);
             invalidateDartFunctionProvider(ref);
           },
           copyText: f.name,
@@ -62,7 +62,7 @@ class EditDartFunctionScreen extends ConsumerWidget {
             variableName: f.name,
             onChanged: (final value) async {
               await dartFunctionsDao.setName(
-                dartFunctionId: f.id,
+                dartFunction: f,
                 name: value,
               );
               invalidateDartFunctionProvider(ref);
@@ -78,7 +78,7 @@ class EditDartFunctionScreen extends ConsumerWidget {
           value: f.description,
           onChanged: (final value) async {
             await dartFunctionsDao.setDescription(
-              dartFunctionId: f.id,
+              dartFunction: f,
               description: value,
             );
             invalidateDartFunctionProvider(ref);

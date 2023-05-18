@@ -249,7 +249,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                         PlaySoundSemantics.of(context)?.stop();
                         final menuItems =
                             await projectContext.db.menuItemsDao.getMenuItems(
-                          menuId: menu.id,
+                          menu: menu,
                         );
                         if (mounted) {
                           if (menuItems.isEmpty) {
@@ -406,7 +406,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                       )!;
                       await projectContext.db.dartFunctionsDao
                           .deleteDartFunction(
-                        id: f.id,
+                        dartFunction: f,
                       );
                       ref.invalidate(dartFunctionsProvider);
                     },
@@ -504,7 +504,9 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                 child: CommonShortcuts(
                   deleteCallback: () async {
                     final commands = await projectContext.db.customLevelsDao
-                        .getCustomLevelCommands(customLevelId: level.id);
+                        .getCustomLevelCommands(
+                      customLevel: level,
+                    );
                     if (commands.isNotEmpty) {
                       if (mounted) {
                         await intlShowMessage(

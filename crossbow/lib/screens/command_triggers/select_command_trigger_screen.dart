@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/screens.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +18,7 @@ class SelectCommandTriggerScreen extends ConsumerWidget {
   });
 
   /// The function to call with the new command trigger.
-  final ValueChanged<int> onChanged;
+  final ValueChanged<CommandTrigger> onChanged;
 
   /// The ID of the current command trigger.
   final int? currentCommandTriggerId;
@@ -42,7 +43,7 @@ class SelectCommandTriggerScreen extends ConsumerWidget {
         }
         return SelectItem<CommandTriggerContext>(
           values: data,
-          onDone: (final value) => onChanged(value.value.id),
+          onDone: (final value) => onChanged(value.value),
           getSearchString: (final value) => value.value.description,
           getWidget: (final value) => Text(value.value.description),
           title: selectCommandTriggerMessage,

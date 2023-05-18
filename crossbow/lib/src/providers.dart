@@ -118,8 +118,7 @@ final commandProvider = FutureProvider.family<CommandContext, int>(
     }
     final commandsDao = projectContext.db.commandsDao;
     final command = await commandsDao.getCommand(id: id);
-    final pinnedCommand =
-        await commandsDao.getPinnedCommand(commandId: command.id);
+    final pinnedCommand = await commandsDao.getPinnedCommand(command: command);
     return CommandContext(
       projectContext: projectContext,
       value: command,
@@ -225,8 +224,11 @@ final menuProvider = FutureProvider.family<MenuContext, int>(
       throw StateError('Cannot get menu with `null` project context.');
     }
     final menu = await projectContext.db.menusDao.getMenu(id: arg);
-    final menuItems = await projectContext.db.menuItemsDao.getMenuItems(
-      menuId: arg,
+    final db = projectContext.db;
+    final menuItemsDao2 = db.menuItemsDao;
+    final menusDao = db.menusDao;
+    final menuItems = await menuItemsDao2.getMenuItems(
+      menu: await menusDao.getMenu(id: arg),
     );
     return MenuContext(
       projectContext: projectContext,
@@ -266,29 +268,44 @@ final callCommandsProvider =
     final customLevelCommandsDao = db.customLevelCommandsDao;
     switch (arg.target) {
       case CallCommandsTarget.command:
-        callCommands = await commandsDao.getCallCommands(commandId: id);
+        callCommands = await commandsDao.getCallCommands(
+          command: await commandsDao.getCommand(
+            id: id,
+          ),
+        );
         break;
       case CallCommandsTarget.menuItem:
-        callCommands = await db.menuItemsDao.getCallCommands(menuItemId: id);
+        callCommands = await db.menuItemsDao.getCallCommands(
+          menuItem: await db.menuItemsDao.getMenuItem(id: id),
+        );
         break;
       case CallCommandsTarget.menuOnCancel:
-        callCommands = await db.menusDao.getOnCancelCallCommands(menuId: id);
+        final menusDao = db.menusDao;
+        callCommands = await menusDao.getOnCancelCallCommands(
+          menu: await menusDao.getMenu(id: id),
+        );
         break;
       case CallCommandsTarget.activatingCustomLevelCommand:
         callCommands = await customLevelCommandsDao.getCallCommands(
-          customLevelCommandId: id,
+          customLevelCommand:
+              await customLevelCommandsDao.getCustomLevelCommand(
+            id: id,
+          ),
         );
         break;
       case CallCommandsTarget.releaseCustomLevelCommand:
         callCommands = await customLevelCommandsDao.getReleaseCommands(
-          customLevelCommandId: id,
+          customLevelCommand:
+              await customLevelCommandsDao.getCustomLevelCommand(
+            id: id,
+          ),
         );
         break;
     }
     final futures = callCommands.map<Future<CallCommandContext>>(
       (final e) async {
         final pinnedCommand = await commandsDao.getPinnedCommand(
-          commandId: e.commandId,
+          command: await commandsDao.getCommand(id: e.commandId),
         );
         return CallCommandContext(
           projectContext: projectContext,
@@ -440,9 +457,9 @@ final customLevelCommandsProvider =
     FutureProvider.family<List<CustomLevelCommandContext>, int>(
   (final ref, final arg) async {
     final projectContext = ref.watch(projectContextNotifierProvider)!;
-    final commands =
-        await projectContext.db.customLevelsDao.getCustomLevelCommands(
-      customLevelId: arg,
+    final customLevelsDao = projectContext.db.customLevelsDao;
+    final commands = await customLevelsDao.getCustomLevelCommands(
+      customLevel: await customLevelsDao.getCustomLevel(id: arg),
     );
     final futures = commands.map<Future<CustomLevelCommandContext>>(
       (final e) async {

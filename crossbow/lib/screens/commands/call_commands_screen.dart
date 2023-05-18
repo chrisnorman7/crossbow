@@ -86,7 +86,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                   context: context,
                   builder: (final context) => SelectPinnedCommandScreen(
                     onChanged: (final value) =>
-                        newCallCommand(commandId: value?.commandId),
+                        newCallCommand(pinnedCommand: value),
                   ),
                 ),
                 child: Text(Intl.message('New Pinned Call Command')),
@@ -109,48 +109,51 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
 
   /// Create a new call command.
   Future<void> newCallCommand({
-    final int? commandId,
+    final PinnedCommand? pinnedCommand,
   }) async {
     final callingId = widget.callCommandsContext.id;
     final projectContext = ref.watch(projectContextNotifierProvider)!;
     final db = projectContext.db;
     final callCommandsDao = db.callCommandsDao;
-    final int actualCommandId;
-    if (commandId == null) {
-      final command = await db.commandsDao.createCommand();
-      actualCommandId = command.id;
+    final commandsDao = db.commandsDao;
+    final customLevelCommandsDao = db.customLevelCommandsDao;
+    final Command actualCommand;
+    if (pinnedCommand == null) {
+      actualCommand = await db.commandsDao.createCommand();
     } else {
-      actualCommandId = commandId;
+      actualCommand = await commandsDao.getCommand(id: pinnedCommand.commandId);
     }
     switch (widget.callCommandsContext.target) {
       case CallCommandsTarget.command:
         await callCommandsDao.createCallCommand(
-          commandId: actualCommandId,
-          callingCommandId: callingId,
+          command: actualCommand,
+          callingCommand: await commandsDao.getCommand(id: callingId),
         );
         break;
       case CallCommandsTarget.menuItem:
         await callCommandsDao.createCallCommand(
-          commandId: actualCommandId,
-          callingMenuItemId: callingId,
+          command: actualCommand,
+          callingMenuItem: await db.menuItemsDao.getMenuItem(id: callingId),
         );
         break;
       case CallCommandsTarget.menuOnCancel:
         await callCommandsDao.createCallCommand(
-          commandId: actualCommandId,
-          onCancelMenuId: callingId,
+          command: actualCommand,
+          onCancelMenu: await db.menusDao.getMenu(id: callingId),
         );
         break;
       case CallCommandsTarget.activatingCustomLevelCommand:
         await callCommandsDao.createCallCommand(
-          commandId: actualCommandId,
-          callingCustomLevelCommandId: callingId,
+          command: actualCommand,
+          callingCustomLevelCommand:
+              await customLevelCommandsDao.getCustomLevelCommand(id: callingId),
         );
         break;
       case CallCommandsTarget.releaseCustomLevelCommand:
         await callCommandsDao.createCallCommand(
-          commandId: actualCommandId,
-          releasingCustomLevelCommandId: callingId,
+          command: actualCommand,
+          releasingCustomLevelCommand:
+              await customLevelCommandsDao.getCustomLevelCommand(id: callingId),
         );
         break;
     }
@@ -170,7 +173,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
       title: confirmDeleteTitle,
       yesCallback: () async {
         await projectContext.db.callCommandsDao
-            .deleteCallCommand(callCommandId: callCommand.id);
+            .deleteCallCommand(callCommand: callCommand);
         invalidateCallCommandsProvider();
         if (mounted) {
           Navigator.pop(context);
@@ -192,7 +195,6 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
     final commandsDao = db.commandsDao;
     final utilsDao = db.utilsDao;
     final callCommand = callCommandContext.value;
-    final callCommandId = callCommand.id;
     final pinnedCommand = callCommandContext.pinnedCommand;
     final after = callCommand.after;
     final randomNumberBase = callCommand.randomNumberBase;
@@ -211,12 +213,12 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
                         if (value == null) {
                           final command = await commandsDao.createCommand();
                           await callCommandsDao.setCommandId(
-                            callCommandId: callCommand.id,
+                            callCommand: callCommand,
                             commandId: command.id,
                           );
                         } else {
                           await callCommandsDao.setCommandId(
-                            callCommandId: callCommand.id,
+                            callCommand: callCommand,
                             commandId: value.commandId,
                           );
                           if (pinnedCommand == null) {
@@ -259,7 +261,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
             seconds: after == null ? null : after / 1000.0,
             onChanged: (final value) async {
               await callCommandsDao.setAfter(
-                callCommandId: callCommandId,
+                callCommand: callCommand,
                 after: value == null ? null : (value * 1000).floor(),
               );
               invalidateCallCommandsProvider();
@@ -272,7 +274,7 @@ class CallCommandsScreenState extends ConsumerState<CallCommandsScreen> {
             chance: randomNumberBase,
             onChanged: (final value) async {
               await callCommandsDao.setRandomNumberBase(
-                callCommandId: callCommandId,
+                callCommand: callCommand,
                 randomNumberBase: value,
               );
               invalidateCallCommandsProvider();

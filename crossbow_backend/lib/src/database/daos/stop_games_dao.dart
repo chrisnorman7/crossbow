@@ -23,42 +23,44 @@ class StopGamesDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Get an [update] query that matches [id].
-  UpdateStatement<$StopGamesTable, StopGame> getUpdateQuery(final int id) =>
-      update(stopGames)..where((final table) => table.id.equals(id));
+  /// Get an [update] query that matches [stopGame].
+  UpdateStatement<$StopGamesTable, StopGame> getUpdateQuery(
+    final StopGame stopGame,
+  ) =>
+      update(stopGames)..where((final table) => table.id.equals(stopGame.id));
 
-  /// Set the [after] value for the stop game with the given [stopGameId].
+  /// Set the [after] value for [stopGame].
   Future<StopGame> setAfter({
-    required final int stopGameId,
+    required final StopGame stopGame,
     final int? after,
   }) async =>
-      (await getUpdateQuery(stopGameId)
+      (await getUpdateQuery(stopGame)
               .writeReturning(StopGamesCompanion(after: Value(after))))
           .single;
 
-  /// Delete the stop game with the given [stopGameId].
-  Future<int> deleteStopGame({required final int stopGameId}) async {
+  /// Delete [stopGame].
+  Future<int> deleteStopGame({required final StopGame stopGame}) async {
     final query = delete(stopGames)
-      ..where((final table) => table.id.equals(stopGameId));
+      ..where((final table) => table.id.equals(stopGame.id));
     return query.go();
   }
 
-  /// Set the [variableName] for the stop game with the given [stopGameId].
+  /// Set the [variableName] for [stopGame].
   Future<StopGame> setVariableName({
-    required final int stopGameId,
+    required final StopGame stopGame,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(stopGameId).writeReturning(
+      (await getUpdateQuery(stopGame).writeReturning(
         StopGamesCompanion(variableName: Value(variableName)),
       ))
           .single;
 
-  /// Set the [description] for the stop game with the given [stopGameId].
+  /// Set the [description] for [stopGame].
   Future<StopGame> setDescription({
-    required final int stopGameId,
+    required final StopGame stopGame,
     required final String description,
   }) async =>
-      (await getUpdateQuery(stopGameId).writeReturning(
+      (await getUpdateQuery(stopGame).writeReturning(
         StopGamesCompanion(description: Value(description)),
       ))
           .single;

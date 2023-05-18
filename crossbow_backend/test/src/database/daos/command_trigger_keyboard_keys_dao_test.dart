@@ -31,7 +31,7 @@ void main() {
             scanCode: ScanCode.t,
           );
           final updatedKey = await keyboardKeysDao.setScanCode(
-            commandTriggerKeyboardKeyId: key.id,
+            commandTriggerKeyboardKey: key,
             scanCode: ScanCode.q,
           );
           expect(updatedKey.id, key.id);
@@ -57,12 +57,12 @@ void main() {
           expect(key.shift, true);
           expect(
             keyboardKeysDao.setModifiers(
-              commandTriggerKeyboardKeyId: key.id,
+              commandTriggerKeyboardKey: key,
             ),
             throwsStateError,
           );
           var updatedKey = await keyboardKeysDao.setModifiers(
-            commandTriggerKeyboardKeyId: key.id,
+            commandTriggerKeyboardKey: key,
             alt: false,
           );
           expect(updatedKey.id, key.id);
@@ -71,7 +71,7 @@ void main() {
           expect(updatedKey.control, true);
           expect(updatedKey.shift, true);
           updatedKey = await keyboardKeysDao.setModifiers(
-            commandTriggerKeyboardKeyId: key.id,
+            commandTriggerKeyboardKey: updatedKey,
             control: false,
           );
           expect(updatedKey.id, key.id);
@@ -80,7 +80,7 @@ void main() {
           expect(updatedKey.control, false);
           expect(updatedKey.shift, true);
           updatedKey = await keyboardKeysDao.setModifiers(
-            commandTriggerKeyboardKeyId: key.id,
+            commandTriggerKeyboardKey: updatedKey,
             shift: false,
           );
           expect(updatedKey.id, key.id);
@@ -89,7 +89,7 @@ void main() {
           expect(updatedKey.control, false);
           expect(updatedKey.shift, false);
           updatedKey = await keyboardKeysDao.setModifiers(
-            commandTriggerKeyboardKeyId: key.id,
+            commandTriggerKeyboardKey: updatedKey,
             alt: true,
             control: true,
             shift: true,
@@ -111,7 +111,7 @@ void main() {
           );
           expect(
             await keyboardKeysDao.deleteCommandTriggerKeyboardKey(
-              commandTriggerKeyboardKeyId: key.id,
+              commandTriggerKeyboardKey: key,
             ),
             1,
           );

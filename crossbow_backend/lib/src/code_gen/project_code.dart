@@ -231,7 +231,7 @@ class ProjectCode {
         }
         encryptionKeys[assetReference.id] = imported.reference.encryptionKey!;
         await db.assetReferencesDao.editAssetReference(
-          assetReferenceId: assetReference.id,
+          assetReference: assetReference,
           folderName: folderName,
           name: path.basename(imported.reference.name),
           comment: fullPath,
@@ -239,7 +239,7 @@ class ProjectCode {
       } else {
         final assetReferenceReference = existing.first;
         await db.assetReferencesDao.editAssetReference(
-          assetReferenceId: assetReference.id,
+          assetReference: assetReference,
           folderName: folderName,
           name: path.basename(assetReferenceReference.reference.name),
         );

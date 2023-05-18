@@ -1,4 +1,5 @@
 import 'package:backstreets_widgets/screens.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +17,7 @@ class SelectDartFunctionScreen extends ConsumerWidget {
   });
 
   /// The function to call with a new dart function.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<DartFunction?> onChanged;
 
   /// The ID of the current dart function.
   final int? currentDartFunctionId;
@@ -29,7 +30,7 @@ class SelectDartFunctionScreen extends ConsumerWidget {
     return value.when(
       data: (final data) => SelectItem(
         values: [null, ...data],
-        onDone: (final value) => onChanged(value?.id),
+        onDone: onChanged,
         getSearchString: (final value) => value?.description ?? clearMessage,
         getWidget: (final value) => Text(value?.description ?? clearMessage),
         title: Intl.message('Select Dart Function'),

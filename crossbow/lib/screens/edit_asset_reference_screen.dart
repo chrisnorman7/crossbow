@@ -47,9 +47,10 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                     builder: (final context) => SelectAssetScreen(
                       onChanged: (final value) async {
                         await assetReferencesDao.editAssetReference(
-                          assetReferenceId: assetReferenceId,
+                          assetReference: assetReference,
                           folderName: value.folderName,
                           name: value.name,
+                          comment: assetReference.comment,
                         );
                         invalidateAssetReferenceProvider(ref);
                       },
@@ -64,7 +65,7 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                   value: assetReference.gain,
                   onChanged: (final value) async {
                     await assetReferencesDao.setGain(
-                      assetReferenceId: assetReferenceId,
+                      assetReference: assetReference,
                       gain: value,
                     );
                     invalidateAssetReferenceProvider(ref);
@@ -77,7 +78,7 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                   value: assetReference.comment ?? unsetMessage,
                   onChanged: (final value) async {
                     await assetReferencesDao.editAssetReference(
-                      assetReferenceId: assetReferenceId,
+                      assetReference: assetReference,
                       folderName: assetReference.folderName,
                       name: assetReference.name,
                       comment: value.isEmpty ? null : value,
@@ -99,7 +100,7 @@ class EditAssetReferenceScreen extends ConsumerWidget {
                   },
                   onChanged: (final value) async {
                     await assetReferencesDao.setVariableName(
-                      assetReferenceId: assetReferenceId,
+                      assetReference: assetReference,
                       variableName: value,
                     );
                     invalidateAssetReferenceProvider(ref);

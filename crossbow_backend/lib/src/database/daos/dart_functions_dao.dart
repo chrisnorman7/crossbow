@@ -22,28 +22,30 @@ class DartFunctionsDao extends DatabaseAccessor<CrossbowBackendDatabase>
         ),
       );
 
-  /// Delete the function with the given [id].
-  Future<int> deleteDartFunction({required final int id}) =>
-      (delete(dartFunctions)..where((final table) => table.id.equals(id))).go();
+  /// Delete [dartFunction].
+  Future<int> deleteDartFunction({required final DartFunction dartFunction}) =>
+      (delete(dartFunctions)
+            ..where((final table) => table.id.equals(dartFunction.id)))
+          .go();
 
   /// Get the function with the given [id].
   Future<DartFunction> getDartFunction({required final int id}) =>
       (select(dartFunctions)..where((final table) => table.id.equals(id)))
           .getSingle();
 
-  /// Get an [update] query that matches on [id].
+  /// Get an [update] query that matches [dartFunction].
   UpdateStatement<$DartFunctionsTable, DartFunction> getUpdateQuery(
-    final int id,
+    final DartFunction dartFunction,
   ) =>
-      update(dartFunctions)..where((final table) => table.id.equals(id));
+      update(dartFunctions)
+        ..where((final table) => table.id.equals(dartFunction.id));
 
-  /// Set the [description] value for the dart function with the given
-  /// [dartFunctionId].
+  /// Set the [description] for [dartFunction].
   Future<DartFunction> setDescription({
-    required final int dartFunctionId,
+    required final DartFunction dartFunction,
     required final String description,
   }) async =>
-      (await getUpdateQuery(dartFunctionId).writeReturning(
+      (await getUpdateQuery(dartFunction).writeReturning(
         DartFunctionsCompanion(description: Value(description)),
       ))
           .single;
@@ -55,12 +57,12 @@ class DartFunctionsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
-  /// Set the [name] for the function with the given [dartFunctionId].
+  /// Set the [name] for [dartFunction].
   Future<DartFunction> setName({
-    required final int dartFunctionId,
+    required final DartFunction dartFunction,
     final String? name,
   }) async =>
-      (await getUpdateQuery(dartFunctionId).writeReturning(
+      (await getUpdateQuery(dartFunction).writeReturning(
         DartFunctionsCompanion(functionName: Value(name)),
       ))
           .single;

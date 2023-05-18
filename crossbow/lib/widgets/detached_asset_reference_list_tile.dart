@@ -111,7 +111,7 @@ class DetachedAssetReferenceListTile extends ConsumerWidget {
         return CommonShortcuts(
           deleteCallback: () async {
             await assetReferencesDao.deleteAssetReference(
-              id: detachedAssetReference.id,
+              assetReference: detachedAssetReference,
             );
             ref.invalidate(
               detachedAssetReferenceProvider.call(assetContext),

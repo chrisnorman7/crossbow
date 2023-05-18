@@ -86,7 +86,7 @@ Future<void> main() async {
             name: 'theme.mp3',
           );
           final music = await assetReferencesDao.editAssetReference(
-            assetReferenceId: assetReference.id,
+            assetReference: assetReference,
             folderName: 'themes',
             name: 'john_theme.mp3',
           );
@@ -106,7 +106,7 @@ Future<void> main() async {
           );
           expect(assetReference.gain, 1.0);
           final updatedAssetReference = await assetReferencesDao.setGain(
-            assetReferenceId: assetReference.id,
+            assetReference: assetReference,
             gain: 0.5,
           );
           expect(updatedAssetReference.folderName, assetReference.folderName);
@@ -124,7 +124,7 @@ Future<void> main() async {
           );
           expect(
             await assetReferencesDao.deleteAssetReference(
-              id: assetReference.id,
+              assetReference: assetReference,
             ),
             1,
           );
@@ -165,7 +165,7 @@ Future<void> main() async {
           expect(assetReference.variableName, null);
           final updatedAssetReference =
               await assetReferencesDao.setVariableName(
-            assetReferenceId: assetReference.id,
+            assetReference: assetReference,
             variableName: 'asset',
           );
           expect(updatedAssetReference.id, assetReference.id);

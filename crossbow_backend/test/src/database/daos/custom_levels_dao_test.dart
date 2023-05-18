@@ -46,16 +46,16 @@ void main() {
           );
           final level = await customLevelsDao.createCustomLevel(
             name: 'Test Level',
-            musicId: music.id,
+            music: music,
           );
           expect(level.musicId, music.id);
           var updatedLevel =
-              await customLevelsDao.setMusicId(customLevelId: level.id);
+              await customLevelsDao.setMusicId(customLevel: level);
           expect(updatedLevel.id, level.id);
           expect(updatedLevel.musicId, null);
           updatedLevel = await customLevelsDao.setMusicId(
-            customLevelId: level.id,
-            musicId: music.id,
+            customLevel: level,
+            music: music,
           );
           expect(updatedLevel.id, level.id);
           expect(updatedLevel.musicId, music.id);
@@ -68,13 +68,13 @@ void main() {
           final level =
               await customLevelsDao.createCustomLevel(name: 'Level 1');
           var updatedLevel = await customLevelsDao.setName(
-            customLevelId: level.id,
+            customLevel: level,
             name: 'Level 2',
           );
           expect(updatedLevel.id, level.id);
           expect(updatedLevel.name, 'Level 2');
           updatedLevel = await customLevelsDao.setName(
-            customLevelId: level.id,
+            customLevel: level,
             name: 'Level 3',
           );
           expect(updatedLevel.id, level.id);
@@ -88,7 +88,10 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(
             name: 'Testing Delete',
           );
-          expect(await customLevelsDao.deleteCustomLevel(id: level.id), 1);
+          expect(
+            await customLevelsDao.deleteCustomLevel(customLevel: level),
+            1,
+          );
           await expectLater(
             customLevelsDao.getCustomLevel(id: level.id),
             throwsStateError,
@@ -105,16 +108,16 @@ void main() {
           final level = await customLevelsDao.createCustomLevel(name: 'Test');
           final command1 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final command2 =
               await customLevelCommandsDao.createCustomLevelCommand(
-            customLevelId: level.id,
-            commandTriggerId: commandTrigger.id,
+            customLevel: level,
+            commandTrigger: commandTrigger,
           );
           final commands = await customLevelsDao.getCustomLevelCommands(
-            customLevelId: level.id,
+            customLevel: level,
           );
           expect(commands.length, 2);
           expect(commands.first.id, command1.id);
@@ -145,7 +148,7 @@ void main() {
           );
           expect(customLevel.variableName, null);
           final updatedCustomLevel = await customLevelsDao.setVariableName(
-            customLevelId: customLevel.id,
+            customLevel: customLevel,
             variableName: 'testCustomLevel',
           );
           expect(updatedCustomLevel.variableName, 'testCustomLevel');

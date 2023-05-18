@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +24,7 @@ class DartFunctionListTile extends ConsumerWidget {
   final int? dartFunctionId;
 
   /// The function to call when the dart function changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<DartFunction?> onChanged;
 
   /// Whether to autofocus the list tile.
   final bool autofocus;
@@ -39,8 +40,9 @@ class DartFunctionListTile extends ConsumerWidget {
         subtitle: Text(unsetMessage),
         onTap: () => pushWidget(
           context: context,
-          builder: (final context) =>
-              SelectDartFunctionScreen(onChanged: onChanged),
+          builder: (final context) => SelectDartFunctionScreen(
+            onChanged: onChanged,
+          ),
         ),
       );
     }

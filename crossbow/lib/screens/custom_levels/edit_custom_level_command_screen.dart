@@ -62,9 +62,9 @@ class EditCustomLevelCommandScreen extends ConsumerWidget {
         CommandTriggerListTile(
           commandTriggerId: commandTrigger.id,
           onChanged: (final value) async {
-            await customLevelCommandsDao.setCommandTriggerId(
-              customLevelCommandId: command.id,
-              commandTriggerId: value,
+            await customLevelCommandsDao.setCommandTrigger(
+              customLevelCommand: command,
+              commandTrigger: value,
             );
             invalidateCustomLevelCommandProvider(ref);
           },
@@ -75,7 +75,7 @@ class EditCustomLevelCommandScreen extends ConsumerWidget {
           interval: command.interval,
           onChanged: (final value) async {
             await customLevelCommandsDao.setInterval(
-              customLevelCommandId: command.id,
+              customLevelCommand: command,
               interval: value,
             );
             invalidateCustomLevelCommandProvider(ref);

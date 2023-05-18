@@ -58,9 +58,9 @@ class EditPushMenuScreen extends ConsumerWidget {
         MenuListTile(
           menuId: menu.id,
           onChanged: (final value) async {
-            await pushMenusDao.setMenuId(
-              pushMenuId: pushMenuId,
-              menuId: value!,
+            await pushMenusDao.setMenu(
+              pushMenu: pushMenu,
+              menu: value!,
             );
             invalidatePushMenuProvider(ref);
           },
@@ -70,7 +70,7 @@ class EditPushMenuScreen extends ConsumerWidget {
           after: pushMenu.after,
           onChanged: (final value) async {
             await pushMenusDao.setAfter(
-              pushMenuId: pushMenuId,
+              pushMenu: pushMenu,
               after: value == 0 ? null : value,
             );
             invalidatePushMenuProvider(ref);
@@ -81,7 +81,7 @@ class EditPushMenuScreen extends ConsumerWidget {
           fadeLength: pushMenu.fadeLength,
           onChanged: (final value) async {
             await pushMenusDao.setFadeLength(
-              pushMenuId: pushMenuId,
+              pushMenu: pushMenu,
               fadeLength: value,
             );
             invalidatePushMenuProvider(ref);
@@ -97,7 +97,7 @@ class EditPushMenuScreen extends ConsumerWidget {
           },
           onChanged: (final value) async {
             await pushMenusDao.setVariableName(
-              pushMenuId: pushMenu.id,
+              pushMenu: pushMenu,
               variableName: value,
             );
             invalidatePushMenuProvider(ref);

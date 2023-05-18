@@ -30,11 +30,6 @@ class CommandTriggerKeyboardKeysDao
         ),
       );
 
-  /// Get an [update] query which matches on the given [id].
-  UpdateStatement<$CommandTriggerKeyboardKeysTable, CommandTriggerKeyboardKey>
-      getUpdateQuery(final int id) => update(commandTriggerKeyboardKeys)
-        ..where((final table) => table.id.equals(id));
-
   /// Get the keyboard key with the given [id].
   Future<CommandTriggerKeyboardKey> getCommandTriggerKeyboardKey({
     required final int id,
@@ -43,21 +38,30 @@ class CommandTriggerKeyboardKeysDao
             ..where((final table) => table.id.equals(id)))
           .getSingle();
 
-  /// Set the [scanCode] for the keyboard key with the given
-  /// [commandTriggerKeyboardKeyId].
+  /// Get an [update] query which matches [commandTriggerKeyboardKey].
+  UpdateStatement<$CommandTriggerKeyboardKeysTable, CommandTriggerKeyboardKey>
+      getUpdateQuery(
+    final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
+  ) =>
+          update(commandTriggerKeyboardKeys)
+            ..where(
+              (final table) => table.id.equals(commandTriggerKeyboardKey.id),
+            );
+
+  /// Set the [scanCode] for [commandTriggerKeyboardKey].
   Future<CommandTriggerKeyboardKey> setScanCode({
-    required final int commandTriggerKeyboardKeyId,
+    required final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
     required final ScanCode scanCode,
   }) async =>
-      (await getUpdateQuery(commandTriggerKeyboardKeyId).writeReturning(
+      (await getUpdateQuery(commandTriggerKeyboardKey).writeReturning(
         CommandTriggerKeyboardKeysCompanion(scanCode: Value(scanCode)),
       ))
           .single;
 
-  /// Update the [control], [alt], and [shift] modifiers for the keyboard key
-  /// with the given [commandTriggerKeyboardKeyId].
+  /// Update the [control], [alt], and [shift] modifiers for
+  /// [commandTriggerKeyboardKey].
   Future<CommandTriggerKeyboardKey> setModifiers({
-    required final int commandTriggerKeyboardKeyId,
+    required final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
     final bool? control,
     final bool? alt,
     final bool? shift,
@@ -65,25 +69,23 @@ class CommandTriggerKeyboardKeysDao
     if (control == null && alt == null && shift == null) {
       throw StateError('At least one modifier must be present.');
     }
-    const absent = Value<bool>.absent();
-    final query = getUpdateQuery(commandTriggerKeyboardKeyId);
-    final rows = await query.writeReturning(
+    return (await getUpdateQuery(commandTriggerKeyboardKey).writeReturning(
       CommandTriggerKeyboardKeysCompanion(
-        control: control == null ? absent : Value(control),
-        alt: alt == null ? absent : Value(alt),
-        shift: shift == null ? absent : Value(shift),
+        control: Value(control ?? commandTriggerKeyboardKey.control),
+        alt: Value(alt ?? commandTriggerKeyboardKey.alt),
+        shift: Value(shift ?? commandTriggerKeyboardKey.shift),
       ),
-    );
-    return rows.single;
+    ))
+        .single;
   }
 
-  /// Delete the keyboard key with the given [commandTriggerKeyboardKeyId].
+  /// Delete the [commandTriggerKeyboardKey].
   Future<int> deleteCommandTriggerKeyboardKey({
-    required final int commandTriggerKeyboardKeyId,
+    required final CommandTriggerKeyboardKey commandTriggerKeyboardKey,
   }) =>
       (delete(commandTriggerKeyboardKeys)
             ..where(
-              (final table) => table.id.equals(commandTriggerKeyboardKeyId),
+              (final table) => table.id.equals(commandTriggerKeyboardKey.id),
             ))
           .go();
 }

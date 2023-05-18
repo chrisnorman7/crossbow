@@ -53,7 +53,7 @@ class EditStopGameScreen extends ConsumerWidget {
           value: stopGame.description,
           onChanged: (final value) async {
             await stopGamesDao.setDescription(
-              stopGameId: stopGame.id,
+              stopGame: stopGame,
               description: value,
             );
             invalidateStopGameProvider(ref);
@@ -65,7 +65,7 @@ class EditStopGameScreen extends ConsumerWidget {
           after: stopGame.after,
           onChanged: (final value) async {
             await stopGamesDao.setAfter(
-              stopGameId: stopGame.id,
+              stopGame: stopGame,
               after: value,
             );
             invalidateStopGameProvider(ref);
@@ -82,7 +82,7 @@ class EditStopGameScreen extends ConsumerWidget {
           },
           onChanged: (final value) async {
             await stopGamesDao.setVariableName(
-              stopGameId: stopGame.id,
+              stopGame: stopGame,
               variableName: value,
             );
             invalidateStopGameProvider(ref);

@@ -22,11 +22,14 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
     final keyboardKeyId = commandTrigger.keyboardKeyId;
     if (keyboardKeyId != null) {
       await db.commandTriggerKeyboardKeysDao.deleteCommandTriggerKeyboardKey(
-        commandTriggerKeyboardKeyId: keyboardKeyId,
+        commandTriggerKeyboardKey:
+            await db.commandTriggerKeyboardKeysDao.getCommandTriggerKeyboardKey(
+          id: keyboardKeyId,
+        ),
       );
     }
     await db.commandTriggersDao.deleteCommandTrigger(
-      commandTriggerId: commandTrigger.id,
+      commandTrigger: commandTrigger,
     );
   }
 
@@ -35,61 +38,95 @@ class UtilsDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// If the [command] is pinned, throw [StateError].
   Future<void> deleteCommand(final Command command) async {
     final commandsDao = db.commandsDao;
-    if (await commandsDao.isPinned(commandId: command.id)) {
+    if (await commandsDao.isPinned(command: command)) {
       throw StateError('$command cannot be deleted because it is pinned.');
     }
     final pushMenuId = command.pushMenuId;
     if (pushMenuId != null) {
-      await db.pushMenusDao.deletePushMenu(id: pushMenuId);
+      final pushMenusDao = db.pushMenusDao;
+      await pushMenusDao.deletePushMenu(
+        pushMenu: await pushMenusDao.getPushMenu(
+          id: pushMenuId,
+        ),
+      );
     }
     final popLevelId = command.popLevelId;
     if (popLevelId != null) {
-      await db.popLevelsDao.deletePopLevel(id: popLevelId);
+      final popLevelsDao = db.popLevelsDao;
+      await popLevelsDao.deletePopLevel(
+        popLevel: await popLevelsDao.getPopLevel(
+          id: popLevelId,
+        ),
+      );
     }
     final stopGameId = command.stopGameId;
     if (stopGameId != null) {
-      await db.stopGamesDao.deleteStopGame(stopGameId: stopGameId);
+      final stopGamesDao = db.stopGamesDao;
+      await stopGamesDao.deleteStopGame(
+        stopGame: await stopGamesDao.getStopGame(
+          id: stopGameId,
+        ),
+      );
     }
     final messageSoundId = command.messageSoundId;
     if (messageSoundId != null) {
-      await db.assetReferencesDao.deleteAssetReference(id: messageSoundId);
+      final assetReferencesDao = db.assetReferencesDao;
+      await assetReferencesDao.deleteAssetReference(
+        assetReference: await assetReferencesDao.getAssetReference(
+          id: messageSoundId,
+        ),
+      );
     }
-    await commandsDao.deleteCommand(id: command.id);
+    await commandsDao.deleteCommand(command: command);
   }
 
   /// Delete the given [menuItem] and all associated rows.
   Future<void> deleteMenuItem(final MenuItem menuItem) async {
+    final assetReferencesDao = db.assetReferencesDao;
     for (final id in [menuItem.activateSoundId, menuItem.selectSoundId]) {
       if (id != null) {
-        await db.assetReferencesDao.deleteAssetReference(id: id);
+        await assetReferencesDao.deleteAssetReference(
+          assetReference: await assetReferencesDao.getAssetReference(
+            id: id,
+          ),
+        );
       }
     }
-    await db.menuItemsDao.deleteMenuItem(id: menuItem.id);
+    await db.menuItemsDao.deleteMenuItem(menuItem: menuItem);
   }
 
   /// Delete the given [menu] and all related [MenuItem]s.
   Future<void> deleteMenu(final Menu menu) async {
-    (await db.menuItemsDao.getMenuItems(menuId: menu.id))
-        .forEach(deleteMenuItem);
+    (await db.menuItemsDao.getMenuItems(menu: menu)).forEach(deleteMenuItem);
+    final assetReferencesDao = db.assetReferencesDao;
     for (final id in [
       menu.activateItemSoundId,
       menu.musicId,
       menu.selectItemSoundId
     ]) {
       if (id != null) {
-        await db.assetReferencesDao.deleteAssetReference(id: id);
+        await assetReferencesDao.deleteAssetReference(
+          assetReference: await assetReferencesDao.getAssetReference(
+            id: id,
+          ),
+        );
       }
     }
-    await db.menusDao.deleteMenu(id: menu.id);
+    await db.menusDao.deleteMenu(menu: menu);
   }
 
   /// Delete the given [customLevel], and all associated rows.
   Future<void> deleteCustomLevel(final CustomLevel customLevel) async {
+    final assetReferencesDao = db.assetReferencesDao;
     for (final id in [customLevel.musicId]) {
       if (id != null) {
-        await db.assetReferencesDao.deleteAssetReference(id: id);
+        await assetReferencesDao.deleteAssetReference(
+          assetReference: await assetReferencesDao.getAssetReference(
+            id: id,
+          ),
+        );
       }
     }
-    await db.customLevelsDao.deleteCustomLevel(id: customLevel.id);
+    await db.customLevelsDao.deleteCustomLevel(customLevel: customLevel);
   }
 }

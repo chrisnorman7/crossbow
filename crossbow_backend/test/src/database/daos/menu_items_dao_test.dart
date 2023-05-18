@@ -17,7 +17,7 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem1 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 1',
           );
           expect(menuItem1.id, isNonZero);
@@ -25,7 +25,7 @@ void main() {
           expect(menuItem1.menuId, menu.id);
           expect(menuItem1.position, 0);
           final menuItem2 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 2',
             position: 1,
           );
@@ -41,7 +41,7 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final playMenuItem =
-              await menuItemsDao.createMenuItem(menuId: menu.id, name: 'Play');
+              await menuItemsDao.createMenuItem(menu: menu, name: 'Play');
           expect(
             await menuItemsDao.getMenuItem(id: playMenuItem.id),
             predicate<MenuItem>(
@@ -55,7 +55,7 @@ void main() {
             ),
           );
           final quitMenuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Quit',
             position: 1,
           );
@@ -79,15 +79,15 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem1 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 1',
           );
           final menuItem2 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 2',
           );
           final menuItem3 = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Menu Item 3',
           );
           final menuItems = [
@@ -96,7 +96,7 @@ void main() {
             menuItem3,
           ];
           final discoveredMenuItems =
-              await menuItemsDao.getMenuItems(menuId: menu.id);
+              await menuItemsDao.getMenuItems(menu: menu);
           expect(discoveredMenuItems.length, menuItems.length);
           for (var i = 0; i < discoveredMenuItems.length; i++) {
             final realMenuItem = menuItems[i];
@@ -105,20 +105,20 @@ void main() {
             expect(realMenuItem.name, discoveredMenuItem.name);
           }
           await menuItemsDao.moveMenuItem(
-            menuItemId: menuItem1.id,
+            menuItem: menuItem1,
             position: 2,
           );
           await menuItemsDao.moveMenuItem(
-            menuItemId: menuItem2.id,
+            menuItem: menuItem2,
             position: 0,
           );
           await menuItemsDao.moveMenuItem(
-            menuItemId: menuItem3.id,
+            menuItem: menuItem3,
             position: 1,
           );
           expect(
             Stream<int>.fromIterable(
-              (await menuItemsDao.getMenuItems(menuId: menu.id))
+              (await menuItemsDao.getMenuItems(menu: menu))
                   .map<int>((final e) => e.id),
             ),
             emitsInOrder([
@@ -136,18 +136,18 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final quitMenuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Quit',
           );
-          await menuItemsDao.createMenuItem(menuId: menu.id, name: 'Play Game');
+          await menuItemsDao.createMenuItem(menu: menu, name: 'Play Game');
           var menuItem = await menuItemsDao.moveMenuItem(
-            menuItemId: quitMenuItem.id,
+            menuItem: quitMenuItem,
             position: 1,
           );
           expect(menuItem.id, quitMenuItem.id);
           expect(menuItem.name, quitMenuItem.name);
           expect(menuItem.position, 1);
-          menuItem = (await menuItemsDao.getMenuItems(menuId: menu.id)).last;
+          menuItem = (await menuItemsDao.getMenuItems(menu: menu)).last;
           expect(menuItem.id, quitMenuItem.id);
         },
       );
@@ -157,15 +157,18 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final playMenuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Play',
           );
           final quitMenuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Quit',
             position: 1,
           );
-          expect(await menuItemsDao.deleteMenuItem(id: playMenuItem.id), 1);
+          expect(
+            await menuItemsDao.deleteMenuItem(menuItem: playMenuItem),
+            1,
+          );
           final query = db.select(db.menuItems)
             ..where((final table) => table.id.equals(playMenuItem.id));
           expect(await query.getSingleOrNull(), null);
@@ -181,9 +184,9 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Main Menu');
           final playMenuItem =
-              await menuItemsDao.createMenuItem(menuId: menu.id, name: 'Play');
+              await menuItemsDao.createMenuItem(menu: menu, name: 'Play');
           final startMenuItem = await menuItemsDao.setName(
-            menuItemId: playMenuItem.id,
+            menuItem: playMenuItem,
             name: 'Start Game',
           );
           expect(startMenuItem.id, playMenuItem.id);
@@ -200,19 +203,19 @@ void main() {
           );
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Test Menu Item',
-            selectSoundId: assetReference.id,
+            selectSound: assetReference,
           );
           expect(menuItem.selectSoundId, assetReference.id);
-          var updatedMenuItem = await menuItemsDao.setSelectSoundId(
-            menuItemId: menuItem.id,
+          var updatedMenuItem = await menuItemsDao.setSelectSound(
+            menuItem: menuItem,
           );
           expect(updatedMenuItem.id, menuItem.id);
           expect(updatedMenuItem.selectSoundId, null);
-          updatedMenuItem = await menuItemsDao.setSelectSoundId(
-            menuItemId: menuItem.id,
-            selectSoundId: assetReference.id,
+          updatedMenuItem = await menuItemsDao.setSelectSound(
+            menuItem: menuItem,
+            selectSound: assetReference,
           );
           expect(updatedMenuItem.id, menuItem.id);
           expect(updatedMenuItem.selectSoundId, assetReference.id);
@@ -228,19 +231,19 @@ void main() {
           );
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Test Menu Item',
-            activateSoundId: assetReference.id,
+            activateSound: assetReference,
           );
           expect(menuItem.activateSoundId, assetReference.id);
-          var updatedMenuItem = await menuItemsDao.setActivateSoundId(
-            menuItemId: menuItem.id,
+          var updatedMenuItem = await menuItemsDao.setActivateSound(
+            menuItem: menuItem,
           );
           expect(updatedMenuItem.id, menuItem.id);
           expect(updatedMenuItem.activateSoundId, null);
-          updatedMenuItem = await menuItemsDao.setActivateSoundId(
-            menuItemId: menuItem.id,
-            activateSoundId: assetReference.id,
+          updatedMenuItem = await menuItemsDao.setActivateSound(
+            menuItem: menuItem,
+            activateSound: assetReference,
           );
           expect(updatedMenuItem.id, menuItem.id);
           expect(updatedMenuItem.activateSoundId, assetReference.id);
@@ -252,23 +255,23 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem = await menuItemsDao.createMenuItem(
-            menuId: menu.id,
+            menu: menu,
             name: 'Test',
           );
           final command = await db.commandsDao.createCommand();
           final createdCallCommands = [
             await db.callCommandsDao.createCallCommand(
-              commandId: command.id,
-              callingMenuItemId: menuItem.id,
+              command: command,
+              callingMenuItem: menuItem,
             ),
             await db.callCommandsDao.createCallCommand(
-              commandId: command.id,
-              callingMenuItemId: menuItem.id,
+              command: command,
+              callingMenuItem: menuItem,
               after: 1234,
             ),
           ];
           final queryCallCommands =
-              await menuItemsDao.getCallCommands(menuItemId: menuItem.id);
+              await menuItemsDao.getCallCommands(menuItem: menuItem);
           expect(queryCallCommands.length, createdCallCommands.length);
           for (var i = 0; i < createdCallCommands.length; i++) {
             expect(createdCallCommands[i].id, queryCallCommands[i].id);
@@ -281,10 +284,10 @@ void main() {
         () async {
           final menu = await menusDao.createMenu(name: 'Test Menu');
           final menuItem =
-              await menuItemsDao.createMenuItem(menuId: menu.id, name: 'First');
+              await menuItemsDao.createMenuItem(menu: menu, name: 'First');
           expect(menuItem.variableName, null);
           final updatedMenuItem = await menuItemsDao.setVariableName(
-            menuItemId: menuItem.id,
+            menuItem: menuItem,
             variableName: 'first',
           );
           expect(updatedMenuItem.id, menuItem.id);

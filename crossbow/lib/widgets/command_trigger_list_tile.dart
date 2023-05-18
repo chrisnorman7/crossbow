@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +23,7 @@ class CommandTriggerListTile extends ConsumerWidget {
   final int commandTriggerId;
 
   /// The function to call when the command trigger changes.
-  final ValueChanged<int> onChanged;
+  final ValueChanged<CommandTrigger> onChanged;
 
   /// The title of the resulting list tile.
   final String title;

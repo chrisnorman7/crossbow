@@ -1,5 +1,6 @@
 import 'package:backstreets_widgets/util.dart';
 import 'package:backstreets_widgets/widgets.dart';
+import 'package:crossbow_backend/crossbow_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +27,7 @@ class StopGameListTile extends ConsumerStatefulWidget {
   final int? stopGameId;
 
   /// The function to call when the stop game changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<StopGame?> onChanged;
 
   /// The title for the list tile.
   final String? title;
@@ -57,7 +58,7 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
           final projectContext = ref.watch(projectContextNotifierProvider)!;
           final stopGame =
               await projectContext.db.stopGamesDao.createStopGame();
-          widget.onChanged(stopGame.id);
+          widget.onChanged(stopGame);
           if (mounted) {
             await pushWidget(
               context: context,
@@ -69,19 +70,21 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
       );
     }
     final value = ref.watch(stopGameProvider.call(id));
-    return CommonShortcuts(
-      deleteCallback: () async {
-        if (widget.nullable) {
-          final projectContext = ref.watch(projectContextNotifierProvider)!;
-          await projectContext.db.stopGamesDao.deleteStopGame(stopGameId: id);
-          widget.onChanged(null);
-        }
-      },
-      copyText: id.toString(),
-      child: value.when(
-        data: (final valueContext) {
-          final stopGame = valueContext.value;
-          return ListTile(
+    return value.when(
+      data: (final valueContext) {
+        final stopGame = valueContext.value;
+        return CommonShortcuts(
+          deleteCallback: widget.nullable
+              ? () async {
+                  final projectContext =
+                      ref.watch(projectContextNotifierProvider)!;
+                  await projectContext.db.stopGamesDao
+                      .deleteStopGame(stopGame: stopGame);
+                  widget.onChanged(null);
+                }
+              : null,
+          copyText: id.toString(),
+          child: ListTile(
             autofocus: widget.autofocus,
             title: Text(widget.title ?? Intl.message('Stop Game')),
             subtitle: Text(setMessage),
@@ -92,11 +95,11 @@ class StopGameListTileState extends ConsumerState<StopGameListTile> {
                     EditStopGameScreen(stopGameId: stopGame.id),
               );
             },
-          );
-        },
-        error: ErrorListTile.withPositional,
-        loading: LoadingWidget.new,
-      ),
+          ),
+        );
+      },
+      error: ErrorListTile.withPositional,
+      loading: LoadingWidget.new,
     );
   }
 }

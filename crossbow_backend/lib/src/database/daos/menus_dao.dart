@@ -17,17 +17,16 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
   /// Create a new menu.
   Future<Menu> createMenu({
     required final String name,
-    final int? activateItemSoundId,
-    final int? musicId,
-    final int? selectItemSoundId,
-    final int? onCancelCallCommandId,
+    final AssetReference? activateItemSound,
+    final AssetReference? music,
+    final AssetReference? selectItemSound,
   }) =>
       into(menus).insertReturning(
         MenusCompanion(
           name: Value(name),
-          activateItemSoundId: Value(activateItemSoundId),
-          selectItemSoundId: Value(selectItemSoundId),
-          musicId: Value(musicId),
+          activateItemSoundId: Value(activateItemSound?.id),
+          selectItemSoundId: Value(selectItemSound?.id),
+          musicId: Value(music?.id),
         ),
       );
 
@@ -37,61 +36,64 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.getSingle();
   }
 
-  /// Delete the menu with the given [id].
+  /// Delete [menu].
   @internal
-  Future<int> deleteMenu({required final int id}) {
-    final query = delete(menus)..where((final table) => table.id.equals(id));
+  Future<int> deleteMenu({
+    required final Menu menu,
+  }) {
+    final query = delete(menus)
+      ..where((final table) => table.id.equals(menu.id));
     return query.go();
   }
 
-  /// Get an [update] query that matches on [id].
-  UpdateStatement<$MenusTable, Menu> getUpdateQuery(final int id) =>
-      update(menus)..where((final table) => table.id.equals(id));
+  /// Get an [update] query that matches [menu].
+  UpdateStatement<$MenusTable, Menu> getUpdateQuery(final Menu menu) =>
+      update(menus)..where((final table) => table.id.equals(menu.id));
 
-  /// Set the [name] of the menu with the given [menuId].
+  /// Set the [name] of [menu].
   Future<Menu> setName({
-    required final int menuId,
+    required final Menu menu,
     required final String name,
   }) async =>
-      (await getUpdateQuery(menuId)
+      (await getUpdateQuery(menu)
               .writeReturning(MenusCompanion(name: Value(name))))
           .single;
 
-  /// Set the [musicId] for the menu with the given [menuId].
+  /// Set the [music] for [menu].
   Future<Menu> setMusicId({
-    required final int menuId,
-    final int? musicId,
+    required final Menu menu,
+    final AssetReference? music,
   }) async =>
-      (await getUpdateQuery(menuId)
-              .writeReturning(MenusCompanion(musicId: Value(musicId))))
+      (await getUpdateQuery(menu)
+              .writeReturning(MenusCompanion(musicId: Value(music?.id))))
           .single;
 
-  /// Set the [activateItemSoundId] for the menu with the given [menuId].
+  /// Set the [activateItemSound] for [menu].
   Future<Menu> setActivateItemSoundId({
-    required final int menuId,
-    final int? activateItemSoundId,
+    required final Menu menu,
+    final AssetReference? activateItemSound,
   }) async =>
-      (await getUpdateQuery(menuId).writeReturning(
-        MenusCompanion(activateItemSoundId: Value(activateItemSoundId)),
+      (await getUpdateQuery(menu).writeReturning(
+        MenusCompanion(activateItemSoundId: Value(activateItemSound?.id)),
       ))
           .single;
 
-  /// Set the [selectItemSoundId] for the menu with the given [menuId].
+  /// Set the [selectItemSound] for [menu].
   Future<Menu> setSelectItemSoundId({
-    required final int menuId,
-    final int? selectItemSoundId,
+    required final Menu menu,
+    final AssetReference? selectItemSound,
   }) async =>
-      (await getUpdateQuery(menuId).writeReturning(
-        MenusCompanion(selectItemSoundId: Value(selectItemSoundId)),
+      (await getUpdateQuery(menu).writeReturning(
+        MenusCompanion(selectItemSoundId: Value(selectItemSound?.id)),
       ))
           .single;
 
-  /// Get the on cancel commands for the menu with the given [menuId].
+  /// Get the on cancel commands for [menu].
   Future<List<CallCommand>> getOnCancelCallCommands({
-    required final int menuId,
+    required final Menu menu,
   }) =>
       (select(callCommands)
-            ..where((final table) => table.onCancelMenuId.equals(menuId)))
+            ..where((final table) => table.onCancelMenuId.equals(menu.id)))
           .get();
 
   /// Get all menus, ordered by their name.
@@ -101,12 +103,12 @@ class MenusDao extends DatabaseAccessor<CrossbowBackendDatabase>
     return query.get();
   }
 
-  /// Set the [variableName] for the the row with the given [menuId].
+  /// Set the [variableName] for [menu].
   Future<Menu> setVariableName({
-    required final int menuId,
+    required final Menu menu,
     final String? variableName,
   }) async =>
-      (await getUpdateQuery(menuId).writeReturning(
+      (await getUpdateQuery(menu).writeReturning(
         MenusCompanion(variableName: Value(variableName)),
       ))
           .single;

@@ -36,35 +36,34 @@ class EditCommandTriggerKeyboardKeyScreen extends ConsumerWidget {
           data: (final data) {
             final projectContext = data.projectContext;
             final dao = projectContext.db.commandTriggerKeyboardKeysDao;
-            final keyboardKey = data.value;
+            final commandTriggerKeyboardKey = data.value;
             return ListView(
               children: [
                 ListTile(
                   autofocus: true,
                   title: Text(Intl.message('Scan Code')),
-                  subtitle: Text(keyboardKey.scanCode.name),
+                  subtitle: Text(commandTriggerKeyboardKey.scanCode.name),
                   onTap: () => pushWidget(
                     context: context,
                     builder: (final context) => SelectEnum<ScanCode>(
                       values: ScanCode.values,
                       onDone: (final value) async {
                         await dao.setScanCode(
-                          commandTriggerKeyboardKeyId:
-                              commandTriggerKeyboardKeyId,
+                          commandTriggerKeyboardKey: commandTriggerKeyboardKey,
                           scanCode: value,
                         );
                         invalidateCommandTriggerKeyboardKeyProvider(ref);
                       },
                       title: Intl.message('Select Scan Code'),
-                      value: keyboardKey.scanCode,
+                      value: commandTriggerKeyboardKey.scanCode,
                     ),
                   ),
                 ),
                 CheckboxListTile(
-                  value: keyboardKey.control,
+                  value: commandTriggerKeyboardKey.control,
                   onChanged: (final value) async {
                     await dao.setModifiers(
-                      commandTriggerKeyboardKeyId: commandTriggerKeyboardKeyId,
+                      commandTriggerKeyboardKey: commandTriggerKeyboardKey,
                       control: value ?? false,
                     );
                     invalidateCommandTriggerKeyboardKeyProvider(ref);
@@ -72,10 +71,10 @@ class EditCommandTriggerKeyboardKeyScreen extends ConsumerWidget {
                   title: Text(controlKey),
                 ),
                 CheckboxListTile(
-                  value: keyboardKey.alt,
+                  value: commandTriggerKeyboardKey.alt,
                   onChanged: (final value) async {
                     await dao.setModifiers(
-                      commandTriggerKeyboardKeyId: commandTriggerKeyboardKeyId,
+                      commandTriggerKeyboardKey: commandTriggerKeyboardKey,
                       alt: value ?? false,
                     );
                     invalidateCommandTriggerKeyboardKeyProvider(ref);
@@ -83,10 +82,10 @@ class EditCommandTriggerKeyboardKeyScreen extends ConsumerWidget {
                   title: Text(altKey),
                 ),
                 CheckboxListTile(
-                  value: keyboardKey.shift,
+                  value: commandTriggerKeyboardKey.shift,
                   onChanged: (final value) async {
                     await dao.setModifiers(
-                      commandTriggerKeyboardKeyId: commandTriggerKeyboardKeyId,
+                      commandTriggerKeyboardKey: commandTriggerKeyboardKey,
                       shift: value ?? false,
                     );
                     invalidateCommandTriggerKeyboardKeyProvider(ref);

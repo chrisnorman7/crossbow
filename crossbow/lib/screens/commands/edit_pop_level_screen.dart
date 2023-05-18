@@ -24,7 +24,7 @@ class EditPopLevelScreen extends ConsumerWidget {
   final int popLevelId;
 
   /// The function to call when the pop level changes.
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<PopLevel?> onChanged;
 
   /// Build the widget.
   @override
@@ -58,7 +58,7 @@ class EditPopLevelScreen extends ConsumerWidget {
             value: popLevel.description,
             onChanged: (final value) async {
               await popLevelsDao.setDescription(
-                popLevelId: popLevel.id,
+                popLevel: popLevel,
                 description: value,
               );
               invalidatePopLevelProvider(ref);
@@ -70,7 +70,7 @@ class EditPopLevelScreen extends ConsumerWidget {
             fadeLength: popLevel.fadeLength,
             onChanged: (final value) async {
               await popLevelsDao.setFadeLength(
-                id: popLevelId,
+                popLevel: popLevel,
                 fadeLength: value,
               );
               invalidatePopLevelProvider(ref);
@@ -86,7 +86,7 @@ class EditPopLevelScreen extends ConsumerWidget {
             },
             onChanged: (final value) async {
               await popLevelsDao.setVariableName(
-                popLevelId: popLevel.id,
+                popLevel: popLevel,
                 variableName: value,
               );
               invalidatePopLevelProvider(ref);

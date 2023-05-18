@@ -57,7 +57,7 @@ void main() {
           final trigger =
               await commandTriggersDao.createCommandTrigger(description: '');
           final updatedTrigger = await commandTriggersDao.setDescription(
-            commandTriggerId: trigger.id,
+            commandTrigger: trigger,
             description: 'asdf',
           );
           expect(updatedTrigger.id, trigger.id);
@@ -72,17 +72,17 @@ void main() {
               .createCommandTriggerKeyboardKey(scanCode: ScanCode.s);
           final trigger = await commandTriggersDao.createCommandTrigger(
             description: 'Test',
-            keyboardKeyId: keyboardKey.id,
+            keyboardKey: keyboardKey,
           );
           expect(trigger.keyboardKeyId, keyboardKey.id);
           var updatedTrigger = await commandTriggersDao.setKeyboardKeyId(
-            commandTriggerId: trigger.id,
+            commandTrigger: trigger,
           );
           expect(updatedTrigger.id, trigger.id);
           expect(updatedTrigger.keyboardKeyId, null);
           updatedTrigger = await commandTriggersDao.setKeyboardKeyId(
-            commandTriggerId: trigger.id,
-            keyboardKeyId: keyboardKey.id,
+            commandTrigger: trigger,
+            keyboardKey: keyboardKey,
           );
           expect(updatedTrigger.id, trigger.id);
           expect(updatedTrigger.keyboardKeyId, keyboardKey.id);
@@ -123,11 +123,11 @@ void main() {
           );
           final trigger = await commandTriggersDao.createCommandTrigger(
             description: 'Test trigger',
-            keyboardKeyId: keyboardKey.id,
+            keyboardKey: keyboardKey,
           );
           expect(
             await commandTriggersDao.deleteCommandTrigger(
-              commandTriggerId: trigger.id,
+              commandTrigger: trigger,
             ),
             1,
           );
@@ -179,7 +179,7 @@ void main() {
           );
           expect(trigger.variableName, null);
           final updatedTrigger = await commandTriggersDao.setVariableName(
-            commandTriggerId: trigger.id,
+            commandTrigger: trigger,
             variableName: 'trigger',
           );
           expect(updatedTrigger.id, trigger.id);

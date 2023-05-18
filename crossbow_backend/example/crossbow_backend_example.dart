@@ -17,39 +17,40 @@ Future<void> main() async {
     url: 'https://github.com/chrisnorman7/crossbow.git',
   );
   final openGitHub = await menuItemsDao.createMenuItem(
-    menuId: menu.id,
+    menu: menu,
     name: 'Open GitHub',
   );
   await db.callCommandsDao.createCallCommand(
-    commandId: openGitHubCommand.id,
-    callingMenuItemId: openGitHub.id,
+    command: openGitHubCommand,
+    callingMenuItem: openGitHub,
   );
   final stopGame = await db.stopGamesDao.createStopGame(after: 3000);
   final popLevel = await db.popLevelsDao.createPopLevel(fadeLength: 3.0);
   final quitCommand = await commands.createCommand(
     messageText: 'The game will now close.',
-    popLevelId: popLevel.id,
-    stopGameId: stopGame.id,
+    popLevel: popLevel,
+    stopGame: stopGame,
   );
   final quit = await menuItemsDao.createMenuItem(
-    menuId: menu.id,
+    menu: menu,
     name: 'Quit Game',
   );
   await db.callCommandsDao.createCallCommand(
-    commandId: quitCommand.id,
-    callingMenuItemId: quit.id,
+    command: quitCommand,
+    callingMenuItem: quit,
   );
   final pushMenu = await db.pushMenusDao.createPushMenu(
-    menuId: menu.id,
+    menu: menu,
     after: 2000,
   );
+  final initialCommand = await projectContext.initialCommand;
   await commands.setMessageText(
-    commandId: projectContext.project.initialCommandId,
+    command: initialCommand,
     text: 'Welcome to the crossbow example.',
   );
   await commands.setPushMenuId(
-    commandId: projectContext.project.initialCommandId,
-    pushMenuId: pushMenu.id,
+    command: initialCommand,
+    pushMenu: pushMenu,
   );
   await projectContext.run();
 }

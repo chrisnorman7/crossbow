@@ -15,14 +15,14 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
 
   /// Create a new custom level command.
   Future<CustomLevelCommand> createCustomLevelCommand({
-    required final int customLevelId,
-    required final int commandTriggerId,
+    required final CustomLevel customLevel,
+    required final CommandTrigger commandTrigger,
     final int? interval,
   }) =>
       into(customLevelCommands).insertReturning(
         CustomLevelCommandsCompanion(
-          commandTriggerId: Value(commandTriggerId),
-          customLevelId: Value(customLevelId),
+          commandTriggerId: Value(commandTrigger.id),
+          customLevelId: Value(customLevel.id),
           interval: Value(interval),
         ),
       );
@@ -32,63 +32,62 @@ class CustomLevelCommandsDao extends DatabaseAccessor<CrossbowBackendDatabase>
       (select(customLevelCommands)..where((final table) => table.id.equals(id)))
           .getSingle();
 
-  /// Get an [update] query which matches on the given [id].
+  /// Get an [update] query which matches [customLevelCommand].
   UpdateStatement<$CustomLevelCommandsTable, CustomLevelCommand> getUpdateQuery(
-    final int id,
+    final CustomLevelCommand customLevelCommand,
   ) =>
-      update(customLevelCommands)..where((final table) => table.id.equals(id));
+      update(customLevelCommands)
+        ..where((final table) => table.id.equals(customLevelCommand.id));
 
-  /// Set the [commandTriggerId] for the custom level command with the ID
-  /// [customLevelCommandId].
-  Future<CustomLevelCommand> setCommandTriggerId({
-    required final int customLevelCommandId,
-    required final int commandTriggerId,
+  /// Set the [commandTrigger] for [customLevelCommand].
+  Future<CustomLevelCommand> setCommandTrigger({
+    required final CustomLevelCommand customLevelCommand,
+    required final CommandTrigger commandTrigger,
   }) async =>
-      (await getUpdateQuery(customLevelCommandId).writeReturning(
+      (await getUpdateQuery(customLevelCommand).writeReturning(
         CustomLevelCommandsCompanion(
-          commandTriggerId: Value(commandTriggerId),
+          commandTriggerId: Value(commandTrigger.id),
         ),
       ))
           .single;
 
-  /// Delete the command with the given [id].
+  /// Delete [customLevelCommand].
   Future<int> deleteCustomLevelCommand({
-    required final int id,
+    required final CustomLevelCommand customLevelCommand,
   }) =>
-      (delete(customLevelCommands)..where((final table) => table.id.equals(id)))
+      (delete(customLevelCommands)
+            ..where((final table) => table.id.equals(customLevelCommand.id)))
           .go();
 
-  /// Get the activation call commands associated with the custom level command
-  /// with the given [customLevelCommandId].
+  /// Get the activation call commands associated with [customLevelCommand].
   Future<List<CallCommand>> getCallCommands({
-    required final int customLevelCommandId,
+    required final CustomLevelCommand customLevelCommand,
   }) =>
       (select(callCommands)
             ..where(
               (final table) => table.callingCustomLevelCommandId
-                  .equals(customLevelCommandId),
+                  .equals(customLevelCommand.id),
             ))
           .get();
 
-  /// Get the release call commands associated with the custom level command
-  /// with the given [customLevelCommandId].
+  /// Get the release call commands associated with [customLevelCommand].
   Future<List<CallCommand>> getReleaseCommands({
-    required final int customLevelCommandId,
+    required final CustomLevelCommand customLevelCommand,
   }) =>
       (select(callCommands)
             ..where(
-              (final table) => table.releasingCustomLevelCommandId
-                  .equals(customLevelCommandId),
+              (final table) => table.releasingCustomLevelCommandId.equals(
+                customLevelCommand.id,
+              ),
             ))
           .get();
 
-  /// Set the [interval] value for the custom level command with the given
-  /// [customLevelCommandId].
+  /// Set the [interval] for [customLevelCommand].
   Future<CustomLevelCommand> setInterval({
-    required final int customLevelCommandId,
+    required final CustomLevelCommand customLevelCommand,
     final int? interval,
   }) async =>
-      (await getUpdateQuery(customLevelCommandId).writeReturning(
+      (await getUpdateQuery(customLevelCommand).writeReturning(
         CustomLevelCommandsCompanion(interval: Value(interval)),
       ))
           .single;

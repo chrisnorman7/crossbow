@@ -73,7 +73,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
                 onDone: (final value) async {
                   Navigator.pop(context);
                   await pinnedCommandsDao.setName(
-                    pinnedCommandId: pinnedCommand.id,
+                    pinnedCommand: pinnedCommand,
                     name: value,
                   );
                   invalidatePinnedCommandsProvider();
@@ -91,10 +91,10 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
           onPressed: () async {
             if (pinnedCommand == null) {
               await pinnedCommandsDao.createPinnedCommand(
-                commandId: command.id,
+                command: command,
                 name: Intl.message('Untitled Command'),
               );
-            } else if (await commandsDao.isCalled(commandId: command.id)) {
+            } else if (await commandsDao.isCalled(command: command)) {
               if (mounted) {
                 await intlShowMessage(
                   context: context,
@@ -105,7 +105,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
               return;
             } else {
               await pinnedCommandsDao.deletePinnedCommand(
-                pinnedCommandId: pinnedCommand.id,
+                pinnedCommand: pinnedCommand,
               );
             }
             invalidatePinnedCommandsProvider();
@@ -124,7 +124,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             value: command.description,
             onChanged: (final value) async {
               await commandsDao.setDescription(
-                commandId: command.id,
+                command: command,
                 description: value,
               );
               invalidateCommandProvider();
@@ -135,7 +135,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             value: command.messageText ?? '',
             onChanged: (final value) async {
               await commandsDao.setMessageText(
-                commandId: command.id,
+                command: command,
                 text: value.isEmpty ? null : value,
               );
               invalidateCommandProvider();
@@ -148,11 +148,11 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             assetReferenceId: command.messageSoundId,
             onChanged: (final value) async {
               await commandsDao.setMessageSoundId(
-                commandId: command.id,
-                assetReferenceId: value,
+                command: command,
+                assetReference: value,
               );
               if (value != null) {
-                ref.invalidate(assetReferenceProvider.call(value));
+                ref.invalidate(assetReferenceProvider.call(value.id));
               }
               invalidateCommandProvider();
             },
@@ -170,8 +170,8 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             pushMenuId: command.pushMenuId,
             onChanged: (final value) async {
               await commandsDao.setPushMenuId(
-                commandId: command.id,
-                pushMenuId: value,
+                command: command,
+                pushMenu: value,
               );
               invalidateCommandProvider();
             },
@@ -180,8 +180,8 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             pushCustomLevelId: command.pushCustomLevelId,
             onChanged: (final value) async {
               await commandsDao.setPushCustomLevelId(
-                commandId: command.id,
-                pushCustomLevelId: value,
+                command: command,
+                pushCustomLevel: value,
               );
               invalidateCommandProvider();
             },
@@ -190,8 +190,8 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             popLevelId: command.popLevelId,
             onChanged: (final value) async {
               await commandsDao.setPopLevelId(
-                commandId: command.id,
-                popLevelId: value,
+                command: command,
+                popLevel: value,
               );
               invalidateCommandProvider();
             },
@@ -201,8 +201,8 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             stopGameId: command.stopGameId,
             onChanged: (final value) async {
               await commandsDao.setStopGameId(
-                commandId: command.id,
-                stopGameId: value,
+                command: command,
+                stopGame: value,
               );
               invalidateCommandProvider();
             },
@@ -211,7 +211,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             url: command.url,
             onChanged: (final value) async {
               await commandsDao.setUrl(
-                commandId: command.id,
+                command: command,
                 url: value,
               );
               invalidateCommandProvider();
@@ -221,8 +221,8 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             dartFunctionId: command.dartFunctionId,
             onChanged: (final value) async {
               await commandsDao.setDartFunctionId(
-                commandId: command.id,
-                dartFunctionId: value,
+                command: command,
+                dartFunction: value,
               );
               invalidateCommandProvider();
             },
@@ -237,7 +237,7 @@ class EditCommandScreenState extends ConsumerState<EditCommandScreen> {
             },
             onChanged: (final value) async {
               await commandsDao.setVariableName(
-                commandId: command.id,
+                command: command,
                 variableName: value,
               );
               invalidateCommandProvider();
