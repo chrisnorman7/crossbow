@@ -16,6 +16,9 @@ import 'main_dart_code.dart';
 /// The ziggurat import to use.
 const zigguratImport = "import 'package:ziggurat/ziggurat.dart';";
 
+/// The import for ziggurat sounds.
+String get zigguratSoundsImport => "import 'package:ziggurat/sound.dart';";
+
 /// The import for `crossbow_backend`.
 const crossbowBackendImport =
     "import 'package:crossbow_backend/crossbow_backend.dart';";
@@ -126,6 +129,9 @@ class ProjectCode {
 
   /// The file where the windows build script will be written.
   File get buildScriptFileWindows => File('${buildScriptFileDefault.path}.bat');
+
+  /// The file where reverbs will be written.
+  File get reverbsFile => File(path.join(libDirectory.path, 'reverbs.dart'));
 
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
@@ -658,7 +664,8 @@ class ProjectCode {
       ],
       buildScriptFileDefault,
       buildScriptFileWindows,
-      File(path.join(outputDirectory, packageName)),
+      Directory(path.join(outputDirectory, packageName)),
+      reverbsFile,
     ]) {
       stringBuffer.writeln(
         entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
@@ -703,6 +710,59 @@ class ProjectCode {
     );
     buildScriptFileDefault.writeAsStringSync(defaultScriptBuffer.toString());
     buildScriptFileWindows.writeAsStringSync(windowsStringBuffer.toString());
+  }
+
+  /// Write all reverbs.
+  Future<void> writeReverbs(final CrossbowBackendDatabase db) async {
+    final reverbs = await db.reverbsDao.getReverbs();
+    if (reverbs.isEmpty) {
+      ensureDelete(reverbsFile);
+      return;
+    }
+    final stringBuffer = StringBuffer()
+      ..writeln('// ignore_for_file: avoid_redundant_argument_values')
+      ..writeln(zigguratSoundsImport);
+    for (final reverb in reverbs) {
+      final variableName = reverb.variableName ?? 'reverbPreset${reverb.id}';
+      final name = reverb.name;
+      stringBuffer
+        ..writeln('/// ${reverb.name}.')
+        ..writeln('const $variableName = ReverbPreset(')
+        ..write('name: ');
+      if (name.contains("'")) {
+        stringBuffer.write('"$name"');
+      } else {
+        stringBuffer.write("'$name'");
+      }
+      stringBuffer
+        ..writeln(',')
+        ..writeln('gain: ${reverb.gain},')
+        ..writeln('lateReflectionsDelay: ${reverb.lateReflectionsDelay},')
+        ..writeln(
+          'lateReflectionsDiffusion: ${reverb.lateReflectionsDiffusion},',
+        )
+        ..writeln(
+          'lateReflectionsHfReference: ${reverb.lateReflectionsHfReference},',
+        )
+        ..writeln(
+          'lateReflectionsHfRolloff: ${reverb.lateReflectionsHfRolloff},',
+        )
+        ..writeln(
+          'lateReflectionsLfReference: ${reverb.lateReflectionsLfReference},',
+        )
+        ..writeln(
+          'lateReflectionsLfRolloff: ${reverb.lateReflectionsLfRolloff},',
+        )
+        ..writeln('lateReflectionsModulationDepth: ')
+        ..writeln('${reverb.lateReflectionsModulationDepth},')
+        ..writeln('lateReflectionsModulationFrequency: ')
+        ..writeln('${reverb.lateReflectionsModulationFrequency},')
+        ..writeln('meanFreePath: ${reverb.meanFreePath},')
+        ..writeln('t60: ${reverb.t60},')
+        ..writeln(');');
+    }
+    final code = formatter.format(stringBuffer.toString());
+    reverbsFile.writeAsStringSync(code);
   }
 
   /// Write everything.
@@ -753,6 +813,7 @@ class ProjectCode {
     await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
     await writeGitIgnore(db);
     writeBuildScripts();
+    await writeReverbs(db);
     await db.close();
   }
 }
