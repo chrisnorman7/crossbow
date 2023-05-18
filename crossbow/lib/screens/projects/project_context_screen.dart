@@ -24,9 +24,11 @@ import '../command_triggers/edit_command_trigger_screen.dart';
 import '../commands/edit_command_screen.dart';
 import '../commands/edit_dart_function_screen.dart';
 import '../custom_levels/edit_custom_level_screen.dart';
+import '../reverbs/edit_reverb_screen.dart';
 import 'assets_page.dart';
 import 'build_project_screen.dart';
 import 'menus/edit_menu_screen.dart';
+import 'reverbs_page.dart';
 
 /// The main project screen.
 class ProjectContextScreen extends ConsumerStatefulWidget {
@@ -130,10 +132,22 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               builder: getPinnedCommandsPage,
             ),
             TabbedScaffoldTab(
+              title: Intl.message('Reverbs'),
+              icon: Text(
+                Intl.message(
+                  'Reverbs which can be used throughout your game',
+                ),
+              ),
+              builder: (final context) => CommonShortcuts(
+                newCallback: newReverb,
+                child: const ReverbsPage(),
+              ),
+            ),
+            TabbedScaffoldTab(
               title: Intl.message('Assets'),
               icon: Text(Intl.message('Existing assets on disk')),
               builder: (final context) => const AssetsPage(),
-            )
+            ),
           ],
         ),
       );
@@ -655,5 +669,22 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
       );
     }
     ref.invalidate(dartFunctionsProvider);
+  }
+
+  /// Create a new reverb.
+  Future<void> newReverb() async {
+    final projectContext = ref.watch(projectContextNotifierProvider)!;
+    final reverb = await projectContext.db.reverbsDao.createReverb(
+      'Untitled Reverb',
+    );
+    if (mounted) {
+      ref.invalidate(reverbsProvider);
+      await pushWidget(
+        context: context,
+        builder: (final context) => EditRoomReverbScreen(
+          reverbId: reverb.id,
+        ),
+      );
+    }
   }
 }
