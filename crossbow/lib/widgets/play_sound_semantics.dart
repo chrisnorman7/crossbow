@@ -69,7 +69,6 @@ class PlaySoundSemanticsState extends ConsumerState<PlaySoundSemantics> {
     try {
       _sound = game.interfaceSounds.playSound(
         assetReference: asset,
-        gain: asset.gain,
         keepAlive: true,
         looping: widget.looping,
       );
