@@ -187,6 +187,7 @@ class ProjectCode {
   }) async {
     ensureClearDirectory(encryptedAssetsDirectory);
     final encryptionKeys = <int, String>{};
+    final importedAssets = <String, ziggurat.AssetReferenceReference>{};
     final assetStores = <String, ziggurat.AssetStore>{};
     final assetReferencesDao = db.assetReferencesDao;
     final query = db.select(db.assetReferences);
@@ -204,13 +205,16 @@ class ProjectCode {
           assets: [],
         ),
       );
-      final comment = path.join(folderName, assetReference.name);
-      final existing = assetStore.assets.where(
-        (final element) => element.comment == comment,
-      );
+      final assetReferenceComment = assetReference.comment;
+      final assetReferenceKey = path.join(folderName, assetReference.name);
+      final assetReferenceReference = importedAssets[assetReferenceKey];
+      final comment =
+          (assetReferenceComment == null || assetReferenceComment.isEmpty)
+              ? assetReferenceKey
+              : assetReferenceComment;
       final variableName =
           assetReference.variableName ?? 'assetReference${assetReference.id}';
-      if (existing.isEmpty) {
+      if (assetReferenceReference == null) {
         final fullPath = path.join(
           oldAssetsDirectory,
           folderName,
@@ -240,22 +244,27 @@ class ProjectCode {
           continue;
         }
         encryptionKeys[assetReference.id] = imported.reference.encryptionKey!;
-        await db.assetReferencesDao.editAssetReference(
+        importedAssets[assetReferenceKey] = imported;
+        await assetReferencesDao.editAssetReference(
           assetReference: assetReference,
           folderName: folderName,
           name: path.basename(imported.reference.name),
-          comment: fullPath,
+          comment: comment,
         );
       } else {
-        final assetReferenceReference = existing.first;
-        await db.assetReferencesDao.editAssetReference(
+        await assetReferencesDao.editAssetReference(
           assetReference: assetReference,
           folderName: folderName,
           name: path.basename(assetReferenceReference.reference.name),
+          comment: comment,
         );
         encryptionKeys[assetReference.id] =
             assetReferenceReference.reference.encryptionKey!;
       }
+      await assetReferencesDao.setVariableName(
+        assetReference: assetReference,
+        variableName: variableName,
+      );
     }
     return encryptionKeys;
   }
@@ -355,7 +364,7 @@ class ProjectCode {
           ..writeln('/// Assets for ${assetReference.folderName}.')
           ..writeln(zigguratImport),
       )
-        ..writeln('/// ${assetReference.comment}.')
+        ..writeln('/// ${assetReference.comment}')
         ..writeln('const $variableName = AssetReference(')
         ..writeln(
           "'${oldProject.assetsDirectory}/${assetReference.folderName}/${assetReference.name}',",
