@@ -188,6 +188,7 @@ class ProjectCode {
     ensureClearDirectory(encryptedAssetsDirectory);
     final encryptionKeys = <int, String>{};
     final assetStores = <String, ziggurat.AssetStore>{};
+    final assetReferencesDao = db.assetReferencesDao;
     final query = db.select(db.assetReferences);
     final oldAssetsDirectory = path.join(
       oldProjectDirectory.path,
@@ -233,7 +234,10 @@ class ProjectCode {
             relativeTo: Directory.current,
           );
         } else {
-          throw StateError('Invalid asset reference: $assetReference');
+          await assetReferencesDao.deleteAssetReference(
+            assetReference: assetReference,
+          );
+          continue;
         }
         encryptionKeys[assetReference.id] = imported.reference.encryptionKey!;
         await db.assetReferencesDao.editAssetReference(
