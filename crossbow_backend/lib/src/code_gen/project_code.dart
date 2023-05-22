@@ -10,6 +10,7 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../crossbow_backend.dart';
 import '../../extensions.dart';
+import 'flutter_git_ignore.dart';
 
 /// The ziggurat import to use.
 const zigguratImport = "import 'package:ziggurat/ziggurat.dart';";
@@ -136,10 +137,11 @@ class ProjectCode {
   String get packageName => oldProject.projectName.snakeCase;
 
   /// The runner filename.
-  String get runnerFilename => 'runner.dart';
+  String get projectContextFilename => 'project_context.dart';
 
   /// The file where code for the runner class will be written.
-  File get runnerFile => File(path.join(libDirectory.path, runnerFilename));
+  File get projectContextFile =>
+      File(path.join(libDirectory.path, projectContextFilename));
 
   /// The filename for the main entry point.
   File get mainFile => File(path.join(binDirectory.path, '$packageName.dart'));
@@ -632,8 +634,8 @@ class ProjectCode {
   }
 
   /// Write the runner file.
-  /// Write the runner file.
-  Future<void> writeRunnerFIle({
+  /// Write the project context file.
+  Future<void> writeProjectContextFile({
     required final CrossbowBackendDatabase db,
     required final String encryptionKey,
     required final EncryptionKeys encryptionKeys,
@@ -664,14 +666,14 @@ class ProjectCode {
     }
     stringBuffer.writeln('},);}');
     final code = formatter.format(stringBuffer.toString());
-    runnerFile.writeAsStringSync(code);
+    projectContextFile.writeAsStringSync(code);
   }
 
   /// Write the main file.
   Future<void> writeMainFile() async {
     final stringBuffer = StringBuffer()
       ..writeln('/// $packageName.')
-      ..writeln("import 'package:$packageName/$runnerFilename';")
+      ..writeln("import 'package:$packageName/$projectContextFilename';")
       ..writeln('/// Run the game.')
       ..writeln('Future<void> main() async {')
       ..writeln('// Create the runner.')
@@ -685,7 +687,9 @@ class ProjectCode {
 
   /// Write a `.gitignore` file.
   Future<void> writeGitIgnore(final CrossbowBackendDatabase db) async {
-    final stringBuffer = StringBuffer();
+    final stringBuffer = StringBuffer()
+      ..writeln(flutterGitIgnore)
+      ..writeln('# Engine related');
     for (final entity in [
       assetSourcesDirectory,
       encryptedAssetsDirectory,
@@ -712,7 +716,7 @@ class ProjectCode {
       buildScriptFileWindows,
       Directory(path.join(outputDirectory, packageName)),
       reverbsFile,
-      runnerFile,
+      projectContextFile,
     ]) {
       stringBuffer.writeln(
         entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
@@ -852,7 +856,7 @@ class ProjectCode {
     await writeMenuItems(db);
     await writePushMenus(db);
     final encryptionKeys = await writeEncryptedAssetReferences(db: db);
-    await writeRunnerFIle(
+    await writeProjectContextFile(
       db: db,
       encryptionKey: encryptionKey,
       encryptionKeys: encryptionKeys,
