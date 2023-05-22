@@ -123,7 +123,8 @@ class ProjectCode {
   File get gitignoreFile => File(path.join(outputDirectory, '.gitignore'));
 
   /// The file where the build script will be written.
-  File get buildScriptFileDefault => File(path.join(outputDirectory, 'build'));
+  File get buildScriptFileDefault =>
+      File(path.join(outputDirectory, 'build-project'));
 
   /// The file where the windows build script will be written.
   File get buildScriptFileWindows => File('${buildScriptFileDefault.path}.bat');
