@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dart_style/dart_style.dart';
-import 'package:jinja/jinja.dart';
 import 'package:path/path.dart' as path;
 import 'package:plain_optional/plain_optional.dart';
 import 'package:pubspec_yaml/pubspec_yaml.dart';
@@ -11,7 +10,6 @@ import 'package:ziggurat/ziggurat.dart' as ziggurat;
 
 import '../../crossbow_backend.dart';
 import '../../extensions.dart';
-import 'main_dart_code.dart';
 
 /// The ziggurat import to use.
 const zigguratImport = "import 'package:ziggurat/ziggurat.dart';";
@@ -135,6 +133,12 @@ class ProjectCode {
 
   /// The package name to be used by this project.
   String get packageName => oldProject.projectName.snakeCase;
+
+  /// The runner filename.
+  String get runnerFilename => 'runner.dart';
+
+  /// The file where code for the runner class will be written.
+  File get runnerFile => File(path.join(libDirectory.path, runnerFilename));
 
   /// The filename for the main entry point.
   File get mainFile => File(path.join(binDirectory.path, '$packageName.dart'));
@@ -626,27 +630,56 @@ class ProjectCode {
     pushMenusFile.writeAsStringSync(code);
   }
 
-  /// Write the main file.
-  Future<void> writeMainFile({
+  /// Write the runner file.
+  /// Write the runner file.
+  Future<void> writeRunnerFIle({
     required final CrossbowBackendDatabase db,
     required final String encryptionKey,
-    required final Map<int, String> encryptionKeys,
+    required final EncryptionKeys encryptionKeys,
   }) async {
-    final environment = Environment();
-    final template = environment.fromString(mainDartCode);
-    final dartFunctions = await db.dartFunctionsDao.getDartFunctions();
-    final output = template.render({
-      'packageName': packageName,
-      'filename': path.basename(encryptedProjectFile.path),
-      'encryptionKey': encryptionKey,
-      'assetReferenceEncryptionKeys': encryptionKeys,
-      'dartFunctions': dartFunctions.map<Map<String, dynamic>>((final e) {
-        final data = e.toJson();
-        data['name'] = e.name;
-        return data;
-      }),
-    });
-    mainFile.writeAsStringSync(formatter.format(output));
+    final filename = path.basename(encryptedProjectFile.path);
+    final stringBuffer = StringBuffer()
+      ..writeln("import 'dart:io';")
+      ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';")
+      ..writeln("import 'game_functions.dart';")
+      ..writeln('/// Return a project runner for this game.')
+      ..writeln('ProjectContext getProjectRunner() {')
+      ..writeln('  const gameFunctions = GameFunctions();')
+      ..writeln('  return ProjectContext.fromFile(')
+      ..writeln("    File('$filename'),")
+      ..writeln("    encryptionKey: '$encryptionKey',")
+      ..writeln('    assetReferenceEncryptionKeys: {');
+    for (final entry in encryptionKeys.entries) {
+      final id = entry.key;
+      final key = entry.value;
+      stringBuffer.writeln("$id: '$key',");
+    }
+    stringBuffer
+      ..writeln('},')
+      ..writeln('dartFunctionsMap: {');
+    for (final function in await db.dartFunctionsDao.getDartFunctions()) {
+      final name = function.name;
+      stringBuffer.writeln("'$name': gameFunctions.$name,");
+    }
+    stringBuffer.writeln('},);}');
+    final code = formatter.format(stringBuffer.toString());
+    runnerFile.writeAsStringSync(code);
+  }
+
+  /// Write the main file.
+  Future<void> writeMainFile() async {
+    final stringBuffer = StringBuffer()
+      ..writeln('/// $packageName.')
+      ..writeln("import 'package:$packageName/$runnerFilename';")
+      ..writeln('/// Run the game.')
+      ..writeln('Future<void> main() async {')
+      ..writeln('// Create the runner.')
+      ..writeln('final runner = getProjectRunner();')
+      ..writeln('// Now run the runner.')
+      ..writeln('return runner.run();')
+      ..writeln('}');
+    final code = formatter.format(stringBuffer.toString());
+    mainFile.writeAsStringSync(code);
   }
 
   /// Write a `.gitignore` file.
@@ -664,7 +697,6 @@ class ProjectCode {
       popLevelsFile,
       gameFunctionsBaseFile,
       databaseFile,
-      mainFile,
       menusFile,
       stopGamesFile,
       ...[
@@ -679,6 +711,7 @@ class ProjectCode {
       buildScriptFileWindows,
       Directory(path.join(outputDirectory, packageName)),
       reverbsFile,
+      runnerFile,
     ]) {
       stringBuffer.writeln(
         entity.path.substring(outputDirectory.length + 1).replaceAll(r'\', '/'),
@@ -818,11 +851,14 @@ class ProjectCode {
     await writeMenuItems(db);
     await writePushMenus(db);
     final encryptionKeys = await writeEncryptedAssetReferences(db: db);
-    await writeMainFile(
+    await writeRunnerFIle(
       db: db,
       encryptionKey: encryptionKey,
       encryptionKeys: encryptionKeys,
     );
+    if (!mainFile.existsSync()) {
+      await writeMainFile();
+    }
     await writeAssetReferences(db: db, encryptionKeys: encryptionKeys);
     await writeGitIgnore(db);
     writeBuildScripts();
