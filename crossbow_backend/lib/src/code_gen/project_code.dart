@@ -646,7 +646,7 @@ class ProjectCode {
       ..writeln("import 'package:crossbow_backend/crossbow_backend.dart';")
       ..writeln("import 'game_functions.dart';")
       ..writeln('/// Return a project runner for this game.')
-      ..writeln('ProjectContext getProjectRunner() {')
+      ..writeln('ProjectContext getProjectContext() {')
       ..writeln('  const gameFunctions = GameFunctions();')
       ..writeln('  return ProjectContext.fromFile(')
       ..writeln("    File('$filename'),")
@@ -676,10 +676,10 @@ class ProjectCode {
       ..writeln("import 'package:$packageName/$projectContextFilename';")
       ..writeln('/// Run the game.')
       ..writeln('Future<void> main() async {')
-      ..writeln('// Create the runner.')
-      ..writeln('final runner = getProjectRunner();')
-      ..writeln('// Now run the runner.')
-      ..writeln('return runner.run();')
+      ..writeln('// Create the project context.')
+      ..writeln('final projectContext = getProjectContext();')
+      ..writeln('// Now run the project.')
+      ..writeln('return projectContext.run();')
       ..writeln('}');
     final code = formatter.format(stringBuffer.toString());
     mainFile.writeAsStringSync(code);
