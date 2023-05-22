@@ -44,7 +44,7 @@ class ProjectContextScreen extends ConsumerStatefulWidget {
 /// State for [ProjectContextScreen].
 class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   /// Build the current project.
-  Future<void> buildProject() async {
+  Future<void> _buildProject() async {
     final state = ref.watch(projectContextNotifierProvider.notifier);
     final projectContext = state.maybeProjectContext;
     await state.clearProjectContext();
@@ -64,7 +64,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
   Widget build(final BuildContext context) => CallbackShortcuts(
         bindings: {
           closeProjectShortcut: () => Navigator.of(context).maybePop(),
-          buildHotkey: buildProject
+          buildHotkey: _buildProject
         },
         child: TabbedScaffold(
           tabs: [
@@ -73,7 +73,7 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
               icon: const Icon(Icons.settings),
               builder: getSettingsPage,
               floatingActionButton: FloatingActionButton(
-                onPressed: buildProject,
+                onPressed: _buildProject,
                 tooltip: Intl.message('Build Project'),
                 child: const Icon(Icons.build),
               ),
