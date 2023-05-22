@@ -142,6 +142,11 @@ class ProjectScreenState extends ConsumerState<ProjectContextScreen> {
                 newCallback: newReverb,
                 child: const ReverbsPage(),
               ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: newReverb,
+                tooltip: Intl.message('New Reverb'),
+                child: intlNewIcon,
+              ),
             ),
             TabbedScaffoldTab(
               title: Intl.message('Assets'),
